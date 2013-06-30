@@ -26,8 +26,11 @@ Template.puzzle.rows = function() {
 }
 
 function scroll_into_view(e) {
-  if (e.length && e[0].scrollIntoView)
-    e[0].scrollIntoView();
+  if (e.length) {
+    var r = e[0].getClientRects()[0];
+    if (document.elementFromPoint(r.left, r.top) !== e[0])
+      e[0].scrollIntoView();
+  }
 }
 
 function select(square) {
@@ -41,6 +44,16 @@ function select(square) {
 }
 
 function move(dr, dc) {
+  if (Session.get('selected-direction') === 'across' && dr) {
+    Session.set('selected-direction', 'down');
+    return false;
+  } else if (Session.get('selected-direction') === 'down' && dc) {
+    Session.set('selected-direction', 'across');
+    return false;
+  }
+
+  Session.set('selected-direction', dr ? 'down' : 'across');
+
   var row = Session.get('selected-row') || 0,
       col = Session.get('selected-column') || 0;
   var puz = active_puzzle();
@@ -55,6 +68,7 @@ function move(dr, dc) {
   }
   var s = Squares.findOne({row: row, column: col, puzzle: puz._id});
   select(s);
+  return false;
 }
 
 function letter(keycode) {
@@ -66,6 +80,11 @@ function letter(keycode) {
                                });
   var id = Fills.findOne({square: square._id})._id;
   Fills.update({_id: id}, {$set: {letter: s}});
+  if (Session.get('selected-direction') == 'across')
+    move(0, 1);
+  else
+    move(1, 0);
+  return false;
 }
 
 function clearFill() {
@@ -76,24 +95,27 @@ function clearFill() {
                                });
   var id = Fills.findOne({square: square._id})._id;
   Fills.update({_id: id}, {$set: {letter: null}});
+  return false;
 }
 
 function handle_key(k) {
+  if (k.altKey || k.ctrlKey)
+    return true;
   if (k.keyCode === 39)
-    move(0, 1);
+    return move(0, 1);
   else if (k.keyCode === 37)
-    move(0, -1);
+    return move(0, -1);
   else if (k.keyCode === 38)
-    move(-1, 0);
+    return move(-1, 0);
   else if(k.keyCode === 40)
-    move(1, 0);
+    return move(1, 0);
   else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
-    letter(k.keyCode);
+    return letter(k.keyCode);
   else if (k.keyCode === ' '.charCodeAt(0) ||
            k.keyCode === 8 ||
            k.keyCode === 46)
-    clearFill();
-  return false;
+    return clearFill();
+  return true;
 }
 
 Template.row.cells = function() {
@@ -111,7 +133,8 @@ Template.cell.fill = function() {
 
 Template.cell.events({
   'click': function () {
-    select(this);
+    if (!this.black)
+      select(this);
   }
 });
 
@@ -123,9 +146,10 @@ Template.cell.css_class = function() {
   if (Session.equals('selected-row', this.row) &&
       Session.equals('selected-column', this.column))
     classes.push('selected');
-  else if (Session.equals('word-across', this.word_across) ||
-      Session.equals('word-down', this.word_down))
-    classes.push('inword');
+  else if (Session.equals('word-across', this.word_across))
+      classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
+  else if (Session.equals('word-down', this.word_down))
+      classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
   return classes.join(' ');
 }
 
@@ -145,10 +169,22 @@ Template.clue.text = function() {
   return this.text;
 }
 
+Template.clue.events({
+  'click': function() {
+    var s = Squares.findOne({puzzle: this.puzzle, number: this.number});
+    Session.set('selected-direction', this.direction);
+    select(s);
+  }
+})
+
 Template.clue.css_class = function() {
   var classes = ['clue-' + this.number];
-  if (Session.equals('word-' + this.direction, this.number))
-    classes.push('selected');
+  if (Session.equals('word-' + this.direction, this.number)) {
+    if (Session.equals('selected-direction', this.direction))
+      classes.push('selected');
+    else
+      classes.push('otherword');
+  }
   return classes.join(' ');
 }
 
@@ -158,6 +194,7 @@ window.new_puzzle = function() {
     Session.set('puzzleid', p._id);
     Session.set('selected-row', 0);
     Session.set('selected-column', -1);
+    Session.set('selected-direction', 'across');
     move(0, 1);
   }
 }

@@ -71,6 +71,10 @@
     background-color: #88f;
 }
 
+#puzzlegrid .cell.otherword {
+    background-color: #ccf;
+}
+
 #clues {
     font-family: serif;
     font-size: 90%;
@@ -103,4 +107,8 @@
 
 #clues .clue.selected {
     background-color: #66c;
+}
+
+#clues .clue.otherword {
+    background-color: #ccf;
 }
