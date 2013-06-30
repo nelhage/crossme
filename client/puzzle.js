@@ -205,8 +205,13 @@ window.load_game = function(id) {
   Session.set('selected-row', 0);
   Session.set('selected-column', 0);
   Session.set('selected-direction', 'across');
+  history.pushState(null, '', '/game/' + id);
 }
 
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
+  var m = document.location.pathname.match(/^\/game\/(\w+)$/);
+  if (m) {
+    load_game(m[1]);
+  }
 });
