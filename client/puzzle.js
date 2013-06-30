@@ -1,14 +1,19 @@
 Deps.autorun(function () {
   Meteor.subscribe('puzzles');
-  var puzid = Session.get('puzzleid');
-  if (puzid)
-    Meteor.subscribe('puzzle', puzid);
+  var id = Session.get('gameid');
+  if (id)
+    Meteor.subscribe('game', id);
 });
 
-function active_puzzle() {
-  var id = Session.get('puzzleid');
-  if (!id) return null;
-  return Puzzles.findOne({_id: id});
+window.active_puzzle = function() {
+  var id = puzzle_id();
+  return id && Puzzles.findOne({_id: id});
+}
+
+function puzzle_id() {
+  var id = Session.get('gameid');
+  var game = id && Games.findOne({_id: id});
+  return game && game.puzzle;
 }
 
 Template.puzzle.show = function() {
@@ -82,11 +87,11 @@ function move(dr, dc) {
 function letter(keycode) {
   var s = String.fromCharCode(keycode);
   var square = Squares.findOne({
-                                 puzzle: Session.get('puzzleid'),
+                                 puzzle: puzzle_id(),
                                  row: Session.get('selected-row'),
                                  column: Session.get('selected-column')
                                });
-  var id = Fills.findOne({square: square._id})._id;
+  var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: s}});
   if (Session.get('selected-direction') == 'across')
     move(0, 1);
@@ -97,11 +102,11 @@ function letter(keycode) {
 
 function clearFill() {
   var square = Squares.findOne({
-                                 puzzle: Session.get('puzzleid'),
+                                 puzzle: puzzle_id(),
                                  row: Session.get('selected-row'),
                                  column: Session.get('selected-column')
                                });
-  var id = Fills.findOne({square: square._id})._id;
+  var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: null}});
   return false;
 }
@@ -135,7 +140,7 @@ Template.cell.number = function() {
 }
 
 Template.cell.fill = function() {
-  var f = Fills.findOne({square: this._id});
+  var f = Fills.findOne({square: this._id, game: Session.get('gameid')});
   return f ? (f.letter || '') : '';
 }
 
@@ -161,11 +166,11 @@ Template.cell.css_class = function() {
 }
 
 Template.clues.across_clues = function() {
-  return Clues.find({puzzle: Session.get('puzzleid'), direction: 'across'}, {sort: {number: 1}});
+  return Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}});
 }
 
 Template.clues.down_clues = function() {
-  return Clues.find({puzzle: Session.get('puzzleid'), direction: 'down'}, {sort: {number: 1}});
+  return Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}});
 }
 
 Template.clue.number = function() {
@@ -195,24 +200,13 @@ Template.clue.css_class = function() {
   return classes.join(' ');
 }
 
-function new_puzzle() {
-  var p = Puzzles.findOne();
-  if (p) {
-    load_puzzle(p._id);
-  }
-}
-
-window.load_puzzle = function(id) {
-  Session.set('puzzleid', id);
+window.load_game = function(id) {
+  Session.set('gameid', id);
   Session.set('selected-row', 0);
-  Session.set('selected-column', -1);
+  Session.set('selected-column', 0);
   Session.set('selected-direction', 'across');
-  move(0, 1);
 }
 
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
-  if (!active_puzzle()) {
-    setTimeout(new_puzzle, 0);
-  }
 });

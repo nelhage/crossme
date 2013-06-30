@@ -2,10 +2,16 @@ Meteor.publish('puzzles', function () {
   return Puzzles.find();
 });
 
-Meteor.publish('puzzle', function (puzid) {
-  return [Clues.find({puzzle: puzid}),
-          Squares.find({puzzle: puzid}),
-          Fills.find({puzzle: puzid})];
+Meteor.publish('game', function (gameid) {
+  var game = Games.findOne({_id: gameid});
+  if (game) {
+    return [ Games.find({_id: gameid}),
+             Clues.find({puzzle: game.puzzle}),
+             Squares.find({puzzle: game.puzzle}),
+             Fills.find({game: game._id}) ];
+  } else {
+    return [];
+  }
 });
 
 Clues._ensureIndex([['puzzle', 1], ['direction', 1], ['number', 1]]);

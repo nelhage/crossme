@@ -37,8 +37,7 @@ Meteor.methods({
           };
           if (puz.numbers[r][c])
             h.number = puz.numbers[r][c];
-          var sid = Squares.insert(h);
-          Fills.insert({puzzle: puzid, square: sid, letter: null});
+          Squares.insert(h);
         }
       }
       function store_clue(clue, index, direction) {
