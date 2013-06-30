@@ -13,10 +13,6 @@ function find_word(puz, cell) {
 
 Meteor.methods({
     uploadPuzzle: function (buf) {
-      Puzzles.remove({});
-      Squares.remove({});
-      Clues.remove({});
-
       var puz = new PuzFile(new Buffer(buf, 'binary'));
       var puzid = Puzzles.insert({
         title: puz.title,
@@ -61,5 +57,6 @@ Meteor.methods({
       puz.across_clues.forEach(function (clue, index) {
         store_clue(clue, index, 'across');
       });
+      return puzid;
     }
 });

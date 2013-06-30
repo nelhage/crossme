@@ -189,15 +189,19 @@ Template.clue.css_class = function() {
   return classes.join(' ');
 }
 
-window.new_puzzle = function() {
+function new_puzzle() {
   var p = Puzzles.findOne();
   if (p) {
-    Session.set('puzzleid', p._id);
-    Session.set('selected-row', 0);
-    Session.set('selected-column', -1);
-    Session.set('selected-direction', 'across');
-    move(0, 1);
+    load_puzzle(p._id);
   }
+}
+
+window.load_puzzle = function(id) {
+  Session.set('puzzleid', id);
+  Session.set('selected-row', 0);
+  Session.set('selected-column', -1);
+  Session.set('selected-direction', 'across');
+  move(0, 1);
 }
 
 Meteor.startup(function() {

@@ -9,7 +9,10 @@ function uploadFile(file) {
         fail(fr.error);
     };
     fr.onload = function() {
-        Meteor.call('uploadPuzzle', fr.result);
+        Meteor.call('uploadPuzzle', fr.result, function (error, id) {
+            if (!error)
+              load_puzzle(id);
+        });
     };
     fr.readAsBinaryString(file);
 }

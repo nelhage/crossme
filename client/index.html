@@ -4,6 +4,7 @@
 
 <body>
   {{> upload }}
+  {{> selector }}
   {{> puzzle }}
 </body>
 
@@ -14,6 +15,18 @@
       <button> Upload a puzzle </button>
     </div>
   </form>
+</template>
+
+<template name='selector'>
+  <div id='selector'>
+    <label for='switchpuzzle'>Puzzle:</label>
+    <select id='switchpuzzle'>
+      {{#each puzzles}}
+      <option label="{{title}}" {{#if selected}}selected='selected'{{/if}}>{{_id}}</option>
+      {{/each}}
+    </select>
+    <button>Go!</button>
+  </div>
 </template>
 
 <template name='puzzle'>
