@@ -28,7 +28,8 @@ Template.puzzle.rows = function() {
 function scroll_into_view(e) {
   if (e.length) {
     var r = e[0].getClientRects()[0];
-    if (document.elementFromPoint(r.left, r.top) !== e[0])
+    if (document.elementFromPoint(r.left, r.top) !== e[0] ||
+        document.elementFromPoint(r.right, r.bottom) !== e[0])
       e[0].scrollIntoView();
   }
 }
