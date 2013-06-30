@@ -1,3 +1,19 @@
+#details {
+    margin: 1em;
+}
+
+#details div.title {
+    font-size: 150%;
+}
+
+#default div.author {
+    font-size: 120%;
+}
+
+#details .label {
+    font-weight: bold;
+}
+
 #puzzlegrid {
     float: left;
     border-left: 1px solid black;
@@ -21,12 +37,26 @@
     margin: 0px;
 }
 
+#puzzlegrid .cell .fill {
+    font-family: sans-serif;
+    font-size: 20px;
+    text-align: center;
+    vertical-align: baseline;
+    position: absolute;
+    left: 6px;
+    top: 6px;
+}
+
+#puzzlegrid .cell .cellbody {
+    position: relative;
+}
+
 #puzzlegrid .cell .numberlabel {
     float: left;
     width: 15px;
     height: 15px;
-    font-size: 12px;
-    font-face: serif;
+    font-size: 10px;
+    font-family: serif;
 }
 
 #puzzlegrid .cell.filled {
@@ -42,7 +72,7 @@
 }
 
 #clues {
-    font-face: serif;
+    font-family: serif;
     font-size: 90%;
     margin-left: 5px;
     float: left;

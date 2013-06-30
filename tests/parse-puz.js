@@ -5,7 +5,8 @@ var fs = require('fs'),
 function main(path) {
   var buf = fs.readFileSync(path);
   var puz = new Puz(buf);
-  console.log("Puz is %d x %d", puz.width, puz.height);
+  console.log("Puzzle: ", puz.title);
+  console.log(puz.copyright);
   for (var r = 0; r < puz.height; r++) {
     for (var c = 0; c < puz.width; c++) {
       if (puz.numbers[r][c]) {

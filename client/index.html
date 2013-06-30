@@ -19,6 +19,16 @@
 <template name='puzzle'>
   {{#if show}}
   <div id='puzzle'>
+    <div id='details'>
+      <div class='title'>
+        <span class='label'>Title:</span>
+        <span class='value'>{{title}}</span>
+      </div>
+      <div class='author'>
+        <span class='label'>By:</span>
+        <span class='value'>{{author}}</span>
+      </div>
+    </div>
   <div id='puzzlegrid'>
     {{#each rows}}
     {{> row }}
@@ -41,11 +51,16 @@
 
 <template name='cell'>
   <div class='cell {{css_class}}'>
-    {{#if number}}
-    <div class='numberlabel'>
-      {{ number }}
+    <div class='cellbody'>
+      {{#if number}}
+      <div class='numberlabel'>
+        {{ number }}
+      </div>
+      {{/if}}
+      <div class='fill'>
+        {{fill}}
+      </div>
     </div>
-    {{/if}}
   </div>
 </template>
 

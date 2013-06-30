@@ -41,7 +41,8 @@ Meteor.methods({
           };
           if (puz.numbers[r][c])
             h.number = puz.numbers[r][c];
-          Squares.insert(h);
+          var sid = Squares.insert(h);
+          Fills.insert({square: sid, letter: null});
         }
       }
       function store_clue(clue, index, direction) {

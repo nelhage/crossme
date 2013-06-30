@@ -5,6 +5,7 @@ PuzFile = function (buffer) {
 
 function StringReader(buffer) {
   this.buffer = buffer;
+  this.iconv = new Iconv('ISO-8859-1', 'UTF-8');
 }
 
 StringReader.prototype.nextString = function() {
@@ -13,7 +14,7 @@ StringReader.prototype.nextString = function() {
     if (this.buffer[off] == 0)
       break;
   }
-  var str = this.buffer.toString('ascii', 0, off);
+  var str = this.iconv.convert(this.buffer.slice(0, off)).toString();
   this.buffer = this.buffer.slice(off + 1);
   return str;
 }
