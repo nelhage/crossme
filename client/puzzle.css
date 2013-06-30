@@ -1,0 +1,76 @@
+#puzzlegrid {
+    float: left;
+    border-left: 1px solid black;
+    border-top:  1px solid black;
+}
+
+#puzzlegrid .row {
+    height: 30px;
+    padding: 0px;
+    margin: 0px;
+    clear: both;
+}
+
+#puzzlegrid .cell {
+    width: 30px;
+    height: 30px;
+    border-right: 1px solid black;
+    border-bottom: 1px solid black;
+    float: left;
+    padding: 0px;
+    margin: 0px;
+}
+
+#puzzlegrid .cell .numberlabel {
+    float: left;
+    width: 15px;
+    height: 15px;
+    font-size: 12px;
+    font-face: serif;
+}
+
+#puzzlegrid .cell.filled {
+    background-color: black;
+}
+
+#puzzlegrid .cell.selected {
+    background-color: #66c;
+}
+
+#puzzlegrid .cell.inword {
+    background-color: #88f;
+}
+
+#clues {
+    font-face: serif;
+    font-size: 90%;
+    margin-left: 5px;
+    float: left;
+    width: 200px;
+    border: 1px solid black;
+    height: 450px;
+}
+
+#clues .section {
+    height: 50%;
+    margin-bottom: 3px;
+}
+
+#clues .title {
+    height: 25px;
+    background: #ccc;
+    border-bottom: 3px double black;
+    border-top: 1px solid black;
+}
+
+#clues .cluelist {
+    overflow-y: scroll;
+    height: 190px;
+}
+
+#clues .clue {
+}
+
+#clues .clue.selected {
+    background-color: #66c;
+}

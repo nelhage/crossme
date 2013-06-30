@@ -1,4 +1,4 @@
-var Puz = function (buffer) {
+PuzFile = function (buffer) {
   this.buffer = buffer;
   this.parse();
 };
@@ -18,7 +18,7 @@ StringReader.prototype.nextString = function() {
   return str;
 }
 
-Puz.prototype.parse = function () {
+PuzFile.prototype.parse = function () {
   this.magic = this.buffer.toString('utf8', 0x02, 0x0D);
   if (this.magic !== "ACROSS&DOWN") {
     throw new Error("Invalid magic!");
@@ -33,7 +33,7 @@ Puz.prototype.parse = function () {
   this.assign_numbers();
 }
 
-Puz.prototype.read_board = function (off) {
+PuzFile.prototype.read_board = function (off) {
   var solution_data = this.buffer.slice(off, off + this.width * this.height);
   this.solution = [];
   var i = 0;
@@ -49,7 +49,7 @@ Puz.prototype.read_board = function (off) {
   return off + 2*this.width*this.height;
 }
 
-Puz.prototype.read_strings = function(off) {
+PuzFile.prototype.read_strings = function(off) {
   var reader = new StringReader(this.buffer.slice(off));
   this.title = reader.nextString();
   this.author = reader.nextString();
@@ -61,21 +61,21 @@ Puz.prototype.read_strings = function(off) {
   this.note = reader.nextString();
 }
 
-Puz.prototype._needs_across_number = function (r, c) {
+PuzFile.prototype._needs_across_number = function (r, c) {
   if (c == 0 || this.solution[r][c - 1] === null) {
     return (c + 1 !== this.width && this.solution[r][c + 1] !== null)
   }
   return false;
 }
 
-Puz.prototype._needs_down_number = function (r, c) {
+PuzFile.prototype._needs_down_number = function (r, c) {
   if (r == 0 || this.solution[r - 1][c] === null) {
     return (r + 1 !== this.height && this.solution[r + 1][c] !== null)
   }
   return false;
 }
 
-Puz.prototype.assign_numbers = function() {
+PuzFile.prototype.assign_numbers = function() {
   this.numbers = [];
   this.down_clues = [];
   this.across_clues = [];
@@ -101,5 +101,5 @@ Puz.prototype.assign_numbers = function() {
 }
 
 if (typeof(module) !== 'undefined') {
-  module.exports = Puz;
+  module.exports = PuzFile;
 }

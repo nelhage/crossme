@@ -27,6 +27,19 @@ function main(path) {
     });
     process.stdout.write('\n');
   });
+
+  console.log("Across:")
+  puz.across_clues.forEach(function (clue, index) {
+    if (clue) {
+      console.log("%d: %s", index, clue);
+    }
+  })
+  console.log("Down:")
+  puz.down_clues.forEach(function (clue, index) {
+    if (clue) {
+      console.log("%d: %s", index, clue);
+    }
+  })
 }
 
 main(process.argv[2]);

@@ -1,0 +1,75 @@
+<head>
+  <title>CrossMe(teor)</title>
+</head>
+
+<body>
+  {{> upload }}
+  {{> puzzle }}
+</body>
+
+<template name='upload'>
+  <form action='#' id='uploadform'>
+    <div>
+      Upload a puzzle: <input id='puzfile' type="file" value="puz" />
+      <button> Upload a puzzle </button>
+    </div>
+  </form>
+</template>
+
+<template name='puzzle'>
+  {{#if show}}
+  <div id='puzzle'>
+  <div id='puzzlegrid'>
+    {{#each rows}}
+    {{> row }}
+    {{/each}}
+  </div>
+  <div id='clues'>
+    {{>clues}}
+  </div>
+  </div>
+  {{/if}}
+</template>
+
+<template name='row'>
+  <div class='row'>
+    {{#each cells}}
+    {{> cell }}
+    {{/each}}
+  </div>
+</template>
+
+<template name='cell'>
+  <div class='cell {{css_class}}'>
+    {{#if number}}
+    <div class='numberlabel'>
+      {{ number }}
+    </div>
+    {{/if}}
+  </div>
+</template>
+
+<template name='clues'>
+  <div class='section across'>
+    <div class='title'> Across </div>
+    <div class='cluelist'>
+      {{#each across_clues}}
+      {{> clue}}
+      {{/each}}
+    </div>
+  </div>
+  <div class='section down'>
+    <div class='title'> Down </div>
+    <div class='cluelist'>
+      {{#each down_clues}}
+      {{> clue}}
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name='clue'>
+  <div class='clue {{css_class}}'>
+    {{number}}. {{text}}
+  </div>
+</template>
