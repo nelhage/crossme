@@ -1,3 +1,10 @@
+Deps.autorun(function () {
+  Meteor.subscribe('puzzles');
+  var puzid = Session.get('puzzleid');
+  if (puzid)
+    Meteor.subscribe('puzzle', puzid);
+});
+
 function active_puzzle() {
   var id = Session.get('puzzleid');
   if (!id) return null;
@@ -129,7 +136,7 @@ Template.cell.number = function() {
 
 Template.cell.fill = function() {
   var f = Fills.findOne({square: this._id});
-  return f.letter || '';
+  return f ? (f.letter || '') : '';
 }
 
 Template.cell.events({
@@ -143,14 +150,13 @@ Template.cell.css_class = function() {
   var classes = []
   if (this.black)
     classes.push("filled");
-  var sel;
-  if (Session.equals('selected-row', this.row) &&
-      Session.equals('selected-column', this.column))
+  else if (Session.equals('selected-row', this.row) &&
+           Session.equals('selected-column', this.column))
     classes.push('selected');
   else if (Session.equals('word-across', this.word_across))
-      classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
+    classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
   else if (Session.equals('word-down', this.word_down))
-      classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
+    classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
   return classes.join(' ');
 }
 
