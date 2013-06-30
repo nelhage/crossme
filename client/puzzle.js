@@ -203,6 +203,6 @@ window.new_puzzle = function() {
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
   if (!active_puzzle()) {
-    new_puzzle();
+    setTimeout(new_puzzle, 0);
   }
 });
