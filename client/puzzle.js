@@ -87,14 +87,6 @@ function find(puz, row, col, dr, dc, predicate) {
 }
 
 function move(dr, dc) {
-  if (Session.get('selected-direction') === 'across' && dr) {
-    Session.set('selected-direction', 'down');
-    return false;
-  } else if (Session.get('selected-direction') === 'down' && dc) {
-    Session.set('selected-direction', 'across');
-    return false;
-  }
-
   Session.set('selected-direction', dr ? 'down' : 'across');
 
   var row = Session.get('selected-row') || 0,
