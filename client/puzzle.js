@@ -4,6 +4,18 @@ Deps.autorun(function () {
   if (id)
     Meteor.subscribe('game', id);
 });
+Deps.autorun(function () {
+  if (puzzle_id()) {
+    var s = selected_square();
+    if (!s || s.black) {
+      s = find(active_puzzle(), 0, 0, 0, 1, function (s) { return !s.black });
+      select(s);
+    } else {
+      Session.set('word-across', s.word_across);
+      Session.set('word-down', s.word_down);
+    }
+  }
+});
 
 window.active_puzzle = function() {
   var id = puzzle_id();
@@ -262,9 +274,6 @@ Template.clue.css_class = function() {
 
 window.load_game = function(id) {
   Session.set('gameid', id);
-  Session.set('selected-row', 0);
-  Session.set('selected-column', 0);
-  Session.set('selected-direction', 'across');
   history.pushState(null, '', '/game/' + id);
 }
 
