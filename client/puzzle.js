@@ -36,13 +36,7 @@ Template.puzzle.show = function() {
   return !!active_puzzle();
 }
 
-Template.puzzle.title = function() {
-  return active_puzzle().title;
-}
-
-Template.puzzle.author = function() {
-  return active_puzzle().author;
-}
+Template.puzzle.puzzle = active_puzzle;
 
 Template.puzzle.rows = function() {
   var rows = [];

@@ -32,26 +32,32 @@
 <template name='puzzle'>
   {{#if show}}
   <div id='puzzle'>
-    <div id='details'>
-      <div class='title'>
-        <span class='label'>Title:</span>
-        <span class='value'>{{title}}</span>
-      </div>
-      <div class='author'>
-        <span class='label'>By:</span>
-        <span class='value'>{{author}}</span>
-      </div>
+    {{#with puzzle}}
+    {{> metadata}}
+    {{/with}}
+    <div id='puzzlegrid'>
+      {{#each rows}}
+      {{> row }}
+      {{/each}}
     </div>
-  <div id='puzzlegrid'>
-    {{#each rows}}
-    {{> row }}
-    {{/each}}
-  </div>
-  <div id='clues'>
-    {{>clues}}
-  </div>
+    <div id='clues'>
+      {{> clues}}
+    </div>
   </div>
   {{/if}}
+</template>
+
+<template name='metadata'>
+  <div id='details'>
+    <div class='title'>
+      <span class='label'>Title:</span>
+      <span class='value'>{{title}}</span>
+    </div>
+    <div class='author'>
+      <span class='label'>By:</span>
+      <span class='value'>{{author}}</span>
+    </div>
+  </div>
 </template>
 
 <template name='row'>
