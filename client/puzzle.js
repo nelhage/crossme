@@ -16,6 +16,22 @@ function puzzle_id() {
   return game && game.puzzle;
 }
 
+function selected_square() {
+  return Squares.findOne({
+                    puzzle: puzzle_id(),
+                    row: Session.get('selected-row'),
+                    column: Session.get('selected-column')
+                  });
+}
+
+function selected_clue() {
+  var s = selected_square();
+  var dir = Session.get('selected-direction');
+  return Clues.findOne({puzzle:s.puzzle,
+                        direction: dir,
+                        number: selected_square()['word_' + dir]});
+}
+
 Template.puzzle.show = function() {
   return !!active_puzzle();
 }
@@ -56,6 +72,20 @@ function select(square) {
   return false;
 }
 
+function find(puz, row, col, dr, dc, predicate) {
+  var s;
+  while (true) {
+    if (row < 0 || row >= puz.height ||
+        col < 0 || col >= puz.width)
+      return null;
+    s = Squares.findOne({row: row, column: col, puzzle: puz._id});
+    if (predicate(s))
+      return s;
+    row += dr;
+    col += dc;
+  }
+}
+
 function move(dr, dc) {
   if (Session.get('selected-direction') === 'across' && dr) {
     Session.set('selected-direction', 'down');
@@ -70,27 +100,17 @@ function move(dr, dc) {
   var row = Session.get('selected-row') || 0,
       col = Session.get('selected-column') || 0;
   var puz = active_puzzle();
-  while (true) {
-    row += dr;
-    col += dc;
-    if (row < 0 || row >= puz.height ||
-        col < 0 || col >= puz.width)
-      return;
-    if (!Squares.findOne({row: row, column: col, puzzle: puz._id}).black)
-      break;
-  }
-  var s = Squares.findOne({row: row, column: col, puzzle: puz._id});
-  select(s);
+  var dst = find(puz, row+dr, col+dc, dr, dc, function (s) {
+    return !s.black;
+  });
+  if (!dst) return false;
+  select(dst);
   return false;
 }
 
 function letter(keycode) {
   var s = String.fromCharCode(keycode);
-  var square = Squares.findOne({
-                                 puzzle: puzzle_id(),
-                                 row: Session.get('selected-row'),
-                                 column: Session.get('selected-column')
-                               });
+  var square = selected_square();
   var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: s}});
   if (Session.get('selected-direction') == 'across')
@@ -101,13 +121,45 @@ function letter(keycode) {
 }
 
 function clearFill() {
-  var square = Squares.findOne({
-                                 puzzle: puzzle_id(),
-                                 row: Session.get('selected-row'),
-                                 column: Session.get('selected-column')
-                               });
+  var square = selected_square();
   var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: null}});
+  return false;
+}
+
+function find_blank_in_word(square, dr, dc) {
+  return find(Puzzles.findOne(square.puzzle),
+              square.row, square.column, dr, dc, function (s) {
+    if (s.black ||
+        (dc && (square.word_across !== s.word_across)) ||
+        (dr && (square.word_down !== s.word_down)))
+      return false;
+    var f = Fills.findOne({square: s._id, game: Session.get('gameid')});
+    return f && f.letter === null;
+  });
+}
+
+function tabKey() {
+  var square = selected_square();
+  var dr = 0, dc = 0;
+  if (Session.get('selected-direction') === 'down')
+    dr = 1;
+  else
+    dc = 1;
+  var dst = find_blank_in_word(square, dr, dc);
+  if (dst) {
+    select(dst);
+    return false;
+  }
+  var clue = selected_clue();
+  var next = Clues.findOne({number: {$gt: clue.number}, puzzle: clue.puzzle, direction: clue.direction});
+  if (!next)
+    return false;
+  var h = {puzzle: next.puzzle};
+  h['word_' + next.direction] = next.number;
+  dst = find_blank_in_word(Squares.findOne(h), dr, dc);
+  if (dst)
+    select (dst);
   return false;
 }
 
@@ -128,6 +180,8 @@ function handle_key(k) {
            k.keyCode === 8 ||
            k.keyCode === 46)
     return clearFill();
+  else if (k.keyCode === 9)
+    return tabKey();
   return true;
 }
 
