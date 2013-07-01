@@ -146,20 +146,22 @@ function tabKey() {
     dr = 1;
   else
     dc = 1;
-  var dst = find_blank_in_word(square, dr, dc);
-  if (dst) {
-    select(dst);
-    return false;
-  }
-  var clue = selected_clue();
-  var next = Clues.findOne({number: {$gt: clue.number}, puzzle: clue.puzzle, direction: clue.direction});
-  if (!next)
-    return false;
-  var h = {puzzle: next.puzzle};
-  h['word_' + next.direction] = next.number;
-  dst = find_blank_in_word(Squares.findOne(h), dr, dc);
-  if (dst)
-    select (dst);
+  var sel, clue, dst, h;
+  clue = sel = selected_clue();
+  do {
+    clue = Clues.findOne({number: {$gt: clue.number}, puzzle: sel.puzzle, direction: sel.direction},
+                         {sort: {number: 1}});
+    if (!clue)
+      clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction},
+                           {sort: {number: 1}});
+    h = {puzzle: clue.puzzle};
+    h['word_' + clue.direction] = clue.number;
+    dst = find_blank_in_word(Squares.findOne(h), dr, dc);
+    if (dst) {
+      select (dst);
+      return false;
+    }
+  } while(clue._id != sel._id)
   return false;
 }
 
