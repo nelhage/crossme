@@ -86,13 +86,17 @@ function find(puz, row, col, dr, dc, predicate) {
   }
 }
 
-function move(dr, dc) {
+function move(dr, dc, inword) {
   Session.set('selected-direction', dr ? 'down' : 'across');
 
   var row = Session.get('selected-row') || 0,
       col = Session.get('selected-column') || 0;
   var puz = active_puzzle();
+  var sel = selected_square();
   var dst = find(puz, row+dr, col+dc, dr, dc, function (s) {
+    if (inword && ((dc && sel.word_across !== s.word_across) ||
+                   (dr && sel.word_down   !== s.word_down)))
+      return false;
     return !s.black;
   });
   if (!dst) return false;
@@ -106,16 +110,20 @@ function letter(keycode) {
   var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: s}});
   if (Session.get('selected-direction') == 'across')
-    move(0, 1);
+    move(0, 1, true);
   else
-    move(1, 0);
+    move(1, 0, true);
   return false;
 }
 
-function clearFill() {
+function deleteKey() {
   var square = selected_square();
   var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: null}});
+  if (Session.get('selected-direction') == 'across')
+    move(0, -1, true);
+  else
+    move(-1, 0, true);
   return false;
 }
 
@@ -173,7 +181,7 @@ function handle_key(k) {
   else if (k.keyCode === ' '.charCodeAt(0) ||
            k.keyCode === 8 ||
            k.keyCode === 46)
-    return clearFill();
+    return deleteKey();
   else if (k.keyCode === 9)
     return tabKey();
   return true;
