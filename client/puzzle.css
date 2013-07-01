@@ -35,7 +35,7 @@
 }
 
 #theclue .label {
-    background-color: #66c;
+    background-color: #88f;
 }
 
 #puzzlegrid {
@@ -130,7 +130,7 @@
 }
 
 #clues .clue.selected {
-    background-color: #66c;
+    background-color: #88f;
 }
 
 #clues .clue.otherword {
