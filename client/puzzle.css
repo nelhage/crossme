@@ -72,7 +72,7 @@
 }
 
 #puzzlegrid .cell.otherword {
-    background-color: #ccf;
+    background-color: #ccc;
 }
 
 #clues {
@@ -110,5 +110,5 @@
 }
 
 #clues .clue.otherword {
-    background-color: #ccf;
+    background-color: #ccc;
 }
