@@ -3,8 +3,8 @@
 </head>
 
 <body>
-  {{> upload }}
   {{> selector }}
+  {{> upload }}
   {{> puzzle }}
   {{> gaq}}
 </body>
@@ -12,8 +12,8 @@
 <template name='upload'>
   <form action='#' id='uploadform'>
     <div>
-      Upload a puzzle: <input id='puzfile' type="file" value="puz" />
-      <button> Upload a puzzle </button>
+      Or upload a new puzzle: <input id='puzfile' type="file" value="puz" />
+      <button> Upload </button>
     </div>
   </form>
 </template>
