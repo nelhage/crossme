@@ -2,6 +2,8 @@
 var fs = require('fs'),
     Puz = require('../server/puz.js');
 
+global.Iconv = require('iconv').Iconv;
+
 function main(path) {
   var buf = fs.readFileSync(path);
   var puz = new Puz(buf);
