@@ -39,9 +39,9 @@ function selected_square() {
 function selected_clue() {
   var s = selected_square();
   var dir = Session.get('selected-direction');
-  return Clues.findOne({puzzle:s.puzzle,
-                        direction: dir,
-                        number: selected_square()['word_' + dir]});
+  return s && Clues.findOne({puzzle:s.puzzle,
+                             direction: dir,
+                             number: selected_square()['word_' + dir]});
 }
 
 Template.puzzle.show = function() {
@@ -49,6 +49,8 @@ Template.puzzle.show = function() {
 }
 
 Template.puzzle.puzzle = active_puzzle;
+
+Template.currentclue.clue = selected_clue;
 
 Template.puzzle.rows = function() {
   var rows = [];

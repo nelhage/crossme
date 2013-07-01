@@ -1,3 +1,7 @@
+#puzzle {
+    float: left;
+}
+
 #details {
     margin: 1em;
 }
@@ -12,6 +16,26 @@
 
 #details .label {
     font-weight: bold;
+}
+
+#theclue {
+    font-size: 125%;
+    border: 1px solid black;
+    margin: 0px 0px 10px 0px;
+    padding: 0px;
+}
+
+#theclue>span {
+    display: block;
+    float: left;
+    margin: 0px;
+    height: 100%;
+    padding: 5px;
+    font-weight: bold;
+}
+
+#theclue .label {
+    background-color: #66c;
 }
 
 #puzzlegrid {
@@ -111,4 +135,8 @@
 
 #clues .clue.otherword {
     background-color: #ccc;
+}
+
+.clear {
+    clear: both;
 }
