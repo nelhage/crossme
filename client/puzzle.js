@@ -116,10 +116,15 @@ function letter(keycode) {
   return false;
 }
 
-function deleteKey() {
+function clearCell() {
   var square = selected_square();
   var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
   Fills.update({_id: id}, {$set: {letter: null}});
+  return false;
+}
+
+function deleteKey() {
+  clearCell();
   if (Session.get('selected-direction') == 'across')
     move(0, -1, true);
   else
@@ -139,29 +144,33 @@ function find_blank_in_word(square, dr, dc) {
   });
 }
 
-function tabKey() {
-  var square = selected_square();
+function tabKey(k) {
   var dr = 0, dc = 0;
   if (Session.get('selected-direction') === 'down')
     dr = 1;
   else
     dc = 1;
-  var sel, clue, dst, h;
-  clue = sel = selected_clue();
-  do {
-    clue = Clues.findOne({number: {$gt: clue.number}, puzzle: sel.puzzle, direction: sel.direction},
-                         {sort: {number: 1}});
-    if (!clue)
-      clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction},
-                           {sort: {number: 1}});
-    h = {puzzle: clue.puzzle};
-    h['word_' + clue.direction] = clue.number;
-    dst = find_blank_in_word(Squares.findOne(h), dr, dc);
-    if (dst) {
-      select (dst);
-      return false;
-    }
-  } while(clue._id != sel._id)
+  var sel = selected_clue();
+  var cmp, sort;
+  if (k.shiftKey) {
+    cmp = '$lt';
+    sort = -1;
+  } else {
+    cmp = '$gt';
+    sort = 1;
+  }
+  var query = {};
+  query[cmp] = sel.number;
+  var clue = Clues.findOne({number: query, puzzle: sel.puzzle, direction: sel.direction},
+                         {sort: {number: sort}});
+  if (!clue)
+    clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction},
+                           {sort: {number: sort}});
+  var h = {puzzle: clue.puzzle};
+  h['word_' + clue.direction] = clue.number;
+  var s = Squares.findOne(h);
+  s = find_blank_in_word(s, dr, dc) || s;
+  select(s);
   return false;
 }
 
@@ -178,12 +187,13 @@ function handle_key(k) {
     return move(1, 0);
   else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
     return letter(k.keyCode);
-  else if (k.keyCode === ' '.charCodeAt(0) ||
-           k.keyCode === 8 ||
+  else if (k.keyCode === ' '.charCodeAt(0))
+    return clearCell();
+  else if (k.keyCode === 8 ||
            k.keyCode === 46)
     return deleteKey();
   else if (k.keyCode === 9)
-    return tabKey();
+    return tabKey(k);
   return true;
 }
 
