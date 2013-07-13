@@ -31,6 +31,7 @@ function handleUpload() {
 
 Template.upload.events({
   'click button': function() {
+    $('#new-game-modal').modal('hide');
     handleUpload();
     return false;
   }

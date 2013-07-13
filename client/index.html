@@ -3,32 +3,10 @@
 </head>
 
 <body>
-  {{> selector }}
-  {{> upload }}
+  {{> header }}
   {{> puzzle }}
   {{> gaq}}
 </body>
-
-<template name='upload'>
-  <form action='#' id='uploadform'>
-    <div>
-      Or upload a new puzzle: <input id='puzfile' type="file" value="puz" />
-      <button> Upload </button>
-    </div>
-  </form>
-</template>
-
-<template name='selector'>
-  <div id='selector'>
-    <label for='switchpuzzle'>Puzzle:</label>
-    <select id='switchpuzzle'>
-      {{#each puzzles}}
-      <option value="{{_id}}">{{title}}</option>
-      {{/each}}
-    </select>
-    <button>New Game</button>
-  </div>
-</template>
 
 <template name='puzzle'>
   {{#if show}}
@@ -52,11 +30,11 @@
 <template name='metadata'>
   <div id='details'>
     <div class='title'>
-      <span class='label'>Title:</span>
+      <span class='label'>Title</span>
       <span class='value'>{{title}}</span>
     </div>
     <div class='author'>
-      <span class='label'>By:</span>
+      <span class='label'>By</span>
       <span class='value'>{{author}}</span>
     </div>
   </div>

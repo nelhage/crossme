@@ -9,5 +9,7 @@ Template.selector.events({
       if (!error)
         load_game(id);
     });
+    $('#new-game-modal').modal('hide');
+    return false;
   }
 });

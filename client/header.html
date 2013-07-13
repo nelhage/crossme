@@ -1,0 +1,49 @@
+<template name='header'>
+  <div class='navbar navbar-static-top' id='nav'>
+    <div class='navbar-inner'>
+      <a class='brand' href="#">
+        CrossMe
+      </a>
+      <ul class='nav'>
+        <li>
+          <a href='#' data-toggle='modal' data-target='#new-game-modal'>New Game</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div id='new-game-modal' class='modal hide'>
+    <div class='modal-header'>Start a new game...</div>
+    <div class='modal-body'>
+      {{> selector}}
+      {{> upload}}
+    </div>
+    <div class='modal-footer'>
+      <button class='btn' data-dismiss='modal'>Cancel</button>
+    </div>
+  </div>
+</template>
+
+<template name='upload'>
+  <form action='#' id='uploadform'>
+    <div>
+      Or upload new: <input id='puzfile' type="file" value="puz" />
+      <button class='btn btn-primary'> Upload </button>
+    </div>
+  </form>
+</template>
+
+<template name='selector'>
+  <div id='selector'>
+    <form class='form-inline'>
+      <label for='switchpuzzle'>Puzzle:</label>
+      <select id='switchpuzzle'>
+        {{#each puzzles}}
+        <option value="{{_id}}">{{title}}</option>
+        {{/each}}
+      </select>
+      <button class='btn btn-primary'>New Game</button>
+    </form>
+  </div>
+</template>
+
