@@ -75,8 +75,8 @@ function select(square) {
   Session.set('selected-column', square.column);
   Session.set('word-across', square.word_across);
   Session.set('word-down', square.word_down);
-  scroll_into_view($('#clues .across .clue.clue-' +square.word_across));
-  scroll_into_view($('#clues .down .clue.clue-' +square.word_down));
+  scroll_into_view($('#clues .across .clue.clue-'+ square.word_across));
+  scroll_into_view($('#clues .down .clue.clue-' + square.word_down));
   return false;
 }
 
@@ -115,8 +115,7 @@ function move(dr, dc, inword) {
 function letter(keycode) {
   var s = String.fromCharCode(keycode);
   var square = selected_square();
-  var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
-  Fills.update({_id: id}, {$set: {letter: s}});
+  Meteor.call('setLetter', Session.get('gameid'), square._id, s);
   if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
@@ -126,8 +125,7 @@ function letter(keycode) {
 
 function clearCell() {
   var square = selected_square();
-  var id = Fills.findOne({square: square._id, game: Session.get('gameid')})._id;
-  Fills.update({_id: id}, {$set: {letter: null}});
+  Meteor.call('clearLetter', Session.get('gameid'), square._id);
   return false;
 }
 
