@@ -23,6 +23,9 @@
     <div id='clues'>
       {{> clues}}
     </div>
+    <div id='controls'>
+      {{> controls}}
+    </div>
   </div>
   {{/if}}
 </template>
@@ -99,6 +102,39 @@
   <div class='clue {{css_class}}'>
     {{number}}. {{text}}
   </div>
+</template>
+
+<template name='controls'>
+  <ul class='nav nav-pills nav-stacked'>
+    <li class='dropdown'>
+      <a class="dropdown-toggle" id="dReveal" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <b class="caret"></b>
+        Reveal
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dReveal" id='mReveal'>
+        <li role='presentation'>
+          <a role='menuitem' data-target='square' href='#'>Square</a>
+          <a role='menuitem' data-target='word' href='#'>Word</a>
+          <a role='menuitem' data-target='grid' href='#'>Grid</a>
+        </li>
+      </ul>
+    </li>
+    <li class='dropdown'>
+      <a class="dropdown-toggle {{check_class}}" id="dCheck"
+         role="button" data-toggle="dropdown"
+         data-target="#" href="#">
+        <b class="caret"></b>
+        Check
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dCheck" id='mCheck'>
+        <li role='presentation'>
+          <a role='menuitem' data-target='square' href='#'>Square</a>
+          <a role='menuitem' data-target='word' href='#'>Word</a>
+          <a role='menuitem' data-target='grid' href='#'>Grid</a>
+        </li>
+      </ul>
+    </li>
+  </ul>
 </template>
 
 <template name='gaq'>

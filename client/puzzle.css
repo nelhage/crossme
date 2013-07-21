@@ -140,3 +140,16 @@
 .clear {
     clear: both;
 }
+
+#controls {
+    float: left;
+    padding-left: 5px;
+}
+
+#controls a.dropdown-toggle {
+    color: black;
+}
+
+#controls a.check-ok {
+    background-color: #3f3;
+}

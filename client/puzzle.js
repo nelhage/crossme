@@ -75,6 +75,7 @@ function select(square) {
   Session.set('selected-column', square.column);
   Session.set('word-across', square.word_across);
   Session.set('word-down', square.word_down);
+  Session.set('check-ok', null);
   scroll_into_view($('#clues .across .clue.clue-'+ square.word_across));
   scroll_into_view($('#clues .down .clue.clue-' + square.word_down));
   return false;
@@ -126,6 +127,7 @@ function letter(keycode) {
 function clearCell() {
   var square = selected_square();
   Meteor.call('clearLetter', Session.get('gameid'), square._id);
+  Session.set('check-ok', null);
   return false;
 }
 
@@ -277,6 +279,37 @@ window.load_game = function(id) {
   Meteor.Router.to('game', id);
 }
 
+function puzzleState() {
+  return {
+    game: Session.get('gameid'),
+    square: selected_square()._id,
+    direction: Session.get('selected-direction')
+  };
+}
+
+Template.controls.events({
+  'click #mReveal a': function(e) {
+    var target = $(e.currentTarget).data('target');
+    Meteor.call('reveal', puzzleState(), target);
+    return true;
+  },
+  'click #mCheck a': function(e) {
+    var target = $(e.currentTarget).data('target');
+    Meteor.call('check', puzzleState(), target, function (error, ok) {
+      if (error === undefined)
+        Session.set('check-ok', ok);
+    });
+    return true;
+  }
+});
+
+Template.controls.check_class = function() {
+  if (Session.get('check-ok'))
+    return 'check-ok';
+  return '';
+}
+
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
 });
+
