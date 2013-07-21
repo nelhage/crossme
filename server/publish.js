@@ -17,5 +17,4 @@ Meteor.publish('game', function (gameid) {
 Clues._ensureIndex([['puzzle', 1], ['direction', 1], ['number', 1]]);
 Squares._ensureIndex([['puzzle', 1], ['row', 1], ['column', 1]]);
 Squares._ensureIndex([['puzzle', 1], ['number', 1]]);
-Fills._ensureIndex([['puzzle', 1]]);
-Fills._ensureIndex([['square', 1]]);
+Fills._ensureIndex([['game', 1], ['square', 1]]);
