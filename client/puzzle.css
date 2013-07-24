@@ -68,12 +68,15 @@
     text-align: center;
     vertical-align: baseline;
     position: absolute;
-    left: 6px;
-    top: 6px;
+    left: 4px;
+    top: 4px;
 }
 
 #puzzlegrid .cell .cellbody {
     position: relative;
+    width: 26px;
+    height: 26px;
+    margin: 2px;
 }
 
 #puzzlegrid .cell .numberlabel {
@@ -98,6 +101,15 @@
 
 #puzzlegrid .cell.otherword {
     background-color: #ccc;
+}
+
+#puzzlegrid .cell.wrong {
+    color: red;
+}
+
+#puzzlegrid .cell.checked .cellbody {
+    border: 2px solid red;
+    margin: 0px;
 }
 
 #clues {

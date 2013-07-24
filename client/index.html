@@ -66,12 +66,12 @@
 
 <template name='cell'>
   <div class='cell {{css_class}}'>
+    {{#if number}}
+    <div class='numberlabel'>
+      {{ number }}
+    </div>
+    {{/if}}
     <div class='cellbody'>
-      {{#if number}}
-      <div class='numberlabel'>
-        {{ number }}
-      </div>
-      {{/if}}
       <div class='fill'>
         {{fill}}
       </div>

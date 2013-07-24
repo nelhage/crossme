@@ -228,14 +228,19 @@ Template.cell.events({
 Template.cell.css_class = function() {
   var classes = []
   if (this.black)
-    classes.push("filled");
-  else if (Session.equals('selected-row', this.row) &&
+    return 'filled';
+  var fill = Fills.findOne({square: this._id, game: Session.get('gameid')});
+  if (Session.equals('selected-row', this.row) &&
            Session.equals('selected-column', this.column))
     classes.push('selected');
   else if (Session.equals('word-across', this.word_across))
     classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
   else if (Session.equals('word-down', this.word_down))
     classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
+  if (fill && fill.checked === 'checking')
+    classes = classes.concat(['checked', 'wrong']);
+  else if (fill && fill.checked === 'checked')
+    classes.push('checked');
   return classes.join(' ');
 }
 
