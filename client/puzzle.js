@@ -237,7 +237,9 @@ Template.cell.css_class = function() {
     classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
   else if (Session.equals('word-down', this.word_down))
     classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
-  if (fill && fill.checked === 'checking')
+  if (fill && fill.reveal)
+    classes.push('reveal');
+  else if (fill && fill.checked === 'checking')
     classes = classes.concat(['checked', 'wrong']);
   else if (fill && fill.checked === 'checked')
     classes.push('checked');

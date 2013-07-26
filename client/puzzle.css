@@ -108,7 +108,12 @@
 }
 
 #puzzlegrid .cell.checked .cellbody {
-    border: 2px solid red;
+    border: 2px solid #f33;
+    margin: 0px;
+}
+
+#puzzlegrid .cell.reveal .cellbody {
+    border: 2px solid #66f;
     margin: 0px;
 }
 
