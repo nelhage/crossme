@@ -76,6 +76,8 @@ function select(square) {
   Session.set('word-across', square.word_across);
   Session.set('word-down', square.word_down);
   Session.set('check-ok', null);
+  if (!Session.get('selected-direction'))
+    Session.set('selected-direction', 'across');
   scroll_into_view($('#clues .across .clue.clue-'+ square.word_across));
   scroll_into_view($('#clues .down .clue.clue-' + square.word_down));
   return false;
