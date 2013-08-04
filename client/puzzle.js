@@ -304,9 +304,15 @@ Template.controls.events({
   },
   'click #mCheck a': function(e) {
     var target = $(e.currentTarget).data('target');
-    Meteor.call('check', puzzleState(), target, function (error, ok) {
-      if (error === undefined)
-        Session.set('check-ok', ok);
+    Meteor.call('check', puzzleState(), target, function (error, square) {
+      if (error === undefined) {
+        if (square) {
+          select(Squares.findOne({_id: square}));
+          Session.set('check-ok', false);
+        } else {
+          Session.set('check-ok', true);
+        }
+      }
     });
     return true;
   }
