@@ -134,6 +134,22 @@
         </li>
       </ul>
     </li>
+    <li>
+      Now playing:
+      <ul>
+        {{#each players}}
+        <li>
+          {{user.profile.name}}
+        </li>
+        {{/each}}
+        {{#if currentUser}}
+        {{else}}
+        <li>
+          <strong>Log In</strong> to join this list
+        </li>
+        {{/if}}
+      </ul>
+    </li>
   </ul>
 </template>
 

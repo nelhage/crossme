@@ -318,7 +318,24 @@ Template.controls.check_class = function() {
   return '';
 }
 
+Template.controls.players = function() {
+  var id = Session.get('gameid');
+  var game = id && Games.findOne({_id: id});
+  if (!game || !game.players) {
+    return [];
+  }
+  return game.players.map(function (who) {
+    who.user = Meteor.users.findOne({_id: who.userId});
+    return who;
+  });
+}
+
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
+  Meteor.setInterval(function() {
+    if (Meteor.userId() && Session.get('gameid')) {
+      Meteor.call('ping', Session.get('gameid'));
+    }
+  }, 30*1000);
 });
 

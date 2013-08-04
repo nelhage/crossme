@@ -9,6 +9,9 @@
           <a href='#' data-toggle='modal' data-target='#new-game-modal'>New Game</a>
         </li>
       </ul>
+      <ul class='nav pull-right'>
+        {{> userinfo}}
+      </ul>
     </div>
   </div>
 
@@ -47,3 +50,20 @@
   </div>
 </template>
 
+
+<template name='userinfo'>
+  {{#if currentUser}}
+  <li>
+    <a href="#"> {{currentUser.profile.name}} </a>
+  </li>
+  {{else}}
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+      Login <b class="caret"></b>
+    </a>
+    <div class="dropdown-menu" role="menu">
+      {{loginButtons align='right'}}
+    </div>
+  </li>
+  {{/if}}
+</template>

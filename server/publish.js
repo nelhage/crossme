@@ -8,7 +8,9 @@ Meteor.publish('game', function (gameid) {
     return [ Games.find({_id: gameid}),
              Clues.find({puzzle: game.puzzle}),
              Squares.find({puzzle: game.puzzle}),
-             Fills.find({game: game._id}) ];
+             Fills.find({game: game._id}),
+             Meteor.users.find({_id: {$in: (game.players||[]).map(function (u){return u.userId;})}},
+                               {fields: {username: 1, profile: 1}})];
   } else {
     return [];
   }
