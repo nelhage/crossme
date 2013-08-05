@@ -44,6 +44,10 @@ function selected_clue() {
                              number: selected_square()['word_' + dir]});
 }
 
+function isPencil() {
+  return Session.equals('pencil', true);
+}
+
 Template.puzzle.show = function() {
   return !!active_puzzle();
 }
@@ -118,7 +122,7 @@ function move(dr, dc, inword) {
 function letter(keycode) {
   var s = String.fromCharCode(keycode);
   var square = selected_square();
-  Meteor.call('setLetter', Session.get('gameid'), square._id, s);
+  Meteor.call('setLetter', Session.get('gameid'), square._id, s, isPencil());
   if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
@@ -245,6 +249,8 @@ Template.cell.css_class = function() {
     classes = classes.concat(['checked', 'wrong']);
   else if (fill && fill.checked === 'checked')
     classes.push('checked');
+  if (fill && fill.pencil)
+    classes.push('pencil');
   return classes.join(' ');
 }
 
@@ -315,6 +321,9 @@ Template.controls.events({
       }
     });
     return true;
+  },
+  'click .implement button': function(e) {
+    Session.set('pencil', $(e.currentTarget).data('pencil'))
   }
 });
 
@@ -322,6 +331,22 @@ Template.controls.check_class = function() {
   if (Session.get('check-ok'))
     return 'check-ok';
   return '';
+}
+
+Template.controls.penclass = function() {
+  if (isPencil()) {
+    return ""
+  } else {
+    return "active";
+  }
+}
+
+Template.controls.pencilclass = function() {
+  if (isPencil()) {
+    return "active"
+  } else {
+    return "";
+  }
 }
 
 Template.controls.players = function() {

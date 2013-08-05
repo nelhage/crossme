@@ -107,6 +107,10 @@
     color: red;
 }
 
+#puzzlegrid .cell.pencil {
+    color: #999;
+}
+
 #puzzlegrid .cell.checked .cellbody {
     border: 2px solid #f33;
     margin: 0px;
