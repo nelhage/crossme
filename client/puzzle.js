@@ -361,12 +361,15 @@ Template.controls.players = function() {
   });
 }
 
+function maybePing() {
+  if (Meteor.userId() && Session.get('gameid')) {
+    Meteor.call('ping', Session.get('gameid'));
+  }
+}
+
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
-  Meteor.setInterval(function() {
-    if (Meteor.userId() && Session.get('gameid')) {
-      Meteor.call('ping', Session.get('gameid'));
-    }
-  }, 30*1000);
+  Meteor.setInterval(maybePing, 30 * 1000);
 });
 
+Deps.autorun(maybePing);

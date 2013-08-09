@@ -1,5 +1,9 @@
 Meteor.publish('puzzles', function () {
-  return Puzzles.find();
+  var cursors = [Puzzles.find()];
+  if (this.userId) {
+    cursors.push(Games.find({'players.userId': this.userId}));
+  }
+  return cursors;
 });
 
 Meteor.publish('game', function (gameid) {

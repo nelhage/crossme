@@ -1,3 +1,7 @@
 #userinfo {
     padding: 5px;
 }
+
+span.datestamp {
+    font-size: 80%;
+}
