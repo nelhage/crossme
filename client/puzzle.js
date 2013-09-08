@@ -3,9 +3,12 @@ Deps.autorun(function () {
   var id = Session.get('gameid');
   if (id)
     Meteor.subscribe('game', id);
+  var puz = Session.get('previewid');
+  if (puz)
+    Meteor.subscribe('puzzle', puz);
 });
 Deps.autorun(function () {
-  if (puzzle_id()) {
+  if (Session.get('gameid') && puzzle_id()) {
     var s = selected_square();
     if (!s || s.black) {
       s = find(active_puzzle(), 0, 0, 0, 1, function (s) { return !s.black });
@@ -23,6 +26,8 @@ window.active_puzzle = function() {
 }
 
 function puzzle_id() {
+  if (Session.get('previewid'))
+    return Session.get('previewid');
   var id = Session.get('gameid');
   var game = id && Games.findOne({_id: id});
   return game && game.puzzle;
@@ -51,6 +56,9 @@ function isPencil() {
 Template.puzzle.show = function() {
   return !!active_puzzle();
 }
+Template.puzzle.showControls = function() {
+  return !!Session.get('gameid');
+}
 
 Template.puzzle.puzzle = active_puzzle;
 
@@ -63,6 +71,10 @@ Template.puzzle.rows = function() {
     rows.push({puzzle: puz, row: r});
   }
   return rows;
+}
+
+Template.metadata.preview = function() {
+  return !!Session.get('previewid');
 }
 
 function scroll_into_view(e) {
@@ -199,6 +211,8 @@ function handle_key(k) {
     return move(-1, 0);
   else if(k.keyCode === 40)
     return move(1, 0);
+  if (!Session.get('gameid'))
+    return true;
   else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
     return letter(k.keyCode);
   else if (k.keyCode === ' '.charCodeAt(0))
@@ -220,6 +234,8 @@ Template.cell.number = function() {
 }
 
 Template.cell.fill = function() {
+  if (!Session.get('gameid'))
+    return '';
   var f = Fills.findOne({square: this._id, game: Session.get('gameid')});
   return f ? (f.letter || '') : '';
 }
@@ -235,7 +251,6 @@ Template.cell.css_class = function() {
   var classes = []
   if (this.black)
     return 'filled';
-  var fill = Fills.findOne({square: this._id, game: Session.get('gameid')});
   if (Session.equals('selected-row', this.row) &&
            Session.equals('selected-column', this.column))
     classes.push('selected');
@@ -243,14 +258,17 @@ Template.cell.css_class = function() {
     classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
   else if (Session.equals('word-down', this.word_down))
     classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
-  if (fill && fill.reveal)
-    classes.push('reveal');
-  else if (fill && fill.checked === 'checking')
+  if (Session.get('gameid')) {
+    var fill = Fills.findOne({square: this._id, game: Session.get('gameid')});
+    if (fill && fill.reveal)
+      classes.push('reveal');
+    else if (fill && fill.checked === 'checking')
     classes = classes.concat(['checked', 'wrong']);
-  else if (fill && fill.checked === 'checked')
+    else if (fill && fill.checked === 'checked')
     classes.push('checked');
-  if (fill && fill.pencil)
-    classes.push('pencil');
+    if (fill && fill.pencil)
+      classes.push('pencil');
+  }
   return classes.join(' ');
 }
 
@@ -290,8 +308,11 @@ Template.clue.css_class = function() {
 }
 
 window.load_game = function(id) {
-  Session.set('gameid', id);
   Meteor.Router.to('game', id);
+}
+
+window.load_preview = function(id) {
+  Meteor.Router.to('preview', id);
 }
 
 function puzzleState() {

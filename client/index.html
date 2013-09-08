@@ -23,9 +23,11 @@
     <div id='clues'>
       {{> clues}}
     </div>
+    {{#if showControls}}
     <div id='controls'>
       {{> controls}}
     </div>
+    {{/if}}
   </div>
   {{/if}}
 </template>
@@ -35,6 +37,9 @@
     <div class='title'>
       <span class='label'>Title</span>
       <span class='value'>{{title}}</span>
+      {{#if preview}}
+      <span class='preview label'>Preview</span>
+      {{/if}}
     </div>
     <div class='author'>
       <span class='label'>By</span>

@@ -19,6 +19,12 @@
     font-weight: bold;
 }
 
+#details .preview {
+    background-color: #88f;
+    font-size: 24px;
+    line-height: 30px;
+}
+
 #theclue {
     font-size: 125%;
     margin: 0px 0px 10px 0px;
@@ -128,7 +134,7 @@
     float: left;
     width: 200px;
     border: 1px solid black;
-    padding: 3xpx;
+    padding: 3px;
 }
 
 #clues .section {

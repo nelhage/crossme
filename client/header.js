@@ -3,12 +3,18 @@ Template.selector.puzzles = function() {
 }
 
 Template.selector.events({
-  'click button': function() {
+  'click .btn-primary': function() {
     var id = $('#switchpuzzle').val();
     Meteor.call('newGame', id, function (error, id) {
       if (!error)
         load_game(id);
     });
+    $('#new-game-modal').modal('hide');
+    return false;
+  },
+  'click .btn-preview': function() {
+    var id = $('#switchpuzzle').val();
+    load_preview(id);
     $('#new-game-modal').modal('hide');
     return false;
   }
