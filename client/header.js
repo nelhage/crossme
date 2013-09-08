@@ -34,11 +34,7 @@ function uploadFile(file) {
         Meteor.call('uploadPuzzle', fr.result, function (error, id) {
             if (error)
               return fail(error);
-            Meteor.call('newGame', id, function (error, id) {
-              if (error)
-                return fail(error);
-              load_game(id);
-            });
+            load_preview(id);
         });
     };
     fr.readAsBinaryString(file);

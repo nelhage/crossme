@@ -77,6 +77,17 @@ Template.metadata.preview = function() {
   return !!Session.get('previewid');
 }
 
+Template.metadata.events({
+  'click button': function() {
+    var puz = Session.get('previewid');
+    Meteor.call('newGame', puz, function (error, id) {
+      if (!error)
+        load_game(id);
+    });
+    return false;
+  }
+});
+
 function scroll_into_view(e) {
   if (e.length) {
     var r = e[0].getClientRects()[0];
