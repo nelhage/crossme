@@ -212,6 +212,10 @@ function tabKey(k) {
 }
 
 function handle_key(k) {
+  if (k.altKey && k.keyCode === 80) {
+    Session.set('pencil', !Session.get('pencil'))
+    return false;
+  }
   if (k.altKey || k.ctrlKey)
     return true;
   if (k.keyCode === 39)
@@ -220,8 +224,12 @@ function handle_key(k) {
     return move(0, -1);
   else if (k.keyCode === 38)
     return move(-1, 0);
-  else if(k.keyCode === 40)
+  else if (k.keyCode === 40)
     return move(1, 0);
+  else if (k.keyCode === 13) {
+    Session.set('selected-direction', Session.equals('selected-direction', 'across') ? 'down' : 'across');
+    return false;
+  }
   if (!Session.get('gameid'))
     return true;
   else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
