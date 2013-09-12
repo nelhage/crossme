@@ -8,3 +8,7 @@ preserve-inputs
 bootstrap
 accounts-google
 accounts-ui
+standard-app-packages
+npm-deps
+page-js-ie-support
+router
