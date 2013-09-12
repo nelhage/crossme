@@ -93,6 +93,10 @@
     font-family: serif;
 }
 
+#puzzlegrid .cell.correct {
+    background-color: #9f9;
+}
+
 #puzzlegrid .cell.filled {
     background-color: black;
 }
@@ -117,8 +121,13 @@
     color: #999;
 }
 
-#puzzlegrid .cell.checked .cellbody {
+#puzzlegrid .cell.wrong .cellbody {
     border: 2px solid #f33;
+    margin: 0px;
+}
+
+#puzzlegrid .cell.checked .cellbody {
+    border: 2px solid #f3f;
     margin: 0px;
 }
 

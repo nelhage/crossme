@@ -282,11 +282,13 @@ Template.cell.css_class = function() {
     if (fill && fill.reveal)
       classes.push('reveal');
     else if (fill && fill.checked === 'checking')
-    classes = classes.concat(['checked', 'wrong']);
+      classes.push('wrong');
     else if (fill && fill.checked === 'checked')
-    classes.push('checked');
+      classes.push('checked');
     if (fill && fill.pencil)
       classes.push('pencil');
+    if (fill && fill.correct && this.letter === fill.letter)
+      classes.push('correct');
   }
   return classes.join(' ');
 }
