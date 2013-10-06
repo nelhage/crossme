@@ -25,16 +25,14 @@ function fail(err) {
   alert(err);
 }
 
-function uploadFile(file) {
+function uploadFile(file, cb) {
     var fr = new FileReader();
     fr.onerror = function() {
-        fail(fr.error);
+        cb(fr.error, null);
     };
     fr.onload = function() {
         Meteor.call('uploadPuzzle', fr.result, function (error, id) {
-            if (error)
-              return fail(error);
-            load_preview(id);
+            cb(error, id);
         });
     };
     fr.readAsBinaryString(file);
@@ -44,7 +42,21 @@ function handleUpload() {
   var files = $('#puzfile')[0].files;
   if (!files.length)
         return fail("You must select a file.");
-  uploadFile(files[0]);
+  var i = 0;
+  var uploadNext = function(error, id) {
+    if (error) {
+      window.the_error = error;
+      alert("Error uploading: " + files[i].name + ": " + error);
+    } else {
+      if (i === files.length - 1) {
+        load_preview(id);
+      } else {
+        i++;
+        uploadFile(files[i], uploadNext);
+      }
+    }
+  }
+  uploadFile(files[0], uploadNext);
 }
 
 Template.upload.events({
