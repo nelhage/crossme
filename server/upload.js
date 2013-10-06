@@ -14,6 +14,10 @@ function find_word(puz, cell) {
 Meteor.methods({
     uploadPuzzle: function (buf) {
       var puz = new PuzFile(new Buffer(buf, 'binary'));
+      var existing = Puzzles.findOne({title: puz.title, author: puz.author});
+      if (existing) {
+        return existig._id;
+      }
       var puzid = Puzzles.insert({
         title: puz.title,
         author: puz.author,
