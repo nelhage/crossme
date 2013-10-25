@@ -201,13 +201,14 @@ function tabKey(k) {
   var clue = Clues.findOne({number: query, puzzle: sel.puzzle, direction: sel.direction},
                          {sort: {number: sort}});
   if (!clue)
-    clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction},
+    clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction === 'down' ? 'across' : 'down'},
                            {sort: {number: sort}});
   var h = {puzzle: clue.puzzle};
   h['word_' + clue.direction] = clue.number;
   var s = Squares.findOne(h);
   s = find_blank_in_word(s, dr, dc) || s;
   select(s);
+  Session.set('selected-direction', clue.direction);
   return false;
 }
 
