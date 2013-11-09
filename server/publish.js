@@ -6,18 +6,52 @@ Meteor.publish('puzzles', function () {
   return cursors;
 });
 
+function publishPlayers(handle, gameid) {
+  var userObserver = null;
+  var watchPlayers = function(doc) {
+    var uids = (doc.players||[]).map(function (u){return u.userId;});
+    if (userObserver)
+      userObserver.stop();
+    userObserver = Meteor.users.find({_id: {$in: uids}},
+                                     {fields: {username: 1, profile: 1}}).
+      observeChanges({
+          added: function (id, doc) {
+            handle.added(Meteor.users._name, id, doc);
+          },
+          changed: function (id, doc) {
+            handle.added(Meteor.users._name, id, doc);
+          },
+          removed: function (id, doc) {
+            handle.removed(Meteor.users._name, id, doc);
+          }
+      });
+  }
+  var observer = Games.find({_id: gameid}).observe({
+      added: function (doc) {
+        watchPlayers(doc);
+      },
+      changed: function (doc) {
+        watchPlayers(doc);
+      }
+  });
+  handle.ready();
+  handle.onStop(function () {
+    observer.stop();
+    if (userObserver)
+      userObserver.stop();
+  });
+}
+
 Meteor.publish('game', function (gameid) {
   var game = Games.findOne({_id: gameid});
-  if (game) {
-    return [ Games.find({_id: gameid}),
+  if (!game) {
+    return;
+  }
+  publishPlayers(this, gameid);
+  return [ Games.find({_id: gameid}),
              Clues.find({puzzle: game.puzzle}),
              Squares.find({puzzle: game.puzzle}),
-             Fills.find({game: game._id}),
-             Meteor.users.find({_id: {$in: (game.players||[]).map(function (u){return u.userId;})}},
-                               {fields: {username: 1, profile: 1}})];
-  } else {
-    return [];
-  }
+             Fills.find({game: game._id}) ];
 });
 
 Meteor.publish('puzzle', function (puzid) {
