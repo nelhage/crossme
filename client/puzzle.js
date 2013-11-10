@@ -245,6 +245,22 @@ function handle_key(k) {
     return deleteKey();
   else if (k.keyCode === 9)
     return tabKey(k);
+  else if (k.keyCode === 191 && k.shiftKey) {
+    toggleKeyboardShortcuts();
+    return false;
+  } else if (k.keyCode === 27 && showingKeyboardShortcuts()) {
+    hideKeyboardShortcuts();
+    return false;
+  }
+
+  return true;
+}
+
+function global_click(e) {
+  if (showingKeyboardShortcuts()) {
+    hideKeyboardShortcuts();
+    return false;
+  }
   return true;
 }
 
@@ -348,6 +364,22 @@ function puzzleState() {
   };
 }
 
+function showingKeyboardShortcuts() {
+  return $('#shortcuts-help').is(':visible');
+}
+
+function hideKeyboardShortcuts() {
+  return $('#shortcuts-help').hide();
+}
+
+function toggleKeyboardShortcuts() {
+  var overlay = $('#shortcuts-help');
+  if (overlay.is(':visible'))
+    overlay.hide();
+  else
+    overlay.show();
+}
+
 Template.controls.events({
   'click #mReveal a': function(e) {
     var target = $(e.currentTarget).data('target');
@@ -373,6 +405,10 @@ Template.controls.events({
   },
   'blur .my-name': function (e) {
     Meteor.call('setName', $(e.currentTarget).val());
+  },
+  'click #toggle-shortcuts': function (e) {
+    toggleKeyboardShortcuts();
+    return false;
   }
 });
 
@@ -421,6 +457,7 @@ function maybePing() {
 
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
+  $('body').on('click', global_click);
   Meteor.setInterval(maybePing, 30 * 1000);
 });
 

@@ -179,7 +179,7 @@
 
 #controls {
     float: left;
-    padding-left: 5px;
+    padding-left: 10px;
 }
 
 #controls a.dropdown-toggle {
@@ -190,8 +190,37 @@
     background-color: #3f3;
 }
 
+#controls .player-label {
+    padding: 5px 0px;
+}
+
 #player-list input {
     font-size: 90%;
     width: 10em;
     line-height: 80%;
+}
+
+#shortcuts-help {
+    position: absolute;
+    left: 10%;
+    top: 10%;
+    z-index: 100;
+    background-color: #333;
+    border-radius: 20px;
+    opacity: 0.9;
+    border: 2px solid black;
+}
+
+#shortcuts-help .contents {
+    opacity: 1;
+    color: white;
+    padding: 3em;
+}
+
+#shortcuts-help .contents th {
+    padding-right: 1em;
+}
+
+#toggle-shortcuts {
+    font-size: 80%;
 }

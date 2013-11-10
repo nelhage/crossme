@@ -1,0 +1,81 @@
+<template name='controls'>
+  <ul class='nav nav-pills nav-stacked'>
+    <li class='dropdown'>
+      <a class="dropdown-toggle" id="dReveal" role="button" data-toggle="dropdown" data-target="#" href="#">
+        <b class="caret"></b>
+        Reveal
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dReveal" id='mReveal'>
+        <li role='presentation'>
+          <a role='menuitem' data-target='square' href='#'>Square</a>
+          <a role='menuitem' data-target='word' href='#'>Word</a>
+          <a role='menuitem' data-target='grid' href='#'>Grid</a>
+        </li>
+      </ul>
+    </li>
+    <li class='dropdown'>
+      <a class="dropdown-toggle {{check_class}}" id="dCheck"
+         role="button" data-toggle="dropdown"
+         data-target="#" href="#">
+        <b class="caret"></b>
+        Check
+      </a>
+      <ul class="dropdown-menu" role="menu" aria-labelledby="dCheck" id='mCheck'>
+        <li role='presentation'>
+          <a role='menuitem' data-target='square' href='#'>Square</a>
+          <a role='menuitem' data-target='word' href='#'>Word</a>
+          <a role='menuitem' data-target='grid' href='#'>Grid</a>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <div class="btn-group implement">
+        <button data-pencil="false" class="btn {{penclass}}">Pen</button>
+        <button data-pencil="true" class="btn {{pencilclass}}">Pencil</button>
+      </div>
+    </li>
+    <li class='player-label'> Now playing:</li>
+    <li>
+      <ul id='player-list'>
+        {{#each players}}
+        <li>
+          {{#if isMe}}
+          <input class='my-name' type='text' value='{{user.profile.name}}'></input>
+          {{else}}
+          {{user.profile.name}}
+          {{/if}}
+        </li>
+        {{/each}}
+        {{#if currentUser}}
+        {{else}}
+        <li>
+          <strong>Log In</strong> to join this list
+        </li>
+        {{/if}}
+      </ul>
+    </li>
+  </ul>
+  <a href="#" id='toggle-shortcuts'>Keyboard Shortcuts</a>
+  <div id='shortcuts-help' style='display:none;'>
+    <div class='contents'>
+    <table>
+      <tr>
+        <th>&lt;Alt&gt;+p</th>
+        <td>Toggle pencil/pen</td>
+      </tr>
+      <tr>
+        <th>Arrows</th>
+        <td>Move+toggle direction</td>
+      </tr>
+      <tr>
+        <th>TAB</th>
+        <td>Next clue</td>
+      </tr>
+      <tr>
+        <th>Enter</th>
+        <td>Toggle direction</td>
+      </tr>
+    </table>
+  </div>
+  </div>
+</template>
