@@ -213,6 +213,9 @@ function tabKey(k) {
 }
 
 function handle_key(k) {
+  if (k.target.nodeName.toLowerCase() === 'input')
+    return true;
+
   if (k.altKey && k.keyCode === 80) {
     Session.set('pencil', !Session.get('pencil'))
     return false;
@@ -367,6 +370,9 @@ Template.controls.events({
   },
   'click .implement button': function(e) {
     Session.set('pencil', $(e.currentTarget).data('pencil'))
+  },
+  'blur .my-name': function (e) {
+    Meteor.call('setName', $(e.currentTarget).val());
   }
 });
 
@@ -400,6 +406,7 @@ Template.controls.players = function() {
   }
   return game.players.map(function (who) {
     who.user = Meteor.users.findOne({_id: who.userId});
+    who.isMe = (who.user._id === Meteor.userId());
     return who;
   });
 }

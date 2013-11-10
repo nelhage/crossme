@@ -189,3 +189,9 @@
 #controls a.check-ok {
     background-color: #3f3;
 }
+
+#player-list input {
+    font-size: 90%;
+    width: 10em;
+    line-height: 80%;
+}

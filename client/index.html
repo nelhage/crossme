@@ -148,10 +148,14 @@
     </li>
     <li>
       Now playing:
-      <ul>
+      <ul id='player-list'>
         {{#each players}}
         <li>
+          {{#if isMe}}
+          <input class='my-name' type='text' value='{{user.profile.name}}'></input>
+          {{else}}
           {{user.profile.name}}
+          {{/if}}
         </li>
         {{/each}}
         {{#if currentUser}}
