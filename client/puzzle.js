@@ -405,6 +405,8 @@ Template.controls.players = function() {
     return [];
   }
   return game.players.map(function (who) {
+    // Apparently {{each}} requires every element you return to have an _id.
+    who._id = who.userId;
     who.user = Meteor.users.findOne({_id: who.userId});
     who.isMe = (who.user._id === Meteor.userId());
     return who;
