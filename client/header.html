@@ -55,20 +55,23 @@
 </template>
 
 <template name='userinfo'>
-  {{#if currentUser}}
-  <li>
-    <a href="#"> {{currentUser.profile.name}} </a>
-  </li>
-  {{else}}
-  <li class="dropdown">
+  <li class='dropdown' id='userinfo'>
     <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+      {{#if currentUser}}
+      {{currentUser.profile.name}} <b class="caret"></b>
+      {{else}}
       Login <b class="caret"></b>
+      {{/if}}
     </a>
     <div class="dropdown-menu" role="menu">
-      {{loginButtons align='right'}}
+      {{#if currentUser}}
+      {{else}}
+      <p>Log in to remember your recent games, and show up in player
+      lists!</p>
+      {{/if}}
+      <p>{{loginButtons align='right'}}</p>
     </div>
   </li>
-  {{/if}}
 </template>
 
 <template name='recentGames'>
