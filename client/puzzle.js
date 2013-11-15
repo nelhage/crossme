@@ -265,7 +265,7 @@ function global_click(e) {
 }
 
 Template.row.cells = function() {
-  return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}}).fetch();
+  return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
 }
 
 Template.cell.number = function() {
