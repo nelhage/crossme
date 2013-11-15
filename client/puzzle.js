@@ -220,7 +220,7 @@ function handle_key(k) {
     Session.set('pencil', !Session.get('pencil'))
     return false;
   }
-  if (k.altKey || k.ctrlKey)
+  if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
   if (k.keyCode === 39)
     return move(0, 1);
