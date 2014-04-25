@@ -1,3 +1,6 @@
+FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
+SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
+
 Deps.autorun(function () {
   Meteor.subscribe('puzzles');
   var id = Session.get('gameid');
@@ -34,11 +37,12 @@ function puzzle_id() {
 }
 
 function selected_square() {
-  return Squares.findOne({
-                    puzzle: puzzle_id(),
-                    row: Session.get('selected-row'),
-                    column: Session.get('selected-column')
-                  });
+  return SquaresByPosition.find(
+    {
+      puzzle: puzzle_id(),
+      row: Session.get('selected-row'),
+      column: Session.get('selected-column')
+    });
 }
 
 function selected_clue() {
@@ -116,7 +120,7 @@ function find(puz, row, col, dr, dc, predicate) {
     if (row < 0 || row >= puz.height ||
         col < 0 || col >= puz.width)
       return null;
-    s = Squares.findOne({row: row, column: col, puzzle: puz._id});
+    s = SquaresByPosition.find({row: row, column: col, puzzle: puz._id});
     if (predicate(s))
       return s;
     row += dr;
@@ -176,7 +180,7 @@ function find_blank_in_word(square, dr, dc) {
         (dc && (square.word_across !== s.word_across)) ||
         (dr && (square.word_down !== s.word_down)))
       return false;
-    var f = findFill(s._id, Session.get('gameid'));
+    var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
     return f && f.letter === null;
   });
 }
@@ -275,7 +279,7 @@ Template.cell.number = function() {
 Template.cell.fill = function() {
   if (!Session.get('gameid'))
     return '';
-  var f = findFill(this._id, Session.get('gameid'));
+  var f = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
   return f ? (f.letter || '') : '';
 }
 
@@ -298,7 +302,7 @@ Template.cell.css_class = function() {
   else if (Session.equals('word-down', this.word_down))
     classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
   if (Session.get('gameid')) {
-    var fill = findFill(this._id, Session.get('gameid'));
+    var fill = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
     if (fill && fill.reveal)
       classes.push('reveal');
     else if (fill && fill.checked === 'checking')
