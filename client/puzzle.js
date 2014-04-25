@@ -176,7 +176,7 @@ function find_blank_in_word(square, dr, dc) {
         (dc && (square.word_across !== s.word_across)) ||
         (dr && (square.word_down !== s.word_down)))
       return false;
-    var f = Fills.findOne({square: s._id, game: Session.get('gameid')});
+    var f = findFill(s._id, Session.get('gameid'));
     return f && f.letter === null;
   });
 }
@@ -275,7 +275,7 @@ Template.cell.number = function() {
 Template.cell.fill = function() {
   if (!Session.get('gameid'))
     return '';
-  var f = Fills.findOne({square: this._id, game: Session.get('gameid')});
+  var f = findFill(this._id, Session.get('gameid'));
   return f ? (f.letter || '') : '';
 }
 
@@ -298,7 +298,7 @@ Template.cell.css_class = function() {
   else if (Session.equals('word-down', this.word_down))
     classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
   if (Session.get('gameid')) {
-    var fill = Fills.findOne({square: this._id, game: Session.get('gameid')});
+    var fill = findFill(this._id, Session.get('gameid'));
     if (fill && fill.reveal)
       classes.push('reveal');
     else if (fill && fill.checked === 'checking')
