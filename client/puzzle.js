@@ -353,11 +353,11 @@ Template.clue.css_class = function() {
 }
 
 window.load_game = function(id) {
-  Meteor.Router.to('game', id);
+  Router.go('game', {id: id});
 }
 
 window.load_preview = function(id) {
-  Meteor.Router.to('preview', id);
+  Router.go('preview', {id: id});
 }
 
 function puzzleState() {

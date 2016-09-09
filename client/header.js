@@ -86,6 +86,6 @@ Template.recentGames.date = function() {
 
 Template.recentGames.events({
   'click a.game': function (evt) {
-    Meteor.Router.to('/game/' + $(evt.currentTarget).data('game'));
+    Router.go('game', {id: $(evt.currentTarget).data('game')});
   }
 });

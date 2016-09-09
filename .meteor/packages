@@ -8,6 +8,6 @@ accounts-google
 accounts-ui
 standard-app-packages
 npm-deps
-page-js-ie-support
-router
-kadira
+standard-minifier-css
+standard-minifier-js
+iron:router

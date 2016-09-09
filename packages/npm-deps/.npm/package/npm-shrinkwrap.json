@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "iconv": {
-      "version": "2.0.6"
+      "version": "2.0.6",
+      "resolved": "https://registry.npmjs.org/iconv/-/iconv-2.0.6.tgz",
+      "from": "iconv@2.0.6"
     }
   }
 }
