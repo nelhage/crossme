@@ -4,10 +4,11 @@
 # but you can also edit it by hand.
 
 bootstrap
-accounts-google
-accounts-ui
-standard-app-packages
+accounts-google@1.0.10
+accounts-ui@1.1.9
+standard-app-packages@1.0.9
 npm-deps
-standard-minifier-css
-standard-minifier-js
+standard-minifier-css@1.2.0
+standard-minifier-js@1.2.0
 iron:router
+shell-server
