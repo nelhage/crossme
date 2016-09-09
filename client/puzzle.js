@@ -57,29 +57,33 @@ function isPencil() {
   return Session.equals('pencil', true);
 }
 
-Template.puzzle.show = function() {
-  return !!active_puzzle();
-}
-Template.puzzle.showControls = function() {
-  return !!Session.get('gameid');
-}
-
-Template.puzzle.puzzle = active_puzzle;
-
-Template.currentclue.clue = selected_clue;
-
-Template.puzzle.rows = function() {
-  var rows = [];
-  var puz = active_puzzle();
-  for (var r = 0; r < puz.height; r++) {
-    rows.push({puzzle: puz, row: r});
+Template.puzzle.helpers({
+  show: function() {
+    return !!active_puzzle();
+  },
+  showControls: function() {
+    return !!Session.get('gameid');
+  },
+  puzzle: active_puzzle,
+  rows: function() {
+    var rows = [];
+    var puz = active_puzzle();
+    for (var r = 0; r < puz.height; r++) {
+      rows.push({puzzle: puz, row: r});
+    }
+    return rows;
   }
-  return rows;
-}
+});
 
-Template.metadata.preview = function() {
-  return !!Session.get('previewid');
-}
+Template.currentclue.helpers({
+    clue: selected_clue,
+});
+
+Template.metadata.helpers({
+  preview: function() {
+    return !!Session.get('previewid');
+  },
+});
 
 Template.metadata.events({
   'click button': function() {
@@ -268,20 +272,49 @@ function global_click(e) {
   return true;
 }
 
-Template.row.cells = function() {
-  return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
-}
+Template.row.helpers({
+  cells: function() {
+    return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
+  }
+});
 
-Template.cell.number = function() {
-  return this.number;
-}
-
-Template.cell.fill = function() {
-  if (!Session.get('gameid'))
-    return '';
-  var f = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-  return f ? (f.letter || '') : '';
-}
+Template.cell.helpers({
+  number: function() {
+    return this.number;
+  },
+  fill: function() {
+    if (!Session.get('gameid'))
+      return '';
+    var f = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
+    return f ? (f.letter || '') : '';
+  },
+  css_class: function() {
+    var classes = []
+    if (this.black)
+      return 'filled';
+    if (Session.equals('selected-row', this.row) &&
+             Session.equals('selected-column', this.column))
+      classes.push('selected');
+    else if (Session.equals('word-across', this.word_across))
+      classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
+    else if (Session.equals('word-down', this.word_down))
+      classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
+    if (Session.get('gameid')) {
+      var fill = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
+      if (fill && fill.reveal)
+        classes.push('reveal');
+      else if (fill && fill.checked === 'checking')
+        classes.push('wrong');
+      else if (fill && fill.checked === 'checked')
+        classes.push('checked');
+      if (fill && fill.pencil)
+        classes.push('pencil');
+      if (fill && fill.correct && this.letter === fill.letter)
+        classes.push('correct');
+    }
+    return classes.join(' ');
+  },
+});
 
 Template.cell.events({
   'click': function () {
@@ -290,48 +323,18 @@ Template.cell.events({
   }
 });
 
-Template.cell.css_class = function() {
-  var classes = []
-  if (this.black)
-    return 'filled';
-  if (Session.equals('selected-row', this.row) &&
-           Session.equals('selected-column', this.column))
-    classes.push('selected');
-  else if (Session.equals('word-across', this.word_across))
-    classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
-  else if (Session.equals('word-down', this.word_down))
-    classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
-  if (Session.get('gameid')) {
-    var fill = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-    if (fill && fill.reveal)
-      classes.push('reveal');
-    else if (fill && fill.checked === 'checking')
-      classes.push('wrong');
-    else if (fill && fill.checked === 'checked')
-      classes.push('checked');
-    if (fill && fill.pencil)
-      classes.push('pencil');
-    if (fill && fill.correct && this.letter === fill.letter)
-      classes.push('correct');
-  }
-  return classes.join(' ');
-}
 
-Template.clues.across_clues = function() {
-  return Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}});
-}
-
-Template.clues.down_clues = function() {
-  return Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}});
-}
-
-Template.clue.number = function() {
-  return this.number;
-}
-
-Template.clue.text = function() {
-  return this.text;
-}
+Template.clues.helpers({
+  across_clues: function() {
+    return Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}});
+  },
+  down_clues: function() {
+    return Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}});
+  },
+  number: function() {
+    return this.number;
+  },
+});
 
 Template.clue.events({
   'click': function() {
@@ -341,16 +344,21 @@ Template.clue.events({
   }
 })
 
-Template.clue.css_class = function() {
-  var classes = ['clue-' + this.number];
-  if (Session.equals('word-' + this.direction, this.number)) {
-    if (Session.equals('selected-direction', this.direction))
-      classes.push('selected');
-    else
-      classes.push('otherword');
-  }
-  return classes.join(' ');
-}
+Template.clue.helpers({
+  text: function() {
+    return this.text;
+  },
+  css_class: function() {
+    var classes = ['clue-' + this.number];
+    if (Session.equals('word-' + this.direction, this.number)) {
+      if (Session.equals('selected-direction', this.direction))
+        classes.push('selected');
+      else
+        classes.push('otherword');
+    }
+    return classes.join(' ');
+  },
+});
 
 window.load_game = function(id) {
   Router.go('game', {id: id});
@@ -416,42 +424,41 @@ Template.controls.events({
   }
 });
 
-Template.controls.check_class = function() {
-  if (Session.get('check-ok'))
-    return 'check-ok';
-  return '';
-}
-
-Template.controls.penclass = function() {
-  if (isPencil()) {
-    return ""
-  } else {
-    return "active";
-  }
-}
-
-Template.controls.pencilclass = function() {
-  if (isPencil()) {
-    return "active"
-  } else {
-    return "";
-  }
-}
-
-Template.controls.players = function() {
-  var id = Session.get('gameid');
-  var game = id && Games.findOne({_id: id});
-  if (!game || !game.players) {
-    return [];
-  }
-  return game.players.map(function (who) {
-    // Apparently {{each}} requires every element you return to have an _id.
-    who._id = who.userId;
-    who.user = Meteor.users.findOne({_id: who.userId});
-    who.isMe = (who.user._id === Meteor.userId());
-    return who;
-  });
-}
+Template.controls.helpers({
+  check_class: function() {
+    if (Session.get('check-ok'))
+      return 'check-ok';
+    return '';
+  },
+  penclass: function() {
+    if (isPencil()) {
+      return ""
+    } else {
+      return "active";
+    }
+  },
+  pencilclass: function() {
+    if (isPencil()) {
+      return "active"
+    } else {
+      return "";
+    }
+  },
+  players: function() {
+    var id = Session.get('gameid');
+    var game = id && Games.findOne({_id: id});
+    if (!game || !game.players) {
+      return [];
+    }
+    return game.players.map(function (who) {
+      // Apparently {{each}} requires every element you return to have an _id.
+      who._id = who.userId;
+      who.user = Meteor.users.findOne({_id: who.userId});
+      who.isMe = (who.user._id === Meteor.userId());
+      return who;
+    });
+  },
+});
 
 function maybePing() {
   if (Meteor.userId() && Session.get('gameid')) {
