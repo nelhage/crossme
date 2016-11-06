@@ -28,6 +28,7 @@ ecmascript@0.5.8
 ecmascript-runtime@0.3.14
 ejson@1.0.12
 fastclick@1.0.12
+force-ssl@1.0.12
 geojson-utils@1.0.9
 google@1.1.14
 html-tools@1.0.10
