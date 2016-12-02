@@ -292,6 +292,8 @@ Template.cell.helpers({
     var classes = []
     if (this.black)
       return 'filled';
+    if (this.circled)
+      classes.push('circled');
     if (Session.equals('selected-row', this.row) &&
              Session.equals('selected-column', this.column))
       classes.push('selected');

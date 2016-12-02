@@ -94,14 +94,16 @@
 
 <template name='cell'>
   <div class='cell {{css_class}}'>
-    {{#if number}}
-    <div class='numberlabel'>
-      {{ number }}
-    </div>
-    {{/if}}
-    <div class='cellbody'>
-      <div class='fill'>
-        {{fill}}
+    <div class='circle'>
+      {{#if number}}
+      <div class='numberlabel'>
+        {{ number }}
+      </div>
+      {{/if}}
+      <div class='cellbody'>
+        <div class='fill'>
+          {{fill}}
+        </div>
       </div>
     </div>
   </div>

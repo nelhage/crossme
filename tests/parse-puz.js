@@ -12,9 +12,15 @@ function main(path) {
   for (var r = 0; r < puz.height; r++) {
     for (var c = 0; c < puz.width; c++) {
       if (puz.numbers[r][c]) {
-        process.stdout.write('.');
+        if (puz.circled[r][c]) {
+          process.stdout.write('🞊');
+        } else {
+          process.stdout.write('•');
+        }
       } else if (puz.solution[r][c] === null) {
-        process.stdout.write('#');
+        process.stdout.write('■');
+      } else if (puz.circled[r][c]) {
+        process.stdout.write('🞅');
       } else {
         process.stdout.write(' ');
       }
