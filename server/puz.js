@@ -5,6 +5,7 @@ PuzFile = function (buffer) {
 
 function StringReader(buffer) {
   this.buffer = buffer;
+  this.off = 0;
   this.iconv = new Iconv('ISO-8859-1', 'UTF-8');
 }
 
@@ -15,7 +16,9 @@ StringReader.prototype.nextString = function() {
       break;
   }
   var str = this.iconv.convert(this.buffer.slice(0, off)).toString();
-  this.buffer = this.buffer.slice(off + 1);
+  off++; // skip null byte
+  this.buffer = this.buffer.slice(off);
+  this.off += off;
   return str;
 }
 
@@ -30,7 +33,8 @@ PuzFile.prototype.parse = function () {
   this.num_clues = this.buffer.readUInt16LE(0x2E);
   var off = 0x34;
   off = this.read_board(off);
-  this.read_strings(off);
+  off = this.read_strings(off);
+  this.read_special(off);
   this.assign_numbers();
 }
 
@@ -60,6 +64,33 @@ PuzFile.prototype.read_strings = function(off) {
     this.all_clues.push(reader.nextString());
   }
   this.note = reader.nextString();
+
+  return off + reader.off;
+}
+
+PuzFile.prototype.read_special = function(off) {
+  buffer = this.buffer.slice(off);
+  while (buffer.length > 0) {
+    var section = new Iconv('ISO-8859-1', 'UTF-8').convert(buffer.slice(0, 4)).toString();
+    var dataLen = buffer.readUInt16LE(4);
+    var data = buffer.slice(8, 8 + dataLen);
+    buffer = buffer.slice(8 + dataLen + 1); // extra null byte
+
+    if (section != "GEXT") {
+      continue;
+    }
+
+    this.circled = []
+    var i = 0;
+    for (var r = 0; r < this.height; r++) {
+      var row = []
+      for (var c = 0; c < this.width; c++) {
+        var cell = data[i++];
+        row.push((cell & 0x80) ? true : false);
+      }
+      this.circled.push(row);
+    }
+  }
 }
 
 PuzFile.prototype._needs_across_number = function (r, c) {
