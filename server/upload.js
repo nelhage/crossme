@@ -33,6 +33,10 @@ Meteor.methods({
             row: r,
             column: c
           };
+          if (puz.circled[r][c]) {
+            h.circled = true;
+          }
+
           if (puz.solution[r][c] === null) {
             h.black = true;
           } else {
