@@ -69,6 +69,12 @@ PuzFile.prototype.read_strings = function(off) {
 }
 
 PuzFile.prototype.read_special = function(off) {
+  // Pre-initialize circled in case there's no GEXT section
+  this.circled = [];
+  for (var r = 0; r < this.height; r++) {
+    this.circled.push(new Array(this.width))
+  }
+
   buffer = this.buffer.slice(off);
   while (buffer.length > 0) {
     var section = new Iconv('ISO-8859-1', 'UTF-8').convert(buffer.slice(0, 4)).toString();
@@ -80,15 +86,12 @@ PuzFile.prototype.read_special = function(off) {
       continue;
     }
 
-    this.circled = []
     var i = 0;
     for (var r = 0; r < this.height; r++) {
-      var row = []
       for (var c = 0; c < this.width; c++) {
         var cell = data[i++];
-        row.push((cell & 0x80) ? true : false);
+        this.circled[r][c] = (cell & 0x80) ? true : false;
       }
-      this.circled.push(row);
     }
   }
 }
