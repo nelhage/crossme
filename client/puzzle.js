@@ -230,7 +230,15 @@ function handle_key(k) {
   }
   if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
-  if (k.keyCode === 39)
+  if ((k.keyCode === 39 || k.keyCode === 37) && Session.get('selected-direction') === 'down') {
+    Session.set('selected-direction', 'across');
+    return false;
+  }
+  else if ((k.keyCode === 38 || k.keyCode === 40) && Session.get('selected-direction') === 'across') {
+    Session.set('selected-direction', 'down');
+    return false;
+  }
+  else if (k.keyCode === 39)
     return move(0, 1);
   else if (k.keyCode === 37)
     return move(0, -1);
