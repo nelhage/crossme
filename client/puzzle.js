@@ -174,9 +174,9 @@ function letter(keycode) {
     dc = 1;
   sq = find_blank_in_word(square, dr, dc);
   first = first_blank(selected_clue());
-  if (sq && Meteor.user().profile.settingWithinWord == "skip")
+  if (sq && Meteor.user() && Meteor.user().profile.settingWithinWord == "skip")
     select(sq);
-  else if (sq === null && first && Meteor.user().profile.settingEndWordBack)
+  else if (sq === null && first && Meteor.user() && Meteor.user().profile.settingEndWordBack)
       select(first);
   else if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
@@ -257,12 +257,14 @@ function handle_key(k) {
     return true;
   if ((k.keyCode === 39 || k.keyCode === 37) &&
       Session.get('selected-direction') === 'down' &&
+      Meteor.user() &&
       Meteor.user().profile.settingArrows === "stay") { 
     Session.set('selected-direction', 'across');
     return false;
   }
   else if ((k.keyCode === 38 || k.keyCode === 40) &&
            Session.get('selected-direction') === 'across' &&
+           Meteor.user() &&
            Meteor.user().profile.settingArrows === "stay") { 
     Session.set('selected-direction', 'down');
     return false;
