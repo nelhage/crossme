@@ -174,11 +174,10 @@ function letter(keycode) {
     dc = 1;
   sq = find_blank_in_word(square, dr, dc);
   first = first_blank(selected_clue());
-  if (sq)
+  if (sq && Meteor.user().profile.settingWithinWord == "skip")
     select(sq);
-  else if (sq === null && first) {
-    select(first);
-  }
+  else if (sq === null && first && Meteor.user().profile.settingEndWordBack)
+      select(first);
   else if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
@@ -256,11 +255,15 @@ function handle_key(k) {
   }
   if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
-  if ((k.keyCode === 39 || k.keyCode === 37) && Session.get('selected-direction') === 'down') {
+  if ((k.keyCode === 39 || k.keyCode === 37) &&
+      Session.get('selected-direction') === 'down' &&
+      Meteor.user().profile.settingArrows === "stay") { 
     Session.set('selected-direction', 'across');
     return false;
   }
-  else if ((k.keyCode === 38 || k.keyCode === 40) && Session.get('selected-direction') === 'across') {
+  else if ((k.keyCode === 38 || k.keyCode === 40) &&
+           Session.get('selected-direction') === 'across' &&
+           Meteor.user().profile.settingArrows === "stay") { 
     Session.set('selected-direction', 'down');
     return false;
   }
