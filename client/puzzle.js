@@ -132,6 +132,19 @@ function find(puz, row, col, dr, dc, predicate) {
   }
 }
 
+function first_blank(word) {
+  var h = {puzzle: word.puzzle}
+  h['word_' + word.direction] = word.number;
+  first = Squares.findOne(h);
+  var dr = 0, dc = 0;
+  Session.get('selected-direction') === 'down' ? dr = 1 : dc = 1;
+  blanks = find_blank_in_word(first, dr, dc);
+  if (blanks)
+    return blanks;
+  else
+    return false;
+}
+
 function move(dr, dc, inword) {
   Session.set('selected-direction', dr ? 'down' : 'across');
 
@@ -154,7 +167,19 @@ function letter(keycode) {
   var s = String.fromCharCode(keycode);
   var square = selected_square();
   Meteor.call('setLetter', Session.get('gameid'), square._id, s, isPencil());
-  if (Session.get('selected-direction') == 'across')
+  var dr = 0, dc = 0;
+  if (Session.get('selected-direction') === 'down')
+    dr = 1;
+  else
+    dc = 1;
+  sq = find_blank_in_word(square, dr, dc);
+  first = first_blank(selected_clue());
+  if (sq)
+    select(sq);
+  else if (sq === null && first) {
+    select(first);
+  }
+  else if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
     move(1, 0, true);
@@ -180,9 +205,10 @@ function deleteKey() {
 function find_blank_in_word(square, dr, dc) {
   return find(Puzzles.findOne(square.puzzle),
               square.row, square.column, dr, dc, function (s) {
-    if (s.black ||
-        (dc && (square.word_across !== s.word_across)) ||
-        (dr && (square.word_down !== s.word_down)))
+    if (s.black)
+      return null;
+    else if ((dc && (square.word_across !== s.word_across)) ||
+      (dr && (square.word_down !== s.word_down)))
       return false;
     var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
     return f && f.letter === null;
