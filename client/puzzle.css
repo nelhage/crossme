@@ -102,11 +102,11 @@
 }
 
 #puzzlegrid .cell.selected {
-    background-color: #66c;
+    background-color: #77f;
 }
 
 #puzzlegrid .cell.inword {
-    background-color: #88f;
+    background-color: #ccf;
 }
 
 #puzzlegrid .cell.otherword {
@@ -118,7 +118,7 @@
 }
 
 #puzzlegrid .cell.pencil {
-    color: #999;
+    color: #777;
 }
 
 #puzzlegrid .cell.wrong .cellbody {
@@ -127,7 +127,7 @@
 }
 
 #puzzlegrid .cell.checked .cellbody {
-    border: 2px solid #f3f;
+    border: 2px solid #c66;
     margin: 0px;
 }
 
@@ -171,7 +171,7 @@
 }
 
 #clues .clue.selected {
-    background-color: #88f;
+    background-color: #ccf;
 }
 
 #clues .clue.otherword {
