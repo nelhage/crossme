@@ -137,12 +137,11 @@ function first_blank(word) {
   h['word_' + word.direction] = word.number;
   first = Squares.findOne(h);
   var dr = 0, dc = 0;
-  Session.get('selected-direction') === 'down' ? dr = 1 : dc = 1;
-  blanks = find_blank_in_word(first, dr, dc);
-  if (blanks)
-    return blanks;
+  if (Session.get('selected-direction') === 'down')
+    dr = 1;
   else
-    return false;
+    dc = 1;
+  return find_blank_in_word(first, dr, dc) || false;
 }
 
 function move(dr, dc, inword) {
@@ -172,12 +171,12 @@ function letter(keycode) {
     dr = 1;
   else
     dc = 1;
-  sq = find_blank_in_word(square, dr, dc);
-  first = first_blank(selected_clue());
+  var sq = find_blank_in_word(square, dr, dc);
+  var first = first_blank(selected_clue());
   if (sq && Meteor.user() && Meteor.user().profile.settingWithinWord == "skip")
     select(sq);
   else if (sq === null && first && Meteor.user() && Meteor.user().profile.settingEndWordBack)
-      select(first);
+    select(first);
   else if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
@@ -207,7 +206,7 @@ function find_blank_in_word(square, dr, dc) {
     if (s.black)
       return null;
     else if ((dc && (square.word_across !== s.word_across)) ||
-      (dr && (square.word_down !== s.word_down)))
+             (dr && (square.word_down !== s.word_down)))
       return false;
     var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
     return f && f.letter === null;
