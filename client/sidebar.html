@@ -91,19 +91,19 @@
         <div class="modal-body">
           <form class="form-inline">
             <h5>After changing direction with the arrow keys:</h5>
-            <label><input type="radio" name="settingArrows" value="stay" checked={{isSettingChecked 'settingArrows' 'stay' false}}>
+            <label><input type="radio" name="settingArrows" value="stay" checked={{isSettingChecked 'settingArrows' 'stay' true}}>
             Stay in the same square</label><br>
-            <label><input type="radio" name="settingArrows" value="move" checked={{isSettingChecked 'settingArrows' 'move' true}}>
+            <label><input type="radio" name="settingArrows" value="move" checked={{isSettingChecked 'settingArrows' 'move' false}}>
             Move in the direction of the arrow</label><br>
 
             <h5>Within a word:</h5>
-            <label><input type="radio" name="settingWithinWord" value="skip" checked={{isSettingChecked 'settingWithinWord' 'skip' false}}>
+            <label><input type="radio" name="settingWithinWord" value="skip" checked={{isSettingChecked 'settingWithinWord' 'skip' true}}>
             Skip over filled squares</label><br>
-            <label><input type="radio" name="settingWithinWord" value="overwrite" checked={{isSettingChecked 'settingWithinWord' 'overwrite' true}}>
+            <label><input type="radio" name="settingWithinWord" value="overwrite" checked={{isSettingChecked 'settingWithinWord' 'overwrite' false}}>
             Overwrite filled in squares</label><br>
 
             <h5>At the end of a word:</h5>
-            <label><input type="checkbox" name="settingEndWordBack" value="back" checked={{isSettingChecked 'settingEndWordBack' 'back' false}}>
+            <label><input type="checkbox" name="settingEndWordBack" value="back" checked={{isSettingChecked 'settingEndWordBack' 'back' true}}>
             Jump back to first blank in the word (if any)</label><br>
             <!--
             // will add support for this. probably.
