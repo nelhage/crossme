@@ -226,6 +226,7 @@
     padding-right: 1em;
 }
 
-#toggle-shortcuts {
+.sidebar-link {
     font-size: 80%;
+    display: block;
 }

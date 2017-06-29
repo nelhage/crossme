@@ -55,7 +55,7 @@
       </ul>
     </li>
   </ul>
-  <a href="#" id='toggle-shortcuts'>Keyboard Shortcuts</a>
+  <a href="#" class='sidebar-link' id='toggle-shortcuts'>Keyboard Shortcuts</a>
   <div id='shortcuts-help' style='display:none;'>
     <div class='contents'>
     <table>
@@ -78,4 +78,47 @@
     </table>
   </div>
   </div>
+
+  {{#if currentUser}}
+  <a href="#" class="sidebar-link" id="toggle-settings" data-toggle="modal" data-target="#settingsModal">Settings</a>
+  <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="settingsModalLabel">Solving settings</h4>
+        </div>
+        <div class="modal-body">
+          <form class="form-inline">
+            <h5>After changing direction with the arrow keys:</h5>
+            <label><input type="radio" name="settingArrows" value="stay" checked={{isSettingChecked 'settingArrows' 'stay' true}}>
+            Stay in the same square</label><br>
+            <label><input type="radio" name="settingArrows" value="move" checked={{isSettingChecked 'settingArrows' 'move' false}}>
+            Move in the direction of the arrow</label><br>
+
+            <h5>Within a word:</h5>
+            <label><input type="radio" name="settingWithinWord" value="skip" checked={{isSettingChecked 'settingWithinWord' 'skip' true}}>
+            Skip over filled squares</label><br>
+            <label><input type="radio" name="settingWithinWord" value="overwrite" checked={{isSettingChecked 'settingWithinWord' 'overwrite' false}}>
+            Overwrite filled in squares</label><br>
+
+            <h5>At the end of a word:</h5>
+            <label><input type="checkbox" name="settingEndWordBack" value="back" checked={{isSettingChecked 'settingEndWordBack' 'back' true}}>
+            Jump back to first blank in the word (if any)</label><br>
+            <!--
+            // will add support for this. probably.
+            <label><input type="checkbox" name="settingEndWordNext" value="next" checked={{isSettingChecked 'settingEndWordNext' 'next' false}}>
+            Jump to the next clue (if not jumping back)</label><br>
+            -->
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  {{else}}
+  {{/if}}
+
 </template>

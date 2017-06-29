@@ -132,6 +132,18 @@ function find(puz, row, col, dr, dc, predicate) {
   }
 }
 
+function first_blank(word) {
+  var h = {puzzle: word.puzzle}
+  h['word_' + word.direction] = word.number;
+  first = Squares.findOne(h);
+  var dr = 0, dc = 0;
+  if (Session.get('selected-direction') === 'down')
+    dr = 1;
+  else
+    dc = 1;
+  return find_blank_in_word(first, dr, dc) || false;
+}
+
 function move(dr, dc, inword) {
   Session.set('selected-direction', dr ? 'down' : 'across');
 
@@ -154,7 +166,18 @@ function letter(keycode) {
   var s = String.fromCharCode(keycode);
   var square = selected_square();
   Meteor.call('setLetter', Session.get('gameid'), square._id, s, isPencil());
-  if (Session.get('selected-direction') == 'across')
+  var dr = 0, dc = 0;
+  if (Session.get('selected-direction') === 'down')
+    dr = 1;
+  else
+    dc = 1;
+  var sq = find_blank_in_word(square, dr, dc);
+  var first = first_blank(selected_clue());
+  if (sq && Meteor.user() && Meteor.user().profile.settingWithinWord == "skip")
+    select(sq);
+  else if (sq === null && first && Meteor.user() && Meteor.user().profile.settingEndWordBack)
+    select(first);
+  else if (Session.get('selected-direction') == 'across')
     move(0, 1, true);
   else
     move(1, 0, true);
@@ -180,9 +203,10 @@ function deleteKey() {
 function find_blank_in_word(square, dr, dc) {
   return find(Puzzles.findOne(square.puzzle),
               square.row, square.column, dr, dc, function (s) {
-    if (s.black ||
-        (dc && (square.word_across !== s.word_across)) ||
-        (dr && (square.word_down !== s.word_down)))
+    if (s.black)
+      return null;
+    else if ((dc && (square.word_across !== s.word_across)) ||
+             (dr && (square.word_down !== s.word_down)))
       return false;
     var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
     return f && f.letter === null;
@@ -230,7 +254,21 @@ function handle_key(k) {
   }
   if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
-  if (k.keyCode === 39)
+  if ((k.keyCode === 39 || k.keyCode === 37) &&
+      Session.get('selected-direction') === 'down' &&
+      Meteor.user() &&
+      Meteor.user().profile.settingArrows === "stay") { 
+    Session.set('selected-direction', 'across');
+    return false;
+  }
+  else if ((k.keyCode === 38 || k.keyCode === 40) &&
+           Session.get('selected-direction') === 'across' &&
+           Meteor.user() &&
+           Meteor.user().profile.settingArrows === "stay") { 
+    Session.set('selected-direction', 'down');
+    return false;
+  }
+  else if (k.keyCode === 39)
     return move(0, 1);
   else if (k.keyCode === 37)
     return move(0, -1);
@@ -423,7 +461,15 @@ Template.controls.events({
   'click #toggle-shortcuts': function (e) {
     toggleKeyboardShortcuts();
     return false;
-  }
+  },
+  'change #settingsModal input': function (e) {
+    var inputName = $(e.currentTarget).attr("name");
+    // For radio inputs, this should return the one checked value. For checkbox inputs, this only
+    // works if there's exactly one checkbox with this name; this returns the checkbox's value as a
+    // string (if checked) or the bool false (if unchecked).
+    var inputValue = $("#settingsModal input[name='" + inputName + "']:checked").val() || false;
+    Meteor.call('updateSetting', inputName, inputValue);
+  },
 });
 
 Template.controls.helpers({
@@ -459,6 +505,22 @@ Template.controls.helpers({
       who.isMe = (who.user._id === Meteor.userId());
       return who;
     });
+  },
+  isSettingChecked: function(setting, value, isDefault) {
+    var curValue = Meteor.user().profile[setting];
+    // No setting defined yet (user hasn't visited the site since we added a new setting)
+    if (curValue === undefined) {
+      if (isDefault) {
+        // Set the user's setting to the default. This will set a value in the database for all
+        // radio inputs, and all default-checked checkboxes, but not for default-unchecked
+        // checkboxes. That's okay (getting the setting will return undefined instead of false,
+        // which is fine as long as we use truthiness checks everywhere), and the setting will get
+        // persisted to the database if you ever check the box.
+        Meteor.call('updateSetting', setting, value);
+      }
+      return isDefault ? "checked" : false;
+    }
+    return curValue == value ? "checked" : false;
   },
 });
 
