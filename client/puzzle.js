@@ -257,14 +257,14 @@ function handle_key(k) {
   if ((k.keyCode === 39 || k.keyCode === 37) &&
       Session.get('selected-direction') === 'down' &&
       Meteor.user() &&
-      Meteor.user().profile.settingArrows === "stay") { 
+      Meteor.user().profile.settingArrows === "stay") {
     Session.set('selected-direction', 'across');
     return false;
   }
   else if ((k.keyCode === 38 || k.keyCode === 40) &&
            Session.get('selected-direction') === 'across' &&
            Meteor.user() &&
-           Meteor.user().profile.settingArrows === "stay") { 
+           Meteor.user().profile.settingArrows === "stay") {
     Session.set('selected-direction', 'down');
     return false;
   }
@@ -455,9 +455,6 @@ Template.controls.events({
   'click .implement button': function(e) {
     Session.set('pencil', $(e.currentTarget).data('pencil'))
   },
-  'blur .my-name': function (e) {
-    Meteor.call('setName', $(e.currentTarget).val());
-  },
   'click #toggle-shortcuts': function (e) {
     toggleKeyboardShortcuts();
     return false;
@@ -521,6 +518,10 @@ Template.controls.helpers({
       return isDefault ? "checked" : false;
     }
     return curValue == value ? "checked" : false;
+  },
+
+  PlayerList: function() {
+    return PlayerList;
   },
 });
 

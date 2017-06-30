@@ -16,3 +16,5 @@ force-ssl@1.0.14
 google-config-ui
 dynamic-import
 babel-runtime
+react-template-helper
+react
