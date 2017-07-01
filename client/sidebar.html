@@ -3,20 +3,8 @@
     <li>
       {{> React component=RevealControl doReveal=doReveal }}
     </li>
-    <li class='dropdown'>
-      <a class="dropdown-toggle {{check_class}}" id="dCheck"
-         role="button" data-toggle="dropdown"
-         data-target="#" href="#">
-        <b class="caret"></b>
-        Check
-      </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dCheck" id='mCheck'>
-        <li role='presentation'>
-          <a role='menuitem' data-target='square' href='#'>Square</a>
-          <a role='menuitem' data-target='word' href='#'>Word</a>
-          <a role='menuitem' data-target='grid' href='#'>Grid</a>
-        </li>
-      </ul>
+    <li>
+      {{> React component=CheckControl checkOk=checkOk doCheck=doCheck }}
     </li>
     <li>
       <div class="btn-group implement">

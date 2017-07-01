@@ -1,4 +1,7 @@
-import { RevealControl } from "../imports/components/controls.jsx";
+import {
+  RevealControl,
+  CheckControl,
+} from "../imports/components/controls.jsx";
 import { PlayerList } from "../imports/components/player_list.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
@@ -436,20 +439,6 @@ function toggleKeyboardShortcuts() {
 }
 
 Template.controls.events({
-  'click #mCheck a': function(e) {
-    var target = $(e.currentTarget).data('target');
-    Meteor.call('check', puzzleState(), target, function (error, square) {
-      if (error === undefined) {
-        if (square) {
-          select(Squares.findOne({_id: square}));
-          Session.set('check-ok', false);
-        } else {
-          Session.set('check-ok', true);
-        }
-      }
-    });
-    return true;
-  },
   'click .implement button': function(e) {
     Session.set('pencil', $(e.currentTarget).data('pencil'))
   },
@@ -468,10 +457,8 @@ Template.controls.events({
 });
 
 Template.controls.helpers({
-  check_class: function() {
-    if (Session.get('check-ok'))
-      return 'check-ok';
-    return '';
+  checkOk: function() {
+    return !!Session.get('check-ok');
   },
   penclass: function() {
     if (isPencil()) {
@@ -518,18 +505,32 @@ Template.controls.helpers({
     return curValue == value ? "checked" : false;
   },
 
-  doReveal: function() {
-    return doReveal;
-  },
+  doReveal: function() { return doReveal; },
+  doCheck: function() { return doCheck; },
 
-  PlayerList: function() {return PlayerList;},
-  RevealControl: function() {return RevealControl;},
+  PlayerList: function() { return PlayerList; },
+  RevealControl: function() { return RevealControl; },
+  CheckControl: function() { return CheckControl; },
 });
 
 function doReveal(eventKey, e) {
   var target = $(e.currentTarget).data('target');
   Meteor.call('reveal', puzzleState(), target);
   return true;
+}
+
+function doCheck(eventKey, e) {
+  var target = $(e.currentTarget).data('target');
+  Meteor.call('check', puzzleState(), target, function (error, square) {
+    if (error === undefined) {
+      if (square) {
+        select(Squares.findOne({_id: square}));
+        Session.set('check-ok', false);
+      } else {
+        Session.set('check-ok', true);
+      }
+    }
+  });
 }
 
 function maybePing() {
