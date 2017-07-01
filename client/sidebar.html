@@ -1,17 +1,7 @@
 <template name='controls'>
   <ul class='nav nav-pills nav-stacked'>
-    <li class='dropdown'>
-      <a class="dropdown-toggle" id="dReveal" role="button" data-toggle="dropdown" data-target="#" href="#">
-        <b class="caret"></b>
-        Reveal
-      </a>
-      <ul class="dropdown-menu" role="menu" aria-labelledby="dReveal" id='mReveal'>
-        <li role='presentation'>
-          <a role='menuitem' data-target='square' href='#'>Square</a>
-          <a role='menuitem' data-target='word' href='#'>Word</a>
-          <a role='menuitem' data-target='grid' href='#'>Grid</a>
-        </li>
-      </ul>
+    <li>
+      {{> React component=RevealControl doReveal=doReveal }}
     </li>
     <li class='dropdown'>
       <a class="dropdown-toggle {{check_class}}" id="dCheck"
@@ -35,9 +25,9 @@
       </div>
     </li>
     <li class='player-label'> Now playing:</li>
-    <div>
+    <li>
       {{> React component=PlayerList players=players loggedIn=currentUser}}
-    </div>
+    </li>
   </ul>
   <a href="#" class='sidebar-link' id='toggle-shortcuts'>Keyboard Shortcuts</a>
   <div id='shortcuts-help' style='display:none;'>
@@ -65,7 +55,7 @@
 
   {{#if currentUser}}
   <a href="#" class="sidebar-link" id="toggle-settings" data-toggle="modal" data-target="#settingsModal">Settings</a>
-  <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel">
+  <div class="modal fade" id="settingsModal" tabindex="-1" role="dialog" aria-labelledby="settingsModalLabel" style='display: none;'>
     <div class="modal-dialog" role="document">
       <div class="modal-content">
         <div class="modal-header">

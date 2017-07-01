@@ -1,4 +1,4 @@
-class PlayerList extends React.Component {
+export class PlayerList extends React.Component {
   render() {
     var players = this.props.players.map(function(player) {
       return (<PlayerListEntry key={player._id} {...player} />);
@@ -10,17 +10,13 @@ class PlayerList extends React.Component {
       </li>
     }
     return (
-      <li>
-        <ul id='player-list'>
-          {players}
-          {logIn}
-        </ul>
-      </li>
+      <ul id='player-list'>
+        {players}
+        {logIn}
+      </ul>
     );
   }
 }
-
-this.PlayerList = PlayerList;
 
 class PlayerListEntry extends React.Component {
   render() {

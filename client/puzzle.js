@@ -1,3 +1,6 @@
+import { RevealControl } from "../imports/components/controls.jsx";
+import { PlayerList } from "../imports/components/player_list.jsx";
+
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
 
@@ -433,11 +436,6 @@ function toggleKeyboardShortcuts() {
 }
 
 Template.controls.events({
-  'click #mReveal a': function(e) {
-    var target = $(e.currentTarget).data('target');
-    Meteor.call('reveal', puzzleState(), target);
-    return true;
-  },
   'click #mCheck a': function(e) {
     var target = $(e.currentTarget).data('target');
     Meteor.call('check', puzzleState(), target, function (error, square) {
@@ -520,10 +518,19 @@ Template.controls.helpers({
     return curValue == value ? "checked" : false;
   },
 
-  PlayerList: function() {
-    return PlayerList;
+  doReveal: function() {
+    return doReveal;
   },
+
+  PlayerList: function() {return PlayerList;},
+  RevealControl: function() {return RevealControl;},
 });
+
+function doReveal(eventKey, e) {
+  var target = $(e.currentTarget).data('target');
+  Meteor.call('reveal', puzzleState(), target);
+  return true;
+}
 
 function maybePing() {
   if (Meteor.userId() && Session.get('gameid')) {
