@@ -1,8 +1,4 @@
-import {
-  RevealControl,
-  CheckControl,
-} from "../imports/components/controls.jsx";
-import { PlayerList } from "../imports/components/player_list.jsx";
+import { Sidebar } from "../imports/components/controls.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -80,7 +76,31 @@ Template.puzzle.helpers({
       rows.push({puzzle: puz, row: r});
     }
     return rows;
-  }
+  },
+  checkOk: function() {
+    return !!Session.get('check-ok');
+  },
+  isPencil: function() {
+    return !!isPencil();
+  },
+  players: function() {
+    var id = Session.get('gameid');
+    var game = id && Games.findOne({_id: id});
+    if (!game || !game.players) {
+      return [];
+    }
+    return game.players.map(function (who) {
+      // Apparently {{each}} requires every element you return to have an _id.
+      who._id = who.userId;
+      who.user = Meteor.users.findOne({_id: who.userId});
+      who.isMe = (who.user._id === Meteor.userId());
+      return who;
+    });
+  },
+
+  doReveal: function() { return doReveal; },
+  doCheck: function() { return doCheck; },
+  Sidebar: function() { return Sidebar; },
 });
 
 Template.currentclue.helpers({
@@ -312,14 +332,6 @@ function handle_key(k) {
   return true;
 }
 
-function global_click(e) {
-  if (showingKeyboardShortcuts()) {
-    hideKeyboardShortcuts();
-    return false;
-  }
-  return true;
-}
-
 Template.row.helpers({
   cells: function() {
     return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
@@ -434,89 +446,6 @@ function hideKeyboardShortcuts() {
   return $('#shortcuts-help').hide();
 }
 
-function toggleKeyboardShortcuts() {
-  var overlay = $('#shortcuts-help');
-  if (overlay.is(':visible'))
-    overlay.hide();
-  else
-    overlay.show();
-}
-
-Template.controls.events({
-  'click .implement button': function(e) {
-    Session.set('pencil', $(e.currentTarget).data('pencil'))
-  },
-  'click #toggle-shortcuts': function (e) {
-    toggleKeyboardShortcuts();
-    return false;
-  },
-  'change #settingsModal input': function (e) {
-    var inputName = $(e.currentTarget).attr("name");
-    // For radio inputs, this should return the one checked value. For checkbox inputs, this only
-    // works if there's exactly one checkbox with this name; this returns the checkbox's value as a
-    // string (if checked) or the bool false (if unchecked).
-    var inputValue = $("#settingsModal input[name='" + inputName + "']:checked").val() || false;
-    Meteor.call('updateSetting', inputName, inputValue);
-  },
-});
-
-Template.controls.helpers({
-  checkOk: function() {
-    return !!Session.get('check-ok');
-  },
-  penclass: function() {
-    if (isPencil()) {
-      return ""
-    } else {
-      return "active";
-    }
-  },
-  pencilclass: function() {
-    if (isPencil()) {
-      return "active"
-    } else {
-      return "";
-    }
-  },
-  players: function() {
-    var id = Session.get('gameid');
-    var game = id && Games.findOne({_id: id});
-    if (!game || !game.players) {
-      return [];
-    }
-    return game.players.map(function (who) {
-      // Apparently {{each}} requires every element you return to have an _id.
-      who._id = who.userId;
-      who.user = Meteor.users.findOne({_id: who.userId});
-      who.isMe = (who.user._id === Meteor.userId());
-      return who;
-    });
-  },
-  isSettingChecked: function(setting, value, isDefault) {
-    var curValue = Meteor.user().profile[setting];
-    // No setting defined yet (user hasn't visited the site since we added a new setting)
-    if (curValue === undefined) {
-      if (isDefault) {
-        // Set the user's setting to the default. This will set a value in the database for all
-        // radio inputs, and all default-checked checkboxes, but not for default-unchecked
-        // checkboxes. That's okay (getting the setting will return undefined instead of false,
-        // which is fine as long as we use truthiness checks everywhere), and the setting will get
-        // persisted to the database if you ever check the box.
-        Meteor.call('updateSetting', setting, value);
-      }
-      return isDefault ? "checked" : false;
-    }
-    return curValue == value ? "checked" : false;
-  },
-
-  doReveal: function() { return doReveal; },
-  doCheck: function() { return doCheck; },
-
-  PlayerList: function() { return PlayerList; },
-  RevealControl: function() { return RevealControl; },
-  CheckControl: function() { return CheckControl; },
-});
-
 function doReveal(eventKey, e) {
   var target = $(e.currentTarget).data('target');
   Meteor.call('reveal', puzzleState(), target);
@@ -545,7 +474,6 @@ function maybePing() {
 
 Meteor.startup(function() {
   $('body').on('keydown', handle_key);
-  $('body').on('click', global_click);
   Meteor.setInterval(maybePing, 30 * 1000);
 });
 
