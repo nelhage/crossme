@@ -85,9 +85,3 @@ Template.recentGames.helpers({
     return me.lastSeen.toDateString();
   },
 });
-
-Template.recentGames.events({
-  'click a.game': function (evt) {
-    Router.go('game', {id: $(evt.currentTarget).data('game')});
-  }
-});
