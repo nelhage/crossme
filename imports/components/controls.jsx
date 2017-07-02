@@ -1,5 +1,6 @@
 import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 import { PlayerList } from './player_list';
+import classNames from 'classnames';
 
 class RevealControl extends React.Component {
   render() {
@@ -16,7 +17,7 @@ class RevealControl extends React.Component {
 class CheckControl extends React.Component {
   render() {
     return (
-      <DropdownButton className={this.props.checkOk && "check-ok"} title="Check" id='dCheck' onSelect={this.props.doCheck}>
+      <DropdownButton className={classNames({"check-ok": this.props.checkOk})} title="Check" id='dCheck' onSelect={this.props.doCheck}>
         <MenuItem data-target='square'>Square</MenuItem>
         <MenuItem data-target='word'>Word</MenuItem>
         <MenuItem data-target='grid'>Grid</MenuItem>
@@ -30,10 +31,10 @@ class PencilControl extends React.Component {
     return (
       <div className="btn-group">
         <button data-pencil="false"
-                className={'btn' + (this.props.isPencil ? '' : ' active')}
+                className={classNames('btn', {'active': !this.props.isPencil})}
                 onClick={this.click.bind(this)}>Pen</button>
         <button data-pencil="true"
-                className={'btn' + (this.props.isPencil ? ' active' : '')}
+                className={classNames('btn', {'active': this.props.isPencil})}
                 onClick={this.click.bind(this)}>Pencil</button>
       </div>
     );
