@@ -31,6 +31,20 @@
     "pretest": "npm run lint --silent"
   },
   "eslintConfig": {
-    "extends": "@meteorjs/eslint-config-meteor"
+    "extends": "@meteorjs/eslint-config-meteor",
+    "rules": {
+      "react/prefer-stateless-function": "off",
+      "react/prop-types": "off",
+      "react/no-multi-comp": "off",
+      "react/jsx-no-bind": "off",
+      "jsx-a11y/interactive-supports-focus": "off",
+      "class-methods-use-this": "off",
+      "meteor/no-session": "off"
+    },
+    "globals": {
+      "Meteor": false,
+      "Session": false,
+      "$": false
+    }
   }
 }
