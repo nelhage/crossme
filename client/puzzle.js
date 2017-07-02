@@ -21,7 +21,9 @@ Deps.autorun(function () {
     var s = selected_square();
     if (!s || s.black) {
       s = find(active_puzzle(), 0, 0, 0, 1, function (s) { return !s.black });
-      select(s);
+      if (s) {
+        select(s);
+      }
     } else {
       Session.set('word-across', s.word_across);
       Session.set('word-down', s.word_down);
@@ -131,6 +133,8 @@ function find(puz, row, col, dr, dc, predicate) {
         col < 0 || col >= puz.width)
       return null;
     s = SquaresByPosition.find({row: row, column: col, puzzle: puz._id});
+    if (!s)
+      return null;
     if (predicate(s))
       return s;
     row += dr;
