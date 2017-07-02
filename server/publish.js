@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Meteor.publish('puzzles', function () {
   var cursors = [Puzzles.find()];
   if (this.userId) {

@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Package.describe({
   summary: "CrossMe npm dependencies"
 });

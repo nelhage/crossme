@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Template.gaq.helpers({
   show: function() {
     return Meteor.settings &&

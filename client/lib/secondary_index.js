@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 SecondaryIndex = function(collection, fields) {
   this.collection = collection;
   this.fieldList = fields;

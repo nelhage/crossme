@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 function find_word(puz, cell) {
   var row = cell.row, col = cell.column;
   while (col > 0 && puz.solution[row][col - 1] !== null)

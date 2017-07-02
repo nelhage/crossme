@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Router.route('/', function() {
   Session.set('gameid', null);
   Session.set('previewid', null);

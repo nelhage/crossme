@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Template.selector.helpers({
   puzzles: function() {
     return Puzzles.find().fetch();
