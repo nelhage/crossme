@@ -7,7 +7,7 @@ export class PlayerList extends React.Component {
     if (!this.props.loggedIn) {
       logIn = <li>
         <strong>Log In</strong> to join this list
-      </li>
+      </li>;
     }
     return (
       <ul id='player-list'>
@@ -27,7 +27,7 @@ class PlayerListEntry extends React.Component {
                  value={this.props.user.profile.name}
                  onChange={this.nameChanged}/>
         </li>
-      )
+      );
     } else {
       return (
         <li>
