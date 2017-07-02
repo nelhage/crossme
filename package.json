@@ -14,5 +14,23 @@
     "react-addons-update": "^15.6.0",
     "react-bootstrap": "^0.31.0",
     "react-dom": "^15.6.1"
+  },
+  "devDependencies": {
+    "@meteorjs/eslint-config-meteor": "^1.0.5",
+    "babel-eslint": "^7.2.3",
+    "eslint": "^4.1.1",
+    "eslint-config-airbnb": "^15.0.1",
+    "eslint-import-resolver-meteor": "^0.4.0",
+    "eslint-plugin-import": "^2.6.1",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-meteor": "^4.0.1",
+    "eslint-plugin-react": "^7.1.0"
+  },
+  "scripts": {
+    "lint": "eslint .",
+    "pretest": "npm run lint --silent"
+  },
+  "eslintConfig": {
+    "extends": "@meteorjs/eslint-config-meteor"
   }
 }
