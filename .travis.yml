@@ -10,5 +10,5 @@ before_install:
 services:
   - mongodb
 
-test_script:
+script:
   - npm run lint
