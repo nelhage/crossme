@@ -25,7 +25,14 @@
     </div>
     {{#if showControls}}
     <div id='controls'>
-      {{> controls}}
+      {{> React
+          component=Sidebar
+          doReveal=doReveal
+          doCheck=doCheck
+          isPencil=isPencil
+          currentUser=currentUser
+          players=players
+      }}
     </div>
     {{/if}}
   </div>

@@ -4,12 +4,17 @@
 # but you can also edit it by hand.
 
 bootstrap
-accounts-google@1.0.10
+accounts-google@1.2.0
 accounts-ui@1.1.9
 standard-app-packages@1.0.9
 npm-deps
-standard-minifier-css@1.2.0
-standard-minifier-js@1.2.0
+standard-minifier-css@1.3.4
+standard-minifier-js@2.1.0
 iron:router
-shell-server
-force-ssl
+shell-server@0.2.3
+force-ssl@1.0.14
+google-config-ui
+dynamic-import
+babel-runtime
+react-template-helper
+react

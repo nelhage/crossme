@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 Template.selector.helpers({
   puzzles: function() {
     return Puzzles.find().fetch();
@@ -84,10 +86,4 @@ Template.recentGames.helpers({
     var me = _.find(this.players, function(p) { return p.userId === Meteor.userId()});
     return me.lastSeen.toDateString();
   },
-});
-
-Template.recentGames.events({
-  'click a.game': function (evt) {
-    Router.go('game', {id: $(evt.currentTarget).data('game')});
-  }
 });

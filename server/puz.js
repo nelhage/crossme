@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 PuzFile = function (buffer) {
   this.buffer = buffer;
   this.parse();
