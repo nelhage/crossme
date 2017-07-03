@@ -1,79 +1,11 @@
 <template name='header'>
-  <div class='navbar navbar-static-top' id='nav'>
-    <div class='navbar-inner'>
-      <a class='brand' href="/">
-        CrossMe
-      </a>
-      <ul class='nav'>
-        <li>
-          <a href='#' data-toggle='modal' data-target='#new-game-modal'>New Game</a>
-        </li>
-        {{#if currentUser}}
-        <li>
-          <div>
-            {{> React component=RecentGames games=recentGames }}
-          </div>
-        </li>
-        {{/if}}
-      </ul>
-      <ul class='nav pull-right'>
-        {{> React component=UserInfo currentUser=currentUser }}
-      </ul>
-    </div>
+  <div>
+    {{> React
+        component=Header
+        puzzles=puzzles
+        recentGames=recentGames
+        onUpload=handleUpload
+        currentUser=currentUser
+        }}
   </div>
-
-  <div id='new-game-modal' class='modal hide'>
-    <div class='modal-header'>Start a new game...</div>
-    <div class='modal-body'>
-      {{> selector}}
-      {{> upload}}
-    </div>
-    <div class='modal-footer'>
-      <button class='btn' data-dismiss='modal'>Cancel</button>
-    </div>
-  </div>
-</template>
-
-<template name='upload'>
-  <form action='#' id='uploadform'>
-    <div>
-      Or upload new <a href="https://code.google.com/p/puz/wiki/FileFormat">.puz</a>: <input id='puzfile' type="file" value="puz" multiple />
-      <button class='btn btn-primary'> Upload </button>
-    </div>
-  </form>
-</template>
-
-<template name='selector'>
-  <div id='selector'>
-    <form class='form-inline'>
-      <label for='switchpuzzle'>Puzzle:</label>
-      <select id='switchpuzzle'>
-        {{#each puzzles}}
-        <option value="{{_id}}">{{title}}</option>
-        {{/each}}
-      </select>
-      <button class='btn btn-preview'>Preview</button>
-      <button class='btn btn-primary'>New Game</button>
-    </form>
-  </div>
-</template>
-
-<template name='userinfo'>
-  <li class='dropdown' id='userinfo'>
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-      {{#if currentUser}}
-      {{currentUser.profile.name}} <b class="caret"></b>
-      {{else}}
-      Login <b class="caret"></b>
-      {{/if}}
-    </a>
-    <div class="dropdown-menu" role="menu">
-      {{#if currentUser}}
-      {{else}}
-      <p>Log in to remember your recent games, and show up in player
-      lists!</p>
-      {{/if}}
-      <p>{{> loginButtons align='right'}}</p>
-    </div>
-  </li>
 </template>

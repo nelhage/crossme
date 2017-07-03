@@ -1,9 +1,6 @@
 /* eslint-disable */
 
-import {
-  UserInfo,
-  RecentGames,
-} from '../imports/components/header.jsx';
+import Header from '../imports/components/header.jsx';
 
 Template.header.helpers({
   recentGames: function() {
@@ -23,56 +20,17 @@ Template.header.helpers({
       });
   },
 
-  UserInfo: function() { return UserInfo; },
-  RecentGames: function() { return RecentGames; }
-});
-
-Template.selector.helpers({
   puzzles: function() {
     return Puzzles.find().fetch();
-  }
-});
-
-Template.selector.events({
-  'click .btn-primary': function() {
-    var id = $('#switchpuzzle').val();
-    Meteor.call('newGame', id, function (error, id) {
-      if (!error)
-        load_game(id);
-    });
-    $('#new-game-modal').modal('hide');
-    return false;
   },
-  'click .btn-preview': function() {
-    var id = $('#switchpuzzle').val();
-    load_preview(id);
-    $('#new-game-modal').modal('hide');
-    return false;
-  }
+
+  handleUpload: function() { return handleUpload },
+
+  Header: function() { return Header; }
 });
 
-function fail(err) {
-  window.the_error = err;
-  alert(err);
-}
 
-function uploadFile(file, cb) {
-    var fr = new FileReader();
-    fr.onerror = function() {
-        cb(fr.error, null);
-    };
-    fr.onload = function() {
-        Meteor.call('uploadPuzzle', fr.result, function (error, id) {
-            cb(error, id);
-        });
-    };
-    fr.readAsBinaryString(file);
-}
-
-function handleUpload() {
-  var files = $('#puzfile')[0].files;
-  if (!files.length)
-        return fail("You must select a file.");
+function handleUpload(files) {
   var i = 0;
   var uploadNext = function(error, id) {
     if (error) {
@@ -90,10 +48,15 @@ function handleUpload() {
   uploadFile(files[0], uploadNext);
 }
 
-Template.upload.events({
-  'click button': function() {
-    $('#new-game-modal').modal('hide');
-    handleUpload();
-    return false;
-  }
-});
+function uploadFile(file, cb) {
+    var fr = new FileReader();
+    fr.onerror = function() {
+        cb(fr.error, null);
+    };
+    fr.onload = function() {
+        Meteor.call('uploadPuzzle', fr.result, function (error, id) {
+            cb(error, id);
+        });
+    };
+    fr.readAsBinaryString(file);
+}
