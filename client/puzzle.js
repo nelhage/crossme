@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { Sidebar } from "../imports/components/controls.jsx";
+import Sidebar from "../imports/components/controls.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
