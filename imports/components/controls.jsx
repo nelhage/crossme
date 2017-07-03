@@ -147,60 +147,70 @@ class UserPreferences extends React.Component {
             <Modal.Body>
               <form className="form">
                 <h5>After changing direction with the arrow keys:</h5>
-                <label className="radio" htmlFor="settingArrows">
-                  <input
-                    type="radio"
-                    name="settingArrows"
-                    value="stay"
-                    checked={this.isSettingChecked('settingArrows', 'stay', true)}
-                    onChange={onChange}
-                  />
-                  Stay in the same square
-                </label>
-                <label className="radio" htmlFor="settingArrows">
-                  <input
-                    type="radio"
-                    name="settingArrows"
-                    value="move"
-                    checked={this.isSettingChecked('settingArrows', 'move', false)}
-                    onChange={onChange}
-                  />
-                  Move in the direction of the arrow
-                </label>
+                <div className="radio">
+                  <label htmlFor="settingArrows">
+                    <input
+                      type="radio"
+                      name="settingArrows"
+                      value="stay"
+                      checked={this.isSettingChecked('settingArrows', 'stay', true)}
+                      onChange={onChange}
+                    />
+                    Stay in the same square
+                  </label>
+                </div>
+                <div className="radio">
+                  <label htmlFor="settingArrows">
+                    <input
+                      type="radio"
+                      name="settingArrows"
+                      value="move"
+                      checked={this.isSettingChecked('settingArrows', 'move', false)}
+                      onChange={onChange}
+                    />
+                    Move in the direction of the arrow
+                  </label>
+                </div>
 
                 <h5>Within a word:</h5>
-                <label className="radio" htmlFor="settingWithinWord">
-                  <input
-                    type="radio"
-                    name="settingWithinWord"
-                    value="skip"
-                    checked={this.isSettingChecked('settingWithinWord', 'skip', true)}
-                    onChange={onChange}
-                  />
-                  Skip over filled squares
-                </label>
-                <label className="radio" htmlFor="settingWithinWord">
-                  <input
-                    type="radio"
-                    name="settingWithinWord"
-                    value="overwrite"
-                    checked={this.isSettingChecked('settingWithinWord', 'overwrite', false)}
-                    onChange={onChange}
-                  />
-                  Overwrite filled in squares
-                </label>
+                <div className="radio">
+                  <label htmlFor="settingWithinWord">
+                    <input
+                      type="radio"
+                      name="settingWithinWord"
+                      value="skip"
+                      checked={this.isSettingChecked('settingWithinWord', 'skip', true)}
+                      onChange={onChange}
+                    />
+                    Skip over filled squares
+                  </label>
+                </div>
+                <div className="radio">
+                  <label htmlFor="settingWithinWord">
+                    <input
+                      type="radio"
+                      name="settingWithinWord"
+                      value="overwrite"
+                      checked={this.isSettingChecked('settingWithinWord', 'overwrite', false)}
+                      onChange={onChange}
+                    />
+                    Overwrite filled in squares
+                  </label>
+                </div>
 
                 <h5>At the end of a word:</h5>
-                <label className="checkbox" htmlFor="settingEndWordBack">
-                  <input
-                    type="checkbox"
-                    name="settingEndWordBack"
-                    value="back"
-                    checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
-                    onChange={onChange}
-                  />
-                  Jump back to first blank in the word (if any)
-                </label>
+                <div className="checkbox">
+                  <label htmlFor="settingEndWordBack">
+                    <input
+                      type="checkbox"
+                      name="settingEndWordBack"
+                      value="back"
+                      checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
+                      onChange={onChange}
+                    />
+                    Jump back to first blank in the word (if any)
+                  </label>
+                </div>
               </form>
             </Modal.Body>
             <Modal.Footer>
