@@ -1,9 +1,30 @@
 /* eslint-disable */
 
-import { UserInfo } from '../imports/components/header.jsx';
+import {
+  UserInfo,
+  RecentGames,
+} from '../imports/components/header.jsx';
 
 Template.header.helpers({
-  UserInfo: function() { return UserInfo; }
+  recentGames: function() {
+    return Games.find({'players.userId': Meteor.userId()},
+      {
+        sort: {created: -1},
+        limit: 10
+      }).map((game) => {
+        const title = Puzzles.findOne({_id: game.puzzle}).title;
+        const me = _.find(game.players, function(p) { return p.userId === Meteor.userId()});
+        const lastSeen = me.lastSeen.toDateString();
+        return {
+          _id: game._id,
+          title: title,
+          lastSeen: lastSeen
+        };
+      });
+  },
+
+  UserInfo: function() { return UserInfo; },
+  RecentGames: function() { return RecentGames; }
 });
 
 Template.selector.helpers({
@@ -75,21 +96,4 @@ Template.upload.events({
     handleUpload();
     return false;
   }
-});
-
-Template.recentGames.helpers({
-  games: function() {
-    return Games.find({'players.userId': Meteor.userId()},
-                      {
-                        sort: {created: -1},
-                        limit: 10
-                      });
-  },
-  puzzleTitle: function() {
-    return Puzzles.findOne({_id: this.puzzle}).title;
-  },
-  date: function() {
-    var me = _.find(this.players, function(p) { return p.userId === Meteor.userId()});
-    return me.lastSeen.toDateString();
-  },
 });

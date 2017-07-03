@@ -9,7 +9,11 @@
           <a href='#' data-toggle='modal' data-target='#new-game-modal'>New Game</a>
         </li>
         {{#if currentUser}}
-        {{> recentGames}}
+        <li>
+          <div>
+            {{> React component=RecentGames games=recentGames }}
+          </div>
+        </li>
         {{/if}}
       </ul>
       <ul class='nav pull-right'>
@@ -71,22 +75,5 @@
       {{/if}}
       <p>{{> loginButtons align='right'}}</p>
     </div>
-  </li>
-</template>
-
-<template name='recentGames'>
-  <li>
-    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-      Recent Games<b class="caret"></b>
-    </a>
-    <ul class="dropdown-menu" role="menu">
-      {{#each games}}
-      <li>
-        <a class='game' data-game="{{_id}}" href="/game/{{_id}}">
-          {{ puzzleTitle }} <span class='datestamp'>(last viewed: {{date}})</span>
-        </a>
-      </li>
-      {{/each}}
-    </ul>
   </li>
 </template>

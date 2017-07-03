@@ -38,3 +38,25 @@ export class UserInfo extends React.Component {
     );
   }
 }
+
+export class RecentGames extends React.Component {
+  render() {
+    const games = this.props.games.map(game => (
+      <li key={game._id}>
+        <a className="game" href={`/game/${game._id}`}>
+          {game.title} <span className="datestamp">(last viewed: {game.lastSeen})</span>
+        </a>
+      </li>
+      ));
+    return (
+      <div>
+        <a className="dropdown-toggle" data-toggle="dropdown">
+          Recent Games<b className="caret" />
+        </a>
+        <ul className="dropdown-menu" role="menu">
+          {games}
+        </ul>
+      </div>
+    );
+  }
+}
