@@ -1,5 +1,7 @@
 /* eslint-disable */
 
+import { Iconv } from 'iconv';
+
 PuzFile = function (buffer) {
   this.buffer = buffer;
   this.parse();
