@@ -1,5 +1,11 @@
 /* eslint-disable */
 
+import { UserInfo } from '../imports/components/header.jsx';
+
+Template.header.helpers({
+  UserInfo: function() { return UserInfo; }
+});
+
 Template.selector.helpers({
   puzzles: function() {
     return Puzzles.find().fetch();
