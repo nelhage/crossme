@@ -38,7 +38,7 @@
       }}
     </div>
     <div id='clues'>
-      {{> clues}}
+      {{> React component=ClueBox clues=clues cursor=cursor onSelect=selectClue }}
     </div>
     {{#if showControls}}
     <div id='controls'>
@@ -75,31 +75,6 @@
     href="https://github.com/nelhage/crossme">open-source</a>.  Please
     open an issue on github if you have any issues, or just drop me an
     <a href="mailto:nelhage@nelhage.com">email</a>.</p>
-  </div>
-</template>
-
-<template name='clues'>
-  <div class='section across'>
-    <div class='title'> Across </div>
-    <div class='cluelist'>
-      {{#each across_clues}}
-      {{> clue}}
-      {{/each}}
-    </div>
-  </div>
-  <div class='section down'>
-    <div class='title'> Down </div>
-    <div class='cluelist'>
-      {{#each down_clues}}
-      {{> clue}}
-      {{/each}}
-    </div>
-  </div>
-</template>
-
-<template name='clue'>
-  <div class='clue {{css_class}}'>
-    {{number}}. {{text}}
   </div>
 </template>
 

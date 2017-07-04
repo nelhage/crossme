@@ -5,6 +5,7 @@ import {
   PuzzleGrid,
   Metadata,
   CurrentClue,
+  ClueBox,
 } from "../imports/components/puzzle.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
@@ -59,13 +60,20 @@ function selected_square() {
 function selected_clue() {
   var s = selected_square();
   var dir = Session.get('selected-direction');
-  return s && Clues.findOne({puzzle:s.puzzle,
+  return s && Clues.findOne({puzzle: s.puzzle,
                              direction: dir,
                              number: selected_square()['word_' + dir]});
 }
 
 function isPencil() {
   return Session.equals('pencil', true);
+}
+
+
+function selectClue(number, direction) {
+  var s = Squares.findOne({puzzle: puzzle_id(), number: number});
+  Session.set('selected-direction', direction);
+  select(s);
 }
 
 Template.puzzle.helpers({
@@ -112,6 +120,7 @@ Template.puzzle.helpers({
   PuzzleGrid: function() { return PuzzleGrid; },
   Metadata: function() { return Metadata; },
   CurrentClue: function() { return CurrentClue; },
+  ClueBox: function() { return ClueBox; },
 
   cursor: function() {
     return {
@@ -148,6 +157,17 @@ Template.puzzle.helpers({
   },
 
   currentClue: selected_clue,
+
+  clues: function() {
+    return {
+      across: Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}}),
+      down: Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}}),
+    };
+  },
+
+  selectClue: function() {
+    return selectClue;
+  }
 });
 
 function clickCell(cell) {
@@ -362,42 +382,6 @@ function handle_key(k) {
 
   return true;
 }
-
-Template.clues.helpers({
-  across_clues: function() {
-    return Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}});
-  },
-  down_clues: function() {
-    return Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}});
-  },
-  number: function() {
-    return this.number;
-  },
-});
-
-Template.clue.events({
-  'click': function() {
-    var s = Squares.findOne({puzzle: this.puzzle, number: this.number});
-    Session.set('selected-direction', this.direction);
-    select(s);
-  }
-})
-
-Template.clue.helpers({
-  text: function() {
-    return this.text;
-  },
-  css_class: function() {
-    var classes = ['clue-' + this.number];
-    if (Session.equals('word-' + this.direction, this.number)) {
-      if (Session.equals('selected-direction', this.direction))
-        classes.push('selected');
-      else
-        classes.push('otherword');
-    }
-    return classes.join(' ');
-  },
-});
 
 window.load_game = function(id) {
   Router.go('game', {id: id});
