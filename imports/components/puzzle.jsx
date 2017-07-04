@@ -1,11 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
 
+import Sidebar from './controls.jsx';
+
 /* global Router */
 
-/* eslint-disable import/prefer-default-export */
-
-export class PuzzleGrid extends React.Component {
+class PuzzleGrid extends React.Component {
   cellProps(cell) {
     const cursor = this.props.cursor;
     const props = {
@@ -18,6 +18,10 @@ export class PuzzleGrid extends React.Component {
                  cursor.selected_column === cell.column),
       onClick: () => { this.props.onClickCell(cell); },
     };
+    if (props.selected) {
+      return props;
+    }
+
     if (cursor.word_across === cell.word_across) {
       if (cursor.selected_direction === 'across') {
         props.inWord = true;
@@ -52,7 +56,7 @@ export class PuzzleGrid extends React.Component {
     });
     /* eslint-enable react/no-array-index-key */
     return (
-      <div>
+      <div id='puzzlegrid'>
         {rows}
       </div>
     );
@@ -101,7 +105,7 @@ class PuzzleCell extends React.Component {
   }
 }
 
-export class Metadata extends React.Component {
+class Metadata extends React.Component {
   startGame() {
     const id = this.props.puzzle._id;
     Meteor.call('newGame', id, function (error, gotId) {
@@ -133,7 +137,7 @@ export class Metadata extends React.Component {
   }
 }
 
-export class CurrentClue extends React.Component {
+class CurrentClue extends React.Component {
   render() {
     const clue = this.props.clue;
     if (!clue) {
@@ -152,7 +156,7 @@ export class CurrentClue extends React.Component {
   }
 }
 
-export class ClueBox extends React.Component {
+class ClueBox extends React.Component {
   constructor(props) {
     super(props);
     this.onSelect = this.onSelect.bind(this);
@@ -176,18 +180,16 @@ export class ClueBox extends React.Component {
 
   clueGroup(clues) {
     return (
-      clues.map((c) => {
-        return (
-          <Clue
-            key={c._id}
-            number={c.number}
-            text={c.text}
-            direction={c.direction}
-            selected={this.isSelected(c, c.direction)}
-            onClick={this.onSelect}
-          />
-        );
-      })
+      clues.map(c => (
+        <Clue
+          key={c._id}
+          number={c.number}
+          text={c.text}
+          direction={c.direction}
+          selected={this.isSelected(c, c.direction)}
+          onClick={this.onSelect}
+        />
+        ))
     );
   }
 
@@ -195,7 +197,7 @@ export class ClueBox extends React.Component {
     const acrossClues = this.clueGroup(this.props.clues.across, 'across');
     const downClues = this.clueGroup(this.props.clues.down, 'down');
     return (
-      <div>
+      <div id='clues'>
         <div className="section across">
           <div className="title"> Across </div>
           <div className="cluelist">
@@ -225,6 +227,35 @@ class Clue extends React.Component {
         data-direction={this.props.direction}
       >
         {this.props.number}. {this.props.text}
+      </div>
+    );
+  }
+}
+
+export default class Puzzle extends React.Component {
+  render() {
+    return (
+      <div id="puzzle">
+        <Metadata puzzle={this.props.puzzle} preview={this.props.preview} />
+        <CurrentClue clue={this.props.currentClue} />
+        <PuzzleGrid
+          cursor={this.props.cursor}
+          grid={this.props.grid}
+          onClickCell={this.props.onClickCell}
+        />
+        <ClueBox
+          clues={this.props.clues}
+          cursor={this.props.cursor}
+          onSelect={this.props.onSelect}
+        />
+        {!this.props.preview &&
+          <Sidebar
+            doReveal={this.props.doReveal}
+            doCheck={this.props.doReveal}
+            isPencil={this.props.isPencil}
+            currentUser={this.props.currentUser}
+            players={this.props.players}
+          />}
       </div>
     );
   }

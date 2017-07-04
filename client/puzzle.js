@@ -1,12 +1,7 @@
 /* eslint-disable */
 
 import Sidebar from "../imports/components/controls.jsx";
-import {
-  PuzzleGrid,
-  Metadata,
-  CurrentClue,
-  ClueBox,
-} from "../imports/components/puzzle.jsx";
+import Puzzle from "../imports/components/puzzle.jsx";
 import { Home } from "../imports/components/app.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
@@ -117,11 +112,7 @@ Template.puzzle.helpers({
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
 
-  Sidebar: function() { return Sidebar; },
-  PuzzleGrid: function() { return PuzzleGrid; },
-  Metadata: function() { return Metadata; },
-  CurrentClue: function() { return CurrentClue; },
-  ClueBox: function() { return ClueBox; },
+  Puzzle: function() { return Puzzle; },
   Home: function() { return Home; },
 
   cursor: function() {

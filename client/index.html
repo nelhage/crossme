@@ -21,36 +21,23 @@
 
 <template name='puzzle'>
   {{#if show}}
-  <div id='puzzle'>
-    <div>
-      {{> React component=Metadata puzzle=puzzle preview=preview }}
-    </div>
-    <div>
-      {{> React component=CurrentClue clue=currentClue }}
-    </div>
-    <div id='puzzlegrid'>
-      {{> React
-          component=PuzzleGrid
-          cursor=cursor
-          grid=gridState
-          onClickCell=onClickCell
-      }}
-    </div>
-    <div id='clues'>
-      {{> React component=ClueBox clues=clues cursor=cursor onSelect=selectClue }}
-    </div>
-    {{#if showControls}}
-    <div id='controls'>
-      {{> React
-          component=Sidebar
-          doReveal=doReveal
-          doCheck=doCheck
-          isPencil=isPencil
-          currentUser=currentUser
-          players=players
-      }}
-    </div>
-    {{/if}}
+  <div>
+    {{> React
+        component=Puzzle
+        puzzle=puzzle
+        preview=preview
+        currentClue=currentClue
+        currentUser=currentUser
+        cursor=cursor
+        grid=gridState
+        clues=clues
+        onClickCell=onClickCell
+        onSelect=selectClue
+        doReveal=doReveal
+        doCheck=doCheck
+        isPencil=isPencil
+        players=players
+    }}
   </div>
   {{else}}
   <div>

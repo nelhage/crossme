@@ -227,7 +227,7 @@ class UserPreferences extends React.Component {
 export default class Sidebar extends React.Component {
   render() {
     return (
-      <div>
+      <div id='controls'>
         <ul className="nav nav-pills nav-stacked">
           <li>
             <RevealControl doReveal={this.props.doReveal} />
