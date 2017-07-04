@@ -7,6 +7,7 @@ import {
   CurrentClue,
   ClueBox,
 } from "../imports/components/puzzle.jsx";
+import { Home } from "../imports/components/app.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -121,6 +122,7 @@ Template.puzzle.helpers({
   Metadata: function() { return Metadata; },
   CurrentClue: function() { return CurrentClue; },
   ClueBox: function() { return ClueBox; },
+  Home: function() { return Home; },
 
   cursor: function() {
     return {
