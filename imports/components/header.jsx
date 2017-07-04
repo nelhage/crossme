@@ -43,12 +43,12 @@ class UserInfo extends React.Component {
 class RecentGames extends React.Component {
   render() {
     const games = this.props.games.map(game => (
-      <MenuItem href={`/game/${game._id}`}>
+      <MenuItem href={`/game/${game._id}`} key={game._id}>
         {game.title} <span className="datestamp">(last viewed: {game.lastSeen})</span>
       </MenuItem>
     ));
     return (
-      <NavDropdown title="Recent Games">
+      <NavDropdown title="Recent Games" id="recent-games-dropdown">
         {games}
       </NavDropdown>
     );

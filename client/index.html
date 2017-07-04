@@ -8,6 +8,18 @@
   {{> gaq}}
 </body>
 
+<template name='header'>
+  <div>
+    {{> React
+        component=Header
+        puzzles=puzzles
+        recentGames=recentGames
+        onUpload=handleUpload
+        currentUser=currentUser
+        }}
+  </div>
+</template>
+
 <template name='puzzle'>
   {{#if show}}
   <div id='puzzle'>
