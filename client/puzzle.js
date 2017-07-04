@@ -1,7 +1,11 @@
 /* eslint-disable */
 
 import Sidebar from "../imports/components/controls.jsx";
-import { PuzzleGrid, Metadata } from "../imports/components/puzzle.jsx";
+import {
+  PuzzleGrid,
+  Metadata,
+  CurrentClue,
+} from "../imports/components/puzzle.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -107,6 +111,7 @@ Template.puzzle.helpers({
   Sidebar: function() { return Sidebar; },
   PuzzleGrid: function() { return PuzzleGrid; },
   Metadata: function() { return Metadata; },
+  CurrentClue: function() { return CurrentClue; },
 
   cursor: function() {
     return {
@@ -141,16 +146,14 @@ Template.puzzle.helpers({
   preview: function() {
     return !!Session.get('previewid');
   },
+
+  currentClue: selected_clue,
 });
 
 function clickCell(cell) {
   if (!cell.black)
     select(cell);
 }
-
-Template.currentclue.helpers({
-    clue: selected_clue,
-});
 
 function scroll_into_view(e) {
   if (e.length) {

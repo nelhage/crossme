@@ -26,7 +26,9 @@
     <div>
       {{> React component=Metadata puzzle=puzzle preview=preview }}
     </div>
-    {{> currentclue }}
+    <div>
+      {{> React component=CurrentClue clue=currentClue }}
+    </div>
     <div id='puzzlegrid'>
       {{> React
           component=PuzzleGrid
@@ -74,19 +76,6 @@
     open an issue on github if you have any issues, or just drop me an
     <a href="mailto:nelhage@nelhage.com">email</a>.</p>
   </div>
-</template>
-
-<template name='currentclue'>
-  {{#with clue}}
-  <div id='theclue'>
-    <span class='label'>
-      <span class='number'>{{number}}</span>
-      <span class='direction'>{{direction}}</span>
-    </span>
-    <span class='text'>{{text}}</span>
-    <div class='clear'></div>
-  </div>
-  {{/with}}
 </template>
 
 <template name='clues'>

@@ -116,7 +116,7 @@ export class Metadata extends React.Component {
       <div id="details">
         <div className="title">
           <span className="label label-default">Title</span>
-          <span className="value">{this.props.puzzle.title}</span>
+          <span className="value"> {this.props.puzzle.title}</span>
           {this.props.preview && (
             <span>
               <span className="preview label">Preview</span>
@@ -128,6 +128,25 @@ export class Metadata extends React.Component {
           <span className="label label-default">By</span>
           <span className="value">{this.props.puzzle.author}</span>
         </div>
+      </div>
+    );
+  }
+}
+
+export class CurrentClue extends React.Component {
+  render() {
+    const clue = this.props.clue;
+    if (!clue) {
+      return null;
+    }
+    return (
+      <div id="theclue">
+        <span className="label">
+          <span className="number">{clue.number}</span>
+          <span className="direction"> {clue.direction}</span>
+        </span>
+        <span className="text">{clue.text}</span>
+        <div className="clear" />
       </div>
     );
   }
