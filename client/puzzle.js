@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import Sidebar from "../imports/components/controls.jsx";
-import { PuzzleGrid } from "../imports/components/puzzle.jsx";
+import { PuzzleGrid, Metadata } from "../imports/components/puzzle.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -103,10 +103,11 @@ Template.puzzle.helpers({
 
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
+
   Sidebar: function() { return Sidebar; },
-
-
   PuzzleGrid: function() { return PuzzleGrid; },
+  Metadata: function() { return Metadata; },
+
   cursor: function() {
     return {
       selected_row: Session.get('selected-row'),
@@ -135,7 +136,11 @@ Template.puzzle.helpers({
 
   onClickCell: function() {
     return clickCell;
-  }
+  },
+
+  preview: function() {
+    return !!Session.get('previewid');
+  },
 });
 
 function clickCell(cell) {
@@ -145,23 +150,6 @@ function clickCell(cell) {
 
 Template.currentclue.helpers({
     clue: selected_clue,
-});
-
-Template.metadata.helpers({
-  preview: function() {
-    return !!Session.get('previewid');
-  },
-});
-
-Template.metadata.events({
-  'click button': function() {
-    var puz = Session.get('previewid');
-    Meteor.call('newGame', puz, function (error, id) {
-      if (!error)
-        load_game(id);
-    });
-    return false;
-  }
 });
 
 function scroll_into_view(e) {

@@ -23,9 +23,9 @@
 <template name='puzzle'>
   {{#if show}}
   <div id='puzzle'>
-    {{#with puzzle}}
-    {{> metadata}}
-    {{/with}}
+    <div>
+      {{> React component=Metadata puzzle=puzzle preview=preview }}
+    </div>
     {{> currentclue }}
     <div id='puzzlegrid'>
       {{> React
@@ -73,23 +73,6 @@
     href="https://github.com/nelhage/crossme">open-source</a>.  Please
     open an issue on github if you have any issues, or just drop me an
     <a href="mailto:nelhage@nelhage.com">email</a>.</p>
-  </div>
-</template>
-
-<template name='metadata'>
-  <div id='details'>
-    <div class='title'>
-      <span class='label label-default'>Title</span>
-      <span class='value'>{{title}}</span>
-      {{#if preview}}
-      <span class='preview label'>Preview</span>
-      <button class='btn'>Start Game</button>
-      {{/if}}
-    </div>
-    <div class='author'>
-      <span class='label label-default'>By</span>
-      <span class='value'>{{author}}</span>
-    </div>
   </div>
 </template>
 

@@ -1,6 +1,8 @@
 import React from 'react';
 import classNames from 'classnames';
 
+/* global Router */
+
 /* eslint-disable import/prefer-default-export */
 
 export class PuzzleGrid extends React.Component {
@@ -36,6 +38,10 @@ export class PuzzleGrid extends React.Component {
 
   render() {
     /* eslint-disable react/no-array-index-key */
+    /*
+     * This is a grid indexed by (y,x), so the index here is actually
+     * a fine key.
+     */
     const rows = this.props.grid.map((row, i) => {
       const cells = row.map(cell => <PuzzleCell {...this.cellProps(cell)} />);
       return (
@@ -89,6 +95,38 @@ class PuzzleCell extends React.Component {
               {this.props.fill.letter}
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+}
+
+export class Metadata extends React.Component {
+  startGame() {
+    const id = this.props.puzzle._id;
+    Meteor.call('newGame', id, function (error, gotId) {
+      if (!error) {
+        Router.go('game', { id: gotId });
+      }
+    });
+  }
+
+  render() {
+    return (
+      <div id="details">
+        <div className="title">
+          <span className="label label-default">Title</span>
+          <span className="value">{this.props.puzzle.title}</span>
+          {this.props.preview && (
+            <span>
+              <span className="preview label">Preview</span>
+              <button className="btn" onClick={this.startGame.bind(this)}>Start Game</button>
+            </span>
+          )}
+        </div>
+        <div className="author">
+          <span className="label label-default">By</span>
+          <span className="value">{this.props.puzzle.author}</span>
         </div>
       </div>
     );
