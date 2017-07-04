@@ -14,6 +14,7 @@ class PuzzleGrid extends React.Component {
       black: cell.black,
       circled: cell.circled,
       fill: cell.fill,
+      letter: cell.letter,
       selected: (cursor.selected_row === cell.row &&
                  cursor.selected_column === cell.column),
       onClick: () => { this.props.onClickCell(cell); },
@@ -251,7 +252,8 @@ export default class Puzzle extends React.Component {
         {!this.props.preview &&
           <Sidebar
             doReveal={this.props.doReveal}
-            doCheck={this.props.doReveal}
+            doCheck={this.props.doCheck}
+            checkOk={this.props.checkOk}
             isPencil={this.props.isPencil}
             currentUser={this.props.currentUser}
             players={this.props.players}

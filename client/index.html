@@ -3,27 +3,17 @@
 </head>
 
 <body>
-  {{> header }}
-  {{> puzzle }}
+  {{> app}}
 </body>
 
-<template name='header'>
-  <div>
+<template name='app'>
+  <div id='app'>
     {{> React
-        component=Header
+        component=App
         puzzles=puzzles
         recentGames=recentGames
         onUpload=handleUpload
         currentUser=currentUser
-        }}
-  </div>
-</template>
-
-<template name='puzzle'>
-  {{#if show}}
-  <div>
-    {{> React
-        component=Puzzle
         puzzle=puzzle
         preview=preview
         currentClue=currentClue
@@ -37,11 +27,7 @@
         doCheck=doCheck
         isPencil=isPencil
         players=players
-    }}
+        checkOk=checkOk
+        }}
   </div>
-  {{else}}
-  <div>
-    {{> React component=Home }}
-  </div>
-  {{/if}}
 </template>

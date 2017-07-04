@@ -1,8 +1,6 @@
 /* eslint-disable */
 
-import Sidebar from "../imports/components/controls.jsx";
-import Puzzle from "../imports/components/puzzle.jsx";
-import { Home } from "../imports/components/app.jsx";
+import App from "../imports/components/app.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -72,22 +70,8 @@ function selectClue(number, direction) {
   select(s);
 }
 
-Template.puzzle.helpers({
-  show: function() {
-    return !!active_puzzle();
-  },
-  showControls: function() {
-    return !!Session.get('gameid');
-  },
+Template.app.helpers({
   puzzle: active_puzzle,
-  rows: function() {
-    var rows = [];
-    var puz = active_puzzle();
-    for (var r = 0; r < puz.height; r++) {
-      rows.push({puzzle: puz, row: r});
-    }
-    return rows;
-  },
   checkOk: function() {
     return !!Session.get('check-ok');
   },
@@ -112,9 +96,6 @@ Template.puzzle.helpers({
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
 
-  Puzzle: function() { return Puzzle; },
-  Home: function() { return Home; },
-
   cursor: function() {
     return {
       selected_row: Session.get('selected-row'),
@@ -128,6 +109,9 @@ Template.puzzle.helpers({
   gridState: function() {
     let rows = [];
     let puz = active_puzzle();
+    if (!puz)
+      return null;
+
     let gameId = Session.get('gameid');
 
     for (var r = 0; r < puz.height; r++) {
@@ -160,7 +144,32 @@ Template.puzzle.helpers({
 
   selectClue: function() {
     return selectClue;
-  }
+  },
+
+  recentGames: function() {
+    return Games.find({'players.userId': Meteor.userId()},
+      {
+        sort: {created: -1},
+        limit: 10
+      }).map((game) => {
+        const title = Puzzles.findOne({_id: game.puzzle}).title;
+        const me = _.find(game.players, function(p) { return p.userId === Meteor.userId()});
+        const lastSeen = me.lastSeen.toDateString();
+        return {
+          _id: game._id,
+          title: title,
+          lastSeen: lastSeen
+        };
+      });
+  },
+
+  puzzles: function() {
+    return Puzzles.find().fetch();
+  },
+
+  handleUpload: function() { return handleUpload },
+
+  App: function() { return App; }
 });
 
 function clickCell(cell) {
@@ -418,6 +427,37 @@ function doCheck(eventKey, e) {
       }
     }
   });
+}
+
+function handleUpload(files) {
+  var i = 0;
+  var uploadNext = function(error, id) {
+    if (error) {
+      window.the_error = error;
+      alert("Error uploading: " + files[i].name + ": " + error);
+    } else {
+      if (i === files.length - 1) {
+        load_preview(id);
+      } else {
+        i++;
+        uploadFile(files[i], uploadNext);
+      }
+    }
+  }
+  uploadFile(files[0], uploadNext);
+}
+
+function uploadFile(file, cb) {
+    var fr = new FileReader();
+    fr.onerror = function() {
+        cb(fr.error, null);
+    };
+    fr.onload = function() {
+        Meteor.call('uploadPuzzle', fr.result, function (error, id) {
+            cb(error, id);
+        });
+    };
+    fr.readAsBinaryString(file);
 }
 
 function maybePing() {
