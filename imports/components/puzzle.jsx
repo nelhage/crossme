@@ -35,6 +35,7 @@ export class PuzzleGrid extends React.Component {
   }
 
   render() {
+    /* eslint-disable react/no-array-index-key */
     const rows = this.props.grid.map((row, i) => {
       const cells = row.map(cell => <PuzzleCell {...this.cellProps(cell)} />);
       return (
@@ -43,6 +44,7 @@ export class PuzzleGrid extends React.Component {
         </div>
       );
     });
+    /* eslint-enable react/no-array-index-key */
     return (
       <div>
         {rows}
@@ -75,7 +77,7 @@ class PuzzleCell extends React.Component {
     const classes = this.computeClasses();
 
     return (
-      <div className={classNames('cell', classes)} onClick={this.props.onClick} >
+      <div role="button" className={classNames('cell', classes)} onClick={this.props.onClick} >
         <div className="circle">
           {this.props.number && (
             <div className="numberlabel">
