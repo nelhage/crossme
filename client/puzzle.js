@@ -1,6 +1,7 @@
 /* eslint-disable */
 
 import Sidebar from "../imports/components/controls.jsx";
+import { PuzzleGrid } from "../imports/components/puzzle.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -103,7 +104,44 @@ Template.puzzle.helpers({
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
   Sidebar: function() { return Sidebar; },
+
+
+  PuzzleGrid: function() { return PuzzleGrid; },
+  cursor: function() {
+    return {
+      selected_row: Session.get('selected-row'),
+      selected_column: Session.get('selected-column'),
+      selected_direction: Session.get('selected-direction'),
+      word_across: Session.get('word-across'),
+      word_down: Session.get('word-down'),
+    };
+  },
+
+  gridState: function() {
+    let rows = [];
+    let puz = active_puzzle();
+    let gameId = Session.get('gameid');
+
+    for (var r = 0; r < puz.height; r++) {
+      let cells = Squares.find({puzzle: puz._id, row: r},{sort: {column: 1}});
+      rows.push(cells.map((cell) => {
+        let fill = FillsBySquare.find({square: cell._id, game: gameId});
+        cell.fill = fill || {};
+        return cell;
+      }));
+    }
+    return rows;
+  },
+
+  onClickCell: function() {
+    return clickCell;
+  }
 });
+
+function clickCell(cell) {
+  if (!cell.black)
+    select(cell);
+}
 
 Template.currentclue.helpers({
     clue: selected_clue,
@@ -333,60 +371,6 @@ function handle_key(k) {
 
   return true;
 }
-
-Template.row.helpers({
-  cells: function() {
-    return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
-  }
-});
-
-Template.cell.helpers({
-  number: function() {
-    return this.number;
-  },
-  fill: function() {
-    if (!Session.get('gameid'))
-      return '';
-    var f = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-    return f ? (f.letter || '') : '';
-  },
-  css_class: function() {
-    var classes = []
-    if (this.black)
-      return 'filled';
-    if (this.circled)
-      classes.push('circled');
-    if (Session.equals('selected-row', this.row) &&
-             Session.equals('selected-column', this.column))
-      classes.push('selected');
-    else if (Session.equals('word-across', this.word_across))
-      classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
-    else if (Session.equals('word-down', this.word_down))
-      classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
-    if (Session.get('gameid')) {
-      var fill = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-      if (fill && fill.reveal)
-        classes.push('reveal');
-      else if (fill && fill.checked === 'checking')
-        classes.push('wrong');
-      else if (fill && fill.checked === 'checked')
-        classes.push('checked');
-      if (fill && fill.pencil)
-        classes.push('pencil');
-      if (fill && fill.correct && this.letter === fill.letter)
-        classes.push('correct');
-    }
-    return classes.join(' ');
-  },
-});
-
-Template.cell.events({
-  'click': function () {
-    if (!this.black)
-      select(this);
-  }
-});
-
 
 Template.clues.helpers({
   across_clues: function() {

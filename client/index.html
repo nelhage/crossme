@@ -28,9 +28,12 @@
     {{/with}}
     {{> currentclue }}
     <div id='puzzlegrid'>
-      {{#each rows}}
-      {{> row }}
-      {{/each}}
+      {{> React
+          component=PuzzleGrid
+          cursor=cursor
+          grid=gridState
+          onClickCell=onClickCell
+      }}
     </div>
     <div id='clues'>
       {{> clues}}
@@ -101,31 +104,6 @@
     <div class='clear'></div>
   </div>
   {{/with}}
-</template>
-
-<template name='row'>
-  <div class='row'>
-    {{#each cells}}
-    {{> cell }}
-    {{/each}}
-  </div>
-</template>
-
-<template name='cell'>
-  <div class='cell {{css_class}}'>
-    <div class='circle'>
-      {{#if number}}
-      <div class='numberlabel'>
-        {{ number }}
-      </div>
-      {{/if}}
-      <div class='cellbody'>
-        <div class='fill'>
-          {{fill}}
-        </div>
-      </div>
-    </div>
-  </div>
 </template>
 
 <template name='clues'>
