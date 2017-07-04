@@ -141,8 +141,8 @@ class NewGame extends React.Component {
 
   render() {
     return (
-      <NavItem href='#'>
-        <a role="button" onClick={this.open.bind(this)}>New Game</a>
+      <NavItem onClick={this.open.bind(this)}>
+        New Game
         <NewGameModal
           showModal={this.state.showModal}
           onClose={this.close.bind(this)}
