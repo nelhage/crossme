@@ -115,23 +115,6 @@ Template.app.helpers({
     return selectClue;
   },
 
-  recentGames: function() {
-    return Games.find({'players.userId': Meteor.userId()},
-      {
-        sort: {created: -1},
-        limit: 10
-      }).map((game) => {
-        const title = Puzzles.findOne({_id: game.puzzle}).title;
-        const me = _.find(game.players, function(p) { return p.userId === Meteor.userId()});
-        const lastSeen = me.lastSeen.toDateString();
-        return {
-          _id: game._id,
-          title: title,
-          lastSeen: lastSeen
-        };
-      });
-  },
-
   puzzles: function() {
     return Puzzles.find().fetch();
   },

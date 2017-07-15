@@ -1,10 +1,14 @@
 import React from 'react';
 import { Modal, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import { createContainer } from 'meteor/react-meteor-data';
+
+import { _ } from 'meteor/underscore';
 
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
 /* global Router */
+/* global Games, Puzzles */
 
 class UserInfo extends React.Component {
   componentDidMount() {
@@ -54,6 +58,25 @@ class RecentGames extends React.Component {
     );
   }
 }
+
+const RecentGamesContainer = createContainer(({ currentUser }) => (
+  {
+    games: Games.find(
+      { 'players.userId': currentUser._id },
+      {
+        sort: { created: -1 },
+        limit: 10,
+      }).map((game) => {
+        const title = Puzzles.findOne({ _id: game.puzzle }).title;
+        const me = _.find(game.players, function(p) { return p.userId === currentUser._id; });
+        const lastSeen = me.lastSeen.toDateString();
+        return {
+          _id: game._id,
+          title,
+          lastSeen,
+        };
+      }),
+  }), RecentGames);
 
 class NewGameModal extends React.Component {
   doPreview(evt) {
@@ -169,7 +192,7 @@ export default class Header extends React.Component {
             onUpload={this.props.handleUpload}
           />
           {this.props.currentUser &&
-            <RecentGames games={this.props.recentGames} />
+            <RecentGamesContainer currentUser={this.props.currentUser} />
           }
         </Nav>
         <Nav pullRight>

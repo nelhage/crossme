@@ -55,7 +55,6 @@ export default class App extends React.Component {
       <div>
         <Header
           puzzles={this.props.puzzles}
-          recentGames={this.props.recentGames}
           onUpload={this.props.onUpload}
           currentUser={this.props.currentUser}
         />
