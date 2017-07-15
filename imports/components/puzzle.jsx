@@ -8,49 +8,21 @@ import Sidebar from './controls.jsx';
 /* global Puzzles, Squares, FillsBySquare, Clues, SquaresByPosition */
 
 class PuzzleGrid extends React.Component {
-  cellProps(cell) {
-    const cursor = this.props.cursor;
-    const props = {
-      key: cell._id,
-      number: cell.number,
-      black: cell.black,
-      circled: cell.circled,
-      fill: cell.fill,
-      letter: cell.letter,
-      selected: (cursor.selected_row === cell.row &&
-                 cursor.selected_column === cell.column),
-      onClick: () => { this.props.onClickCell(cell); },
-    };
-    if (props.selected) {
-      return props;
-    }
-
-    if (cursor.word_across === cell.word_across) {
-      if (cursor.selected_direction === 'across') {
-        props.inWord = true;
-      } else {
-        props.otherWord = true;
-      }
-    }
-    if (cursor.word_down === cell.word_down) {
-      if (cursor.selected_direction === 'down') {
-        props.inWord = true;
-      } else {
-        props.otherWord = true;
-      }
-    }
-
-    return props;
-  }
-
   render() {
     /* eslint-disable react/no-array-index-key */
     /*
      * This is a grid indexed by (y,x), so the index here is actually
      * a fine key.
      */
-    const rows = this.props.grid.map((row, i) => {
-      const cells = row.map(cell => <PuzzleCell {...this.cellProps(cell)} />);
+    const rows = this.props.squares.map((row, i) => {
+      const cells = row.map(sq => (
+        <PuzzleCellContainer
+          key={sq._id}
+          gameId={this.props.gameId}
+          square={sq}
+          onClick={() => this.props.onClickCell(sq)}
+        />
+      ));
       return (
         <div className="row" key={i}>
           {cells}
@@ -66,20 +38,19 @@ class PuzzleGrid extends React.Component {
   }
 }
 
-function gridState(puzzleId, gameId) {
-  const rows = [];
-  const puz = Puzzles.findOne({ _id: puzzleId });
-  if (!puz) {
+function gridSquares(puzzleId) {
+  if (!puzzleId) {
     return null;
   }
 
-  for (let r = 0; r < puz.height; r += 1) {
-    const cells = Squares.find({ puzzle: puz._id, row: r }, { sort: { column: 1 } });
-    rows.push(cells.map((cell) => {
-      const fill = FillsBySquare.find({ square: cell._id, game: gameId });
-      return { fill: fill || {}, ...cell };
-    }));
-  }
+  const rows = [];
+  Squares.find({ puzzle: puzzleId }, { sort: { column: 1, row: 1 } }).forEach((sq) => {
+    if (!rows[sq.row]) {
+      rows[sq.row] = [];
+    }
+    rows[sq.row].push(sq);
+  });
+
   return rows;
 }
 
@@ -102,7 +73,7 @@ const PuzzleGridContainer = createContainer(
       puzzleId,
       gameId,
       onClickCell,
-      grid: gridState(puzzleId, gameId),
+      squares: gridSquares(puzzleId),
       cursor: cursorState(),
     };
   }, PuzzleGrid);
@@ -148,6 +119,50 @@ class PuzzleCell extends React.Component {
     );
   }
 }
+
+const PuzzleCellContainer = createContainer(
+  ({ gameId, square, onClick }) => {
+    const cursor = cursorState();
+    const props = {
+      gameId,
+      number: square.number,
+      black: square.black,
+      circled: square.circled,
+      letter: square.letter,
+      selected: (
+        cursor.selected_row === square.row &&
+          cursor.selected_column === square.column
+      ),
+      onClick,
+      fill: {},
+    };
+    const fill = FillsBySquare.find({ square: square._id, game: gameId });
+    if (fill) {
+      props.fill = fill;
+    }
+
+    if (props.selected) {
+      return props;
+    }
+
+    if (cursor.word_across === square.word_across) {
+      if (cursor.selected_direction === 'across') {
+        props.inWord = true;
+      } else {
+        props.otherWord = true;
+      }
+    }
+
+    if (cursor.word_down === square.word_down) {
+      if (cursor.selected_direction === 'down') {
+        props.inWord = true;
+      } else {
+        props.otherWord = true;
+      }
+    }
+
+    return props;
+  }, PuzzleCell);
 
 class Metadata extends React.Component {
   startGame() {
