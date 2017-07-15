@@ -38,7 +38,6 @@ export default class App extends React.Component {
         <Puzzle
           puzzleId={this.props.puzzleId}
           gameId={this.props.gameId}
-          currentClue={this.props.currentClue}
           currentUser={this.props.currentUser}
           onClickCell={this.props.onClickCell}
           onSelect={this.props.onSelect}

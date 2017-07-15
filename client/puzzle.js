@@ -88,8 +88,6 @@ Template.app.helpers({
     return clickCell;
   },
 
-  currentClue: selected_clue,
-
   selectClue: function() {
     return selectClue;
   },

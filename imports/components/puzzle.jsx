@@ -5,7 +5,7 @@ import { createContainer } from 'meteor/react-meteor-data';
 import Sidebar from './controls.jsx';
 
 /* global Router */
-/* global Puzzles, Squares, FillsBySquare, Clues */
+/* global Puzzles, Squares, FillsBySquare, Clues, SquaresByPosition */
 
 class PuzzleGrid extends React.Component {
   cellProps(cell) {
@@ -208,6 +208,25 @@ class CurrentClue extends React.Component {
   }
 }
 
+const CurrentClueContainer = createContainer(({ puzzleId }) => {
+  const cursor = cursorState();
+  const square = SquaresByPosition.find({
+    puzzle: puzzleId,
+    row: cursor.selected_row,
+    column: cursor.selected_column,
+  });
+  if (!square) {
+    return {};
+  }
+  return {
+    clue: Clues.findOne({
+      puzzle: puzzleId,
+      direction: cursor.selected_direction,
+      number: square[`word_${cursor.selected_direction}`],
+    }),
+  };
+}, CurrentClue);
+
 class ClueBox extends React.Component {
   constructor(props) {
     super(props);
@@ -306,7 +325,9 @@ export default class Puzzle extends React.Component {
           puzzleId={this.props.puzzleId}
           gameId={this.props.gameId}
         />
-        <CurrentClue clue={this.props.currentClue} />
+        <CurrentClueContainer
+          puzzleId={this.props.puzzleId}
+        />
         <PuzzleGridContainer
           puzzleId={this.props.puzzleId}
           gameId={this.props.gameId}
