@@ -33,18 +33,16 @@ class Home extends React.Component {
 export default class App extends React.Component {
   render() {
     let body = null;
-    if (this.props.puzzle) {
+    if (this.props.puzzleId) {
       body = (
         <Puzzle
-          puzzle={this.props.puzzle}
+          puzzleId={this.props.puzzleId}
+          gameId={this.props.gameId}
           preview={this.props.preview}
           currentClue={this.props.currentClue}
           currentUser={this.props.currentUser}
-          cursor={this.props.cursor}
-          grid={this.props.grid}
-          clues={this.props.clues}
           onClickCell={this.props.onClickCell}
-          onSelect={this.props.selectClue}
+          onSelect={this.props.onSelect}
           doReveal={this.props.doReveal}
           doCheck={this.props.doCheck}
           isPencil={this.props.isPencil}

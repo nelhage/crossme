@@ -1,9 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
+import { createContainer } from 'meteor/react-meteor-data';
 
 import Sidebar from './controls.jsx';
 
 /* global Router */
+/* global Puzzles, Squares, FillsBySquare, Clues */
 
 class PuzzleGrid extends React.Component {
   cellProps(cell) {
@@ -57,12 +59,51 @@ class PuzzleGrid extends React.Component {
     });
     /* eslint-enable react/no-array-index-key */
     return (
-      <div id='puzzlegrid'>
+      <div id="puzzlegrid">
         {rows}
       </div>
     );
   }
 }
+
+function gridState(puzzleId, gameId) {
+  const rows = [];
+  const puz = Puzzles.findOne({ _id: puzzleId });
+  if (!puz) {
+    return null;
+  }
+
+  for (let r = 0; r < puz.height; r += 1) {
+    const cells = Squares.find({ puzzle: puz._id, row: r }, { sort: { column: 1 } });
+    rows.push(cells.map((cell) => {
+      const fill = FillsBySquare.find({ square: cell._id, game: gameId });
+      return { fill: fill || {}, ...cell };
+    }));
+  }
+  return rows;
+}
+
+function cursor() {
+  return {
+    selected_row: Session.get('selected-row'),
+    selected_column: Session.get('selected-column'),
+    selected_direction: Session.get('selected-direction'),
+    word_across: Session.get('word-across'),
+    word_down: Session.get('word-down'),
+  };
+}
+
+const PuzzleGridContainer = createContainer(
+  ({ puzzleId,
+     gameId,
+     onClickCell,
+   }) => ({
+     puzzleId,
+     gameId,
+     onClickCell,
+     grid: gridState(puzzleId, gameId),
+     cursor: cursor(),
+   }), PuzzleGrid);
 
 class PuzzleCell extends React.Component {
   computeClasses() {
@@ -138,6 +179,14 @@ class Metadata extends React.Component {
   }
 }
 
+const MetadataContainer = createContainer(({ puzzleId, preview }) => {
+  const puzzle = Puzzles.findOne({ _id: puzzleId });
+  return {
+    preview,
+    puzzle,
+  };
+}, Metadata);
+
 class CurrentClue extends React.Component {
   render() {
     const clue = this.props.clue;
@@ -198,7 +247,7 @@ class ClueBox extends React.Component {
     const acrossClues = this.clueGroup(this.props.clues.across, 'across');
     const downClues = this.clueGroup(this.props.clues.down, 'down');
     return (
-      <div id='clues'>
+      <div id="clues">
         <div className="section across">
           <div className="title"> Across </div>
           <div className="cluelist">
@@ -233,20 +282,32 @@ class Clue extends React.Component {
   }
 }
 
+const ClueBoxContainer = createContainer(
+  ({ onSelect, puzzleId }) =>
+    ({
+      cursor: cursor(),
+      clues: {
+        across: Clues.find({ puzzle: puzzleId, direction: 'across' },
+                           { sort: { number: 1 } }).fetch(),
+        down: Clues.find({ puzzle: puzzleId, direction: 'down' },
+                         { sort: { number: 1 } }).fetch(),
+      },
+      onSelect,
+    }), ClueBox);
+
 export default class Puzzle extends React.Component {
   render() {
     return (
       <div id="puzzle">
-        <Metadata puzzle={this.props.puzzle} preview={this.props.preview} />
+        <MetadataContainer puzzleId={this.props.puzzleId} preview={this.props.preview} />
         <CurrentClue clue={this.props.currentClue} />
-        <PuzzleGrid
-          cursor={this.props.cursor}
-          grid={this.props.grid}
+        <PuzzleGridContainer
+          puzzleId={this.props.puzzleId}
+          gameId={this.props.gameId}
           onClickCell={this.props.onClickCell}
         />
-        <ClueBox
-          clues={this.props.clues}
-          cursor={this.props.cursor}
+        <ClueBoxContainer
+          puzzleId={this.props.puzzleId}
           onSelect={this.props.onSelect}
         />
         {!this.props.preview &&

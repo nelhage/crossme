@@ -71,7 +71,12 @@ function selectClue(number, direction) {
 }
 
 Template.app.helpers({
-  puzzle: active_puzzle,
+  puzzleId: function() {
+    return puzzle_id();
+  },
+  gameId: function() {
+    return Session.get('gameid');
+  },
   checkOk: function() {
     return !!Session.get('check-ok');
   },
@@ -96,35 +101,6 @@ Template.app.helpers({
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
 
-  cursor: function() {
-    return {
-      selected_row: Session.get('selected-row'),
-      selected_column: Session.get('selected-column'),
-      selected_direction: Session.get('selected-direction'),
-      word_across: Session.get('word-across'),
-      word_down: Session.get('word-down'),
-    };
-  },
-
-  gridState: function() {
-    let rows = [];
-    let puz = active_puzzle();
-    if (!puz)
-      return null;
-
-    let gameId = Session.get('gameid');
-
-    for (var r = 0; r < puz.height; r++) {
-      let cells = Squares.find({puzzle: puz._id, row: r},{sort: {column: 1}});
-      rows.push(cells.map((cell) => {
-        let fill = FillsBySquare.find({square: cell._id, game: gameId});
-        cell.fill = fill || {};
-        return cell;
-      }));
-    }
-    return rows;
-  },
-
   onClickCell: function() {
     return clickCell;
   },
@@ -134,13 +110,6 @@ Template.app.helpers({
   },
 
   currentClue: selected_clue,
-
-  clues: function() {
-    return {
-      across: Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}}),
-      down: Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}}),
-    };
-  },
 
   selectClue: function() {
     return selectClue;

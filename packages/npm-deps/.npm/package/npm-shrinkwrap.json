@@ -1,0 +1,14 @@
+{
+  "dependencies": {
+    "iconv": {
+      "version": "2.2.1",
+      "resolved": "https://registry.npmjs.org/iconv/-/iconv-2.2.1.tgz",
+      "from": "iconv@2.2.1"
+    },
+    "nan": {
+      "version": "2.6.2",
+      "resolved": "https://registry.npmjs.org/nan/-/nan-2.6.2.tgz",
+      "from": "nan@>=2.3.5 <3.0.0"
+    }
+  }
+}
