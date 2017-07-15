@@ -80,33 +80,12 @@ Template.app.helpers({
   checkOk: function() {
     return !!Session.get('check-ok');
   },
-  isPencil: function() {
-    return !!isPencil();
-  },
-  players: function() {
-    var id = Session.get('gameid');
-    var game = id && Games.findOne({_id: id});
-    if (!game || !game.players) {
-      return [];
-    }
-    return game.players.map(function (who) {
-      // Apparently {{each}} requires every element you return to have an _id.
-      who._id = who.userId;
-      who.user = Meteor.users.findOne({_id: who.userId});
-      who.isMe = (who.user._id === Meteor.userId());
-      return who;
-    });
-  },
 
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
 
   onClickCell: function() {
     return clickCell;
-  },
-
-  preview: function() {
-    return !!Session.get('previewid');
   },
 
   currentClue: selected_clue,

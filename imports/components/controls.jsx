@@ -1,8 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import { createContainer } from 'meteor/react-meteor-data';
+
 import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 
-import PlayerList from './player_list.jsx';
+import PlayerListContainer from './player_list.jsx';
 
 class RevealControl extends React.Component {
   render() {
@@ -30,7 +32,7 @@ class CheckControl extends React.Component {
 
 class PencilControl extends React.Component {
   click(e) {
-    Session.set('pencil', $(e.currentTarget).data('pencil'));
+    this.props.onSetPencil(e.currentTarget.dataset.pencil === 'true');
   }
 
   render() {
@@ -54,6 +56,13 @@ class PencilControl extends React.Component {
     );
   }
 }
+
+const PencilControlContainer = createContainer(() => {
+  return {
+    isPencil: Session.get('pencil'),
+    onSetPencil: p => (Session.set('pencil', p)),
+  };
+}, PencilControl);
 
 class KeyboardShortcuts extends React.Component {
   constructor(props) {
@@ -227,7 +236,7 @@ class UserPreferences extends React.Component {
 export default class Sidebar extends React.Component {
   render() {
     return (
-      <div id='controls'>
+      <div id="controls">
         <ul className="nav nav-pills nav-stacked">
           <li>
             <RevealControl doReveal={this.props.doReveal} />
@@ -236,11 +245,11 @@ export default class Sidebar extends React.Component {
             <CheckControl checkOk={this.props.checkOk} doCheck={this.props.doCheck} />
           </li>
           <li>
-            <PencilControl isPencil={this.props.isPencil} />
+            <PencilControlContainer />
           </li>
           <li className="player-label"> Now playing:</li>
           <li>
-            <PlayerList players={this.props.players} loggedIn={this.props.currentUser} />
+            <PlayerListContainer gameId={this.props.gameId} />
           </li>
         </ul>
         <KeyboardShortcuts />

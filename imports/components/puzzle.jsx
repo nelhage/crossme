@@ -165,7 +165,7 @@ class Metadata extends React.Component {
         <div className="title">
           <span className="label label-default">Title</span>
           <span className="value"> {this.props.puzzle.title}</span>
-          {this.props.preview && (
+          {(!this.props.gameId) && (
             <span>
               <span className="preview label">Preview</span>
               <button className="btn" onClick={this.startGame.bind(this)}>Start Game</button>
@@ -181,10 +181,10 @@ class Metadata extends React.Component {
   }
 }
 
-const MetadataContainer = createContainer(({ puzzleId, preview }) => {
+const MetadataContainer = createContainer(({ puzzleId, gameId }) => {
   const puzzle = Puzzles.findOne({ _id: puzzleId });
   return {
-    preview,
+    gameId,
     puzzle,
   };
 }, Metadata);
@@ -302,7 +302,10 @@ export default class Puzzle extends React.Component {
   render() {
     return (
       <div id="puzzle">
-        <MetadataContainer puzzleId={this.props.puzzleId} preview={this.props.preview} />
+        <MetadataContainer
+          puzzleId={this.props.puzzleId}
+          gameId={this.props.gameId}
+        />
         <CurrentClue clue={this.props.currentClue} />
         <PuzzleGridContainer
           puzzleId={this.props.puzzleId}
@@ -313,14 +316,13 @@ export default class Puzzle extends React.Component {
           puzzleId={this.props.puzzleId}
           onSelect={this.props.onSelect}
         />
-        {!this.props.preview &&
+        {this.props.gameId &&
           <Sidebar
             doReveal={this.props.doReveal}
             doCheck={this.props.doCheck}
             checkOk={this.props.checkOk}
-            isPencil={this.props.isPencil}
+            gameId={this.props.gameId}
             currentUser={this.props.currentUser}
-            players={this.props.players}
           />}
       </div>
     );

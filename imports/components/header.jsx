@@ -186,7 +186,7 @@ const NewGameContainer = createContainer(({ onUpload }) => {
   };
 }, NewGame);
 
-class Header extends React.Component {
+export default class Header extends React.Component {
   render() {
     return (
       <Navbar staticTop>
@@ -208,10 +208,3 @@ class Header extends React.Component {
     );
   }
 }
-
-export default createContainer(({ onUpload }) => {
-  return {
-    onUpload,
-    currentUser: Meteor.user(),
-  };
-}, Header);

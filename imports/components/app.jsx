@@ -38,22 +38,22 @@ export default class App extends React.Component {
         <Puzzle
           puzzleId={this.props.puzzleId}
           gameId={this.props.gameId}
-          preview={this.props.preview}
           currentClue={this.props.currentClue}
           currentUser={this.props.currentUser}
           onClickCell={this.props.onClickCell}
           onSelect={this.props.onSelect}
           doReveal={this.props.doReveal}
           doCheck={this.props.doCheck}
-          isPencil={this.props.isPencil}
-          players={this.props.players}
         />);
     } else {
       body = <Home />;
     }
     return (
       <div>
-        <Header onUpload={this.props.onUpload} />
+        <Header
+          currentUser={this.props.currentUser}
+          onUpload={this.props.onUpload}
+        />
         {body}
       </div>
     );

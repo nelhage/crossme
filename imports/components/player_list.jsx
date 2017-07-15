@@ -1,6 +1,9 @@
 import React from 'react';
+import { createContainer } from 'meteor/react-meteor-data';
 
-export default class PlayerList extends React.Component {
+/* global Games */
+
+class PlayerList extends React.Component {
   render() {
     const players = this.props.players.map(function(player) {
       return (<PlayerListEntry key={player._id} {...player} />);
@@ -48,3 +51,24 @@ class PlayerListEntry extends React.Component {
   }
 
 }
+
+export default createContainer(({ gameId }) => {
+  let players = [];
+  const userId = Meteor.userId();
+  if (gameId) {
+    const game = Games.findOne({ _id: gameId });
+    if (game) {
+      players = game.players.map((who) => {
+        return {
+          _id: who.userId,
+          user: Meteor.users.findOne({ _id: who.userId }),
+          isMe: who.userId === userId,
+        };
+      });
+    }
+  }
+  return {
+    loggedIn: !!userId,
+    players,
+  };
+}, PlayerList);
