@@ -59,8 +59,8 @@ class RecentGames extends React.Component {
   }
 }
 
-const RecentGamesContainer = createContainer(({ currentUser }) => (
-  {
+const RecentGamesContainer = createContainer(({ currentUser }) => {
+  return {
     games: Games.find(
       { 'players.userId': currentUser._id },
       {
@@ -76,7 +76,8 @@ const RecentGamesContainer = createContainer(({ currentUser }) => (
           lastSeen,
         };
       }),
-  }), RecentGames);
+  };
+}, RecentGames);
 
 class NewGameModal extends React.Component {
   doPreview(evt) {
@@ -208,9 +209,9 @@ class Header extends React.Component {
   }
 }
 
-export default createContainer(
-  ({ onUpload }) =>
-    ({
-      onUpload,
-      currentUser: Meteor.user(),
-    }), Header);
+export default createContainer(({ onUpload }) => {
+  return {
+    onUpload,
+    currentUser: Meteor.user(),
+  };
+}, Header);

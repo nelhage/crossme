@@ -28,7 +28,7 @@
     "eslint-plugin-react": "^7.1.0"
   },
   "scripts": {
-    "lint": "eslint .",
+    "lint": "eslint --ext=.js,.jsx .",
     "pretest": "npm run lint --silent"
   },
   "eslintConfig": {
@@ -40,7 +40,8 @@
       "react/jsx-no-bind": "off",
       "jsx-a11y/interactive-supports-focus": "off",
       "class-methods-use-this": "off",
-      "meteor/no-session": "off"
+      "meteor/no-session": "off",
+      "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": true }]
     },
     "globals": {
       "Meteor": false,

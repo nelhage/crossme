@@ -83,7 +83,7 @@ function gridState(puzzleId, gameId) {
   return rows;
 }
 
-function cursor() {
+function cursorState() {
   return {
     selected_row: Session.get('selected-row'),
     selected_column: Session.get('selected-column'),
@@ -97,13 +97,15 @@ const PuzzleGridContainer = createContainer(
   ({ puzzleId,
      gameId,
      onClickCell,
-   }) => ({
-     puzzleId,
-     gameId,
-     onClickCell,
-     grid: gridState(puzzleId, gameId),
-     cursor: cursor(),
-   }), PuzzleGrid);
+   }) => {
+    return {
+      puzzleId,
+      gameId,
+      onClickCell,
+      grid: gridState(puzzleId, gameId),
+      cursor: cursorState(),
+    };
+  }, PuzzleGrid);
 
 class PuzzleCell extends React.Component {
   computeClasses() {
@@ -283,9 +285,9 @@ class Clue extends React.Component {
 }
 
 const ClueBoxContainer = createContainer(
-  ({ onSelect, puzzleId }) =>
-    ({
-      cursor: cursor(),
+  ({ onSelect, puzzleId }) => {
+    return {
+      cursor: cursorState(),
       clues: {
         across: Clues.find({ puzzle: puzzleId, direction: 'across' },
                            { sort: { number: 1 } }).fetch(),
@@ -293,7 +295,8 @@ const ClueBoxContainer = createContainer(
                          { sort: { number: 1 } }).fetch(),
       },
       onSelect,
-    }), ClueBox);
+    };
+  }, ClueBox);
 
 export default class Puzzle extends React.Component {
   render() {
