@@ -97,9 +97,11 @@ Template.app.helpers({
   App: function() { return App; }
 });
 
-function clickCell(cell) {
-  if (!cell.black)
-    select(cell);
+function clickCell({row, column}) {
+  const sq = SquaresByPosition.find(
+    {puzzle: puzzle_id(), row: row, column: column});
+  if (sq && !sq.black)
+    select(sq);
 }
 
 function scroll_into_view(e) {

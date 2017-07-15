@@ -1,11 +1,12 @@
 import React from 'react';
 import classNames from 'classnames';
 import { createContainer } from 'meteor/react-meteor-data';
+import { _ } from 'meteor/underscore';
 
 import Sidebar from './controls.jsx';
 
 /* global Router */
-/* global Puzzles, Squares, FillsBySquare, Clues, SquaresByPosition */
+/* global Puzzles, FillsBySquare, Clues, SquaresByPosition */
 
 class PuzzleGrid extends React.Component {
   render() {
@@ -14,13 +15,14 @@ class PuzzleGrid extends React.Component {
      * This is a grid indexed by (y,x), so the index here is actually
      * a fine key.
      */
-    const rows = this.props.squares.map((row, i) => {
-      const cells = row.map(sq => (
+    const rows = _.range(this.props.height).map((i) => {
+      const cells = _.range(this.props.width).map(c => (
         <PuzzleCellContainer
-          key={sq._id}
+          key={c}
+          puzzleId={this.props.puzzleId}
           gameId={this.props.gameId}
-          square={sq}
-          onClick={() => this.props.onClickCell(sq)}
+          pos={{ row: i, column: c }}
+          onClick={() => this.props.onClickCell({ row: i, column: c })}
         />
       ));
       return (
@@ -38,22 +40,6 @@ class PuzzleGrid extends React.Component {
   }
 }
 
-function gridSquares(puzzleId) {
-  if (!puzzleId) {
-    return null;
-  }
-
-  const rows = [];
-  Squares.find({ puzzle: puzzleId }, { sort: { column: 1, row: 1 } }).forEach((sq) => {
-    if (!rows[sq.row]) {
-      rows[sq.row] = [];
-    }
-    rows[sq.row].push(sq);
-  });
-
-  return rows;
-}
-
 function cursorState() {
   return {
     selected_row: Session.get('selected-row'),
@@ -69,11 +55,13 @@ const PuzzleGridContainer = createContainer(
      gameId,
      onClickCell,
    }) => {
+    const puzzle = Puzzles.findOne({ _id: puzzleId });
     return {
       puzzleId,
       gameId,
       onClickCell,
-      squares: gridSquares(puzzleId),
+      height: puzzle ? puzzle.height : 0,
+      width: puzzle ? puzzle.width : 0,
       cursor: cursorState(),
     };
   }, PuzzleGrid);
@@ -121,8 +109,14 @@ class PuzzleCell extends React.Component {
 }
 
 const PuzzleCellContainer = createContainer(
-  ({ gameId, square, onClick }) => {
+  ({ puzzleId, gameId, pos, onClick }) => {
     const cursor = cursorState();
+    const square = SquaresByPosition.find(
+      { puzzle: puzzleId, row: pos.row, column: pos.column },
+    );
+    if (!square) {
+      return { fill: {} };
+    }
     const props = {
       gameId,
       number: square.number,
