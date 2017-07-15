@@ -53,11 +53,7 @@ export default class App extends React.Component {
     }
     return (
       <div>
-        <Header
-          puzzles={this.props.puzzles}
-          onUpload={this.props.onUpload}
-          currentUser={this.props.currentUser}
-        />
+        <Header onUpload={this.props.onUpload} />
         {body}
       </div>
     );

@@ -177,7 +177,15 @@ class NewGame extends React.Component {
   }
 }
 
-export default class Header extends React.Component {
+const NewGameContainer = createContainer(({ onUpload }) => {
+  const puzzles = Puzzles.find().fetch();
+  return {
+    onUpload,
+    puzzles,
+  };
+}, NewGame);
+
+class Header extends React.Component {
   render() {
     return (
       <Navbar staticTop>
@@ -187,10 +195,7 @@ export default class Header extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
-          <NewGame
-            puzzles={this.props.puzzles}
-            onUpload={this.props.handleUpload}
-          />
+          <NewGameContainer onUpload={this.props.handleUpload} />
           {this.props.currentUser &&
             <RecentGamesContainer currentUser={this.props.currentUser} />
           }
@@ -202,3 +207,10 @@ export default class Header extends React.Component {
     );
   }
 }
+
+export default createContainer(
+  ({ onUpload }) =>
+    ({
+      onUpload,
+      currentUser: Meteor.user(),
+    }), Header);

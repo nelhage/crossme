@@ -115,10 +115,6 @@ Template.app.helpers({
     return selectClue;
   },
 
-  puzzles: function() {
-    return Puzzles.find().fetch();
-  },
-
   handleUpload: function() { return handleUpload },
 
   App: function() { return App; }
