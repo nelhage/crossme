@@ -41,7 +41,13 @@
       "jsx-a11y/interactive-supports-focus": "off",
       "class-methods-use-this": "off",
       "meteor/no-session": "off",
-      "arrow-body-style": ["error", "as-needed", { "requireReturnForObjectLiteral": true }]
+      "arrow-body-style": [
+        "error",
+        "as-needed",
+        {
+          "requireReturnForObjectLiteral": true
+        }
+      ]
     },
     "globals": {
       "Meteor": false,

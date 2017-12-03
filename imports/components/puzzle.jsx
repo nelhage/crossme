@@ -191,7 +191,7 @@ class Metadata extends React.Component {
 }
 
 const MetadataContainer = createContainer(({ puzzleId, gameId }) => {
-  const puzzle = Puzzles.findOne({ _id: puzzleId });
+  const puzzle = Puzzles.findOne({ _id: puzzleId }) || {_id: puzzleId};
   return {
     gameId,
     puzzle,

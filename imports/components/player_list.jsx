@@ -57,7 +57,7 @@ export default createContainer(({ gameId }) => {
   const userId = Meteor.userId();
   if (gameId) {
     const game = Games.findOne({ _id: gameId });
-    if (game) {
+    if (game && game.players) {
       players = game.players.map((who) => {
         return {
           _id: who.userId,
