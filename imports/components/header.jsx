@@ -196,7 +196,7 @@ export default class Header extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
-          <NewGameContainer onUpload={this.props.handleUpload} />
+          <NewGameContainer onUpload={this.props.onUpload} />
           {this.props.currentUser &&
             <RecentGamesContainer currentUser={this.props.currentUser} />
           }
