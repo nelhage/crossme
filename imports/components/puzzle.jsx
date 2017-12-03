@@ -1,44 +1,11 @@
 import React from 'react';
 import classNames from 'classnames';
-import { createContainer } from 'meteor/react-meteor-data';
-import { _ } from 'meteor/underscore';
+import { createContainer, withTracker } from 'meteor/react-meteor-data';
 
 import Sidebar from './controls.jsx';
 
 /* global Router */
-/* global Puzzles, FillsBySquare, Clues, SquaresByPosition */
-
-class PuzzleGrid extends React.Component {
-  render() {
-    /* eslint-disable react/no-array-index-key */
-    /*
-     * This is a grid indexed by (y,x), so the index here is actually
-     * a fine key.
-     */
-    const rows = _.range(this.props.height).map((i) => {
-      const cells = _.range(this.props.width).map(c => (
-        <PuzzleCellContainer
-          key={c}
-          puzzleId={this.props.puzzleId}
-          gameId={this.props.gameId}
-          pos={{ row: i, column: c }}
-          onClick={() => this.props.onClickCell({ row: i, column: c })}
-        />
-      ));
-      return (
-        <div className="row" key={i}>
-          {cells}
-        </div>
-      );
-    });
-    /* eslint-enable react/no-array-index-key */
-    return (
-      <div id="puzzlegrid">
-        {rows}
-      </div>
-    );
-  }
-}
+/* global Puzzles, FillsBySquare, Clues, Squares, SquaresByPosition */
 
 function cursorState() {
   return {
@@ -50,19 +17,63 @@ function cursorState() {
   };
 }
 
+const withCursor = withTracker(() => { return { cursor: cursorState() }; });
+
+
+class PuzzleGrid extends React.Component {
+  render() {
+    const rows = this.props.squares.map((row, i) => {
+      const cells = row.map((cell, c) => (
+        <PuzzleCellContainer
+          key={cell._id}
+          square={cell}
+          gameId={this.props.gameId}
+          onClick={() => this.props.onClickCell({ row: i, column: c })}
+        />
+      ));
+      return (
+        <div className="row" key={row[0]._id}>
+          {cells}
+        </div>
+      );
+    });
+
+    return (
+      <div id="puzzlegrid">
+        {rows}
+      </div>
+    );
+  }
+}
+
 const PuzzleGridContainer = createContainer(
   ({ puzzleId,
      gameId,
      onClickCell,
    }) => {
-    const puzzle = Puzzles.findOne({ _id: puzzleId });
+    const puzzle = Puzzles.findOne({ _id: puzzleId }) || { width: 1, height: 1 };
+    const squares = Squares.find({ puzzle: puzzleId }, { sort: { row: 1, column: 1 } }).fetch();
+    const grid = [];
+    let row = [];
+    squares.forEach((sq) => {
+      if (row.length === 0 || sq.row === row[0].row) {
+        row.push(sq);
+      } else {
+        grid.push(row);
+        row = [sq];
+      }
+    });
+    if (row.length > 0) {
+      grid.push(row);
+    }
+
     return {
       puzzleId,
       gameId,
       onClickCell,
       height: puzzle ? puzzle.height : 0,
       width: puzzle ? puzzle.width : 0,
-      cursor: cursorState(),
+      squares: grid,
     };
   }, PuzzleGrid);
 
@@ -109,11 +120,8 @@ class PuzzleCell extends React.Component {
 }
 
 const PuzzleCellContainer = createContainer(
-  ({ puzzleId, gameId, pos, onClick }) => {
+  ({ square, gameId, onClick }) => {
     const cursor = cursorState();
-    const square = SquaresByPosition.find(
-      { puzzle: puzzleId, row: pos.row, column: pos.column },
-    );
     if (!square) {
       return { fill: {} };
     }
@@ -191,7 +199,7 @@ class Metadata extends React.Component {
 }
 
 const MetadataContainer = createContainer(({ puzzleId, gameId }) => {
-  const puzzle = Puzzles.findOne({ _id: puzzleId }) || {_id: puzzleId};
+  const puzzle = Puzzles.findOne({ _id: puzzleId }) || { _id: puzzleId };
   return {
     gameId,
     puzzle,
@@ -315,7 +323,6 @@ class Clue extends React.Component {
 const ClueBoxContainer = createContainer(
   ({ onSelect, puzzleId }) => {
     return {
-      cursor: cursorState(),
       clues: {
         across: Clues.find({ puzzle: puzzleId, direction: 'across' },
                            { sort: { number: 1 } }).fetch(),
@@ -324,7 +331,7 @@ const ClueBoxContainer = createContainer(
       },
       onSelect,
     };
-  }, ClueBox);
+  }, withCursor(ClueBox));
 
 export default class Puzzle extends React.Component {
   render() {
