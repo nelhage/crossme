@@ -8,7 +8,7 @@ import PuzzleCellContainer from './puzzle_cell.jsx';
 import { withCursor, cursorState } from '../ui/cursor.jsx';
 
 /* global Router */
-/* global Puzzles, Clues, Squares, SquaresByPosition */
+/* global Puzzles, Clues, Squares */
 
 const withPuzzle = withTracker(
   ({ puzzleId }) => {
@@ -125,22 +125,15 @@ class CurrentClue extends React.Component {
   }
 }
 
-const CurrentClueContainer = createContainer(({ puzzleId }) => {
+const CurrentClueContainer = createContainer(({ squares, clues }) => {
   const cursor = cursorState();
-  const square = SquaresByPosition.find({
-    puzzle: puzzleId,
-    row: cursor.selected_row,
-    column: cursor.selected_column,
-  });
+  const row = squares && squares[cursor.selected_row];
+  const square = row && row[cursor.selected_column];
   if (!square) {
     return {};
   }
   return {
-    clue: Clues.findOne({
-      puzzle: puzzleId,
-      direction: cursor.selected_direction,
-      number: square[`word_${cursor.selected_direction}`],
-    }),
+    clue: clues[cursor.selected_direction][square[`word_${cursor.selected_direction}`]],
   };
 }, CurrentClue);
 
@@ -232,6 +225,8 @@ class Puzzle extends React.Component {
         />
         <CurrentClueContainer
           puzzleId={this.props.puzzleId}
+          clues={this.props.clues}
+          squares={this.props.squares}
         />
         <PuzzleGrid
           gameId={this.props.gameId}
