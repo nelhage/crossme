@@ -78,6 +78,8 @@ PuzFile.prototype.read_special = function(off) {
   for (var r = 0; r < this.height; r++) {
     this.circled.push(new Array(this.width))
   }
+  var rebus_cells = [];
+  var rebus_solns = [];
 
   buffer = this.buffer.slice(off);
   while (buffer.length > 0) {
@@ -86,16 +88,40 @@ PuzFile.prototype.read_special = function(off) {
     var data = buffer.slice(8, 8 + dataLen);
     buffer = buffer.slice(8 + dataLen + 1); // extra null byte
 
-    if (section != "GEXT") {
-      continue;
-    }
-
-    var i = 0;
-    for (var r = 0; r < this.height; r++) {
-      for (var c = 0; c < this.width; c++) {
-        var cell = data[i++];
-        this.circled[r][c] = (cell & 0x80) ? true : false;
+    if (section === "GEXT") {
+      let i = 0;
+      for (var r = 0; r < this.height; r++) {
+        for (var c = 0; c < this.width; c++) {
+          var cell = data[i++];
+          this.circled[r][c] = (cell & 0x80) ? true : false;
+        }
       }
+    } else if (section == "GRBS") {
+      let i = 0;
+      for (var r = 0; r < this.height; r++) {
+        for (var c = 0; c < this.width; c++) {
+          var cell = data[i++];
+          if (cell != 0) {
+            rebus_cells.push({r: r, c: c, i: cell-1});
+          }
+        }
+      }
+    } else if (section == "RTBL") {
+      let ascii = new Iconv('ISO-8859-1', 'UTF-8').convert(data);
+      let pat = /([ 0-9]{2}):([^;]+);/g
+      while (true) {
+        let match = pat.exec(ascii);
+        if (!match)
+          break;
+        rebus_solns[parseInt(match[1], 10)] = match[2];
+      }
+    }
+  }
+
+  for (let i = 0; i < rebus_cells.length; i++) {
+    let cell = rebus_cells[i];
+    if (rebus_solns.length > cell.i) {
+      this.solution[cell.r][cell.c] = rebus_solns[cell.i];
     }
   }
 }
