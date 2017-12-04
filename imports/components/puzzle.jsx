@@ -75,7 +75,7 @@ class PuzzleGrid extends React.Component {
   }
 }
 
-class PuzzleCell extends React.Component {
+class PuzzleCell extends React.PureComponent {
   computeClasses() {
     if (this.props.black) {
       return 'filled';
@@ -117,11 +117,21 @@ class PuzzleCell extends React.Component {
   }
 }
 
-const PuzzleCellContainer = createContainer(
+const withFill = withTracker(
+  ({ square, gameId }) => {
+    if (!square) {
+      return { fill: {} };
+    }
+    return {
+      fill: FillsBySquare.find({ square: square._id, game: gameId }) || {},
+    };
+  });
+
+const wrapCell = withTracker(
   ({ square, gameId, onClick }) => {
     const cursor = cursorState();
     if (!square) {
-      return { fill: {} };
+      return { };
     }
     const props = {
       gameId,
@@ -134,12 +144,7 @@ const PuzzleCellContainer = createContainer(
           cursor.selected_column === square.column
       ),
       onClick,
-      fill: {},
     };
-    const fill = FillsBySquare.find({ square: square._id, game: gameId });
-    if (fill) {
-      props.fill = fill;
-    }
 
     if (props.selected) {
       return props;
@@ -162,7 +167,9 @@ const PuzzleCellContainer = createContainer(
     }
 
     return props;
-  }, PuzzleCell);
+  });
+
+const PuzzleCellContainer = withFill(wrapCell(PuzzleCell));
 
 class Metadata extends React.Component {
   startGame() {
