@@ -19,6 +19,35 @@ function cursorState() {
 
 const withCursor = withTracker(() => { return { cursor: cursorState() }; });
 
+const withPuzzle = withTracker(
+  ({ puzzleId }) => {
+    const puzzle = Puzzles.findOne({ _id: puzzleId }) || { _id: puzzleId, width: 1, height: 1 };
+    const squares = Squares.find({ puzzle: puzzleId }, { sort: { row: 1, column: 1 } }).fetch();
+    const grid = [];
+    let row = [];
+    squares.forEach((sq) => {
+      if (row.length === 0 || sq.row === row[0].row) {
+        row.push(sq);
+      } else {
+        grid.push(row);
+        row = [sq];
+      }
+    });
+    if (row.length > 0) {
+      grid.push(row);
+    }
+
+    return {
+      puzzle,
+      squares: grid,
+      clues: {
+        across: Clues.find({ puzzle: puzzleId, direction: 'across' },
+                           { sort: { number: 1 } }).fetch(),
+        down: Clues.find({ puzzle: puzzleId, direction: 'down' },
+                         { sort: { number: 1 } }).fetch(),
+      },
+    };
+  });
 
 class PuzzleGrid extends React.Component {
   render() {
@@ -45,37 +74,6 @@ class PuzzleGrid extends React.Component {
     );
   }
 }
-
-const PuzzleGridContainer = createContainer(
-  ({ puzzleId,
-     gameId,
-     onClickCell,
-   }) => {
-    const puzzle = Puzzles.findOne({ _id: puzzleId }) || { width: 1, height: 1 };
-    const squares = Squares.find({ puzzle: puzzleId }, { sort: { row: 1, column: 1 } }).fetch();
-    const grid = [];
-    let row = [];
-    squares.forEach((sq) => {
-      if (row.length === 0 || sq.row === row[0].row) {
-        row.push(sq);
-      } else {
-        grid.push(row);
-        row = [sq];
-      }
-    });
-    if (row.length > 0) {
-      grid.push(row);
-    }
-
-    return {
-      puzzleId,
-      gameId,
-      onClickCell,
-      height: puzzle ? puzzle.height : 0,
-      width: puzzle ? puzzle.width : 0,
-      squares: grid,
-    };
-  }, PuzzleGrid);
 
 class PuzzleCell extends React.Component {
   computeClasses() {
@@ -303,6 +301,8 @@ class ClueBox extends React.Component {
   }
 }
 
+const ClueBoxContainer = withCursor(ClueBox);
+
 class Clue extends React.Component {
   render() {
     const classes = classNames('clue', `clue-${this.props.number}`, this.props.selected);
@@ -320,20 +320,7 @@ class Clue extends React.Component {
   }
 }
 
-const ClueBoxContainer = createContainer(
-  ({ onSelect, puzzleId }) => {
-    return {
-      clues: {
-        across: Clues.find({ puzzle: puzzleId, direction: 'across' },
-                           { sort: { number: 1 } }).fetch(),
-        down: Clues.find({ puzzle: puzzleId, direction: 'down' },
-                         { sort: { number: 1 } }).fetch(),
-      },
-      onSelect,
-    };
-  }, withCursor(ClueBox));
-
-export default class Puzzle extends React.Component {
+class Puzzle extends React.Component {
   render() {
     return (
       <div id="puzzle">
@@ -344,14 +331,15 @@ export default class Puzzle extends React.Component {
         <CurrentClueContainer
           puzzleId={this.props.puzzleId}
         />
-        <PuzzleGridContainer
-          puzzleId={this.props.puzzleId}
+        <PuzzleGrid
           gameId={this.props.gameId}
           onClickCell={this.props.onClickCell}
+          squares={this.props.squares}
+          puzzle={this.props.puzzle}
         />
         <ClueBoxContainer
-          puzzleId={this.props.puzzleId}
           onSelect={this.props.onSelect}
+          clues={this.props.clues}
         />
         {this.props.gameId &&
           <Sidebar
@@ -365,3 +353,5 @@ export default class Puzzle extends React.Component {
     );
   }
 }
+
+export default withPuzzle(Puzzle);
