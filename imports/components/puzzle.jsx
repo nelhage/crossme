@@ -26,16 +26,15 @@ const withPuzzle = withTracker(
     if (row.length > 0) {
       grid.push(row);
     }
+    const clues = { across: [], down: [] };
+    Clues.find({ puzzle: puzzleId }).forEach((clue) => {
+      clues[clue.direction][clue.number] = clue;
+    });
 
     return {
       puzzle,
       squares: grid,
-      clues: {
-        across: Clues.find({ puzzle: puzzleId, direction: 'across' },
-                           { sort: { number: 1 } }).fetch(),
-        down: Clues.find({ puzzle: puzzleId, direction: 'down' },
-                         { sort: { number: 1 } }).fetch(),
-      },
+      clues,
     };
   });
 
