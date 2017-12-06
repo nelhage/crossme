@@ -65,6 +65,54 @@ class PuzzleGrid extends React.Component {
 }
 
 class Puzzle extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.selectClue = this.selectClue.bind(this);
+    this.select = this.select.bind(this);
+    this.clickCell = this.clickCell.bind(this);
+  }
+
+  selectClue(number, direction) {
+    const s = Squares.findOne({ puzzle: this.props.puzzle.id, number });
+    Session.set('selected-direction', direction);
+    this.select(s);
+  }
+
+  clickCell({ row, column }) {
+    const sq = this.props.squares[row][column];
+    if (sq && !sq.black) {
+      this.select(sq);
+    }
+  }
+
+  scrollIntoView(e) {
+    if (e.length) {
+      const r = e[0].getClientRects()[0];
+      if (document.elementFromPoint(r.left, r.top) !== e[0] ||
+          document.elementFromPoint(r.right, r.bottom) !== e[0]) {
+        e[0].scrollIntoView();
+      }
+    }
+  }
+
+  selectedSquare() {
+    return this.props.squares[Session.get('selected-row')][Session.get('selected-column')];
+  }
+
+  select(square) {
+    Session.set('selected-row', square.row);
+    Session.set('selected-column', square.column);
+    Session.set('word-across', square.word_across);
+    Session.set('word-down', square.word_down);
+    Session.set('check-ok', null);
+    if (!Session.get('selected-direction')) {
+      Session.set('selected-direction', 'across');
+    }
+    this.scrollIntoView($(`#clues .across .clue.clue-${square.word_across}`));
+    this.scrollIntoView($(`#clues .down .clue.clue-${square.word_down}`));
+  }
+
   render() {
     return (
       <div id="puzzle">
@@ -79,12 +127,12 @@ class Puzzle extends React.Component {
         />
         <PuzzleGrid
           gameId={this.props.gameId}
-          onClickCell={this.props.onClickCell}
+          onClickCell={this.clickCell}
           squares={this.props.squares}
           puzzle={this.props.puzzle}
         />
         <ClueBoxContainer
-          onSelect={this.props.onSelect}
+          onSelect={this.selectClue}
           clues={this.props.clues}
         />
         {this.props.gameId &&

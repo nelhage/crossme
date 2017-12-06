@@ -49,13 +49,6 @@ function isPencil() {
   return Session.equals('pencil', true);
 }
 
-
-function selectClue(number, direction) {
-  var s = Squares.findOne({puzzle: puzzle_id(), number: number});
-  Session.set('selected-direction', direction);
-  select(s);
-}
-
 Template.app.helpers({
   puzzleId: function() {
     return puzzle_id();
@@ -70,25 +63,10 @@ Template.app.helpers({
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
 
-  onClickCell: function() {
-    return clickCell;
-  },
-
-  selectClue: function() {
-    return selectClue;
-  },
-
   handleUpload: function() { return handleUpload },
 
   App: function() { return App; }
 });
-
-function clickCell({row, column}) {
-  const sq = SquaresByPosition.find(
-    {puzzle: puzzle_id(), row: row, column: column});
-  if (sq && !sq.black)
-    select(sq);
-}
 
 function scroll_into_view(e) {
   if (e.length) {
