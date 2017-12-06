@@ -14,20 +14,6 @@ Deps.autorun(function () {
   if (puz)
     Meteor.subscribe('puzzle', puz);
 });
-Deps.autorun(function () {
-  if (Session.get('gameid') && puzzle_id()) {
-    var s = selected_square();
-    if (!s || s.black) {
-      s = find(active_puzzle(), 0, 0, 0, 1, function (s) { return !s.black });
-      if (s) {
-        select(s);
-      }
-    } else {
-      Session.set('word-across', s.word_across);
-      Session.set('word-down', s.word_down);
-    }
-  }
-});
 
 window.active_puzzle = function() {
   var id = puzzle_id();

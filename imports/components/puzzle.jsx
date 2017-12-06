@@ -1,13 +1,12 @@
 import React from 'react';
-import classNames from 'classnames';
-import { createContainer, withTracker } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import Sidebar from './controls.jsx';
 import PuzzleCellContainer from './puzzle_cell.jsx';
+import ClueBoxContainer from './clue_box.jsx';
+import CurrentClueContainer from './current_clue.jsx';
+import Metadata from './metadata.jsx';
 
-import { withCursor, cursorState } from '../ui/cursor.jsx';
-
-/* global Router */
 /* global Puzzles, Clues, Squares */
 
 const withPuzzle = withTracker(
@@ -66,161 +65,12 @@ class PuzzleGrid extends React.Component {
   }
 }
 
-class Metadata extends React.Component {
-  startGame() {
-    const id = this.props.puzzle._id;
-    Meteor.call('newGame', id, function (error, gotId) {
-      if (!error) {
-        Router.go('game', { id: gotId });
-      }
-    });
-  }
-
-  render() {
-    return (
-      <div id="details">
-        <div className="title">
-          <span className="label label-default">Title</span>
-          <span className="value"> {this.props.puzzle.title}</span>
-          {(!this.props.gameId) && (
-            <span>
-              <span className="preview label">Preview</span>
-              <button className="btn" onClick={this.startGame.bind(this)}>Start Game</button>
-            </span>
-          )}
-        </div>
-        <div className="author">
-          <span className="label label-default">By</span>
-          <span className="value">{this.props.puzzle.author}</span>
-        </div>
-      </div>
-    );
-  }
-}
-
-const MetadataContainer = createContainer(({ puzzleId, gameId }) => {
-  const puzzle = Puzzles.findOne({ _id: puzzleId }) || { _id: puzzleId };
-  return {
-    gameId,
-    puzzle,
-  };
-}, Metadata);
-
-class CurrentClue extends React.Component {
-  render() {
-    const clue = this.props.clue;
-    if (!clue) {
-      return null;
-    }
-    return (
-      <div id="theclue">
-        <span className="label">
-          <span className="number">{clue.number}</span>
-          <span className="direction"> {clue.direction}</span>
-        </span>
-        <span className="text">{clue.text}</span>
-        <div className="clear" />
-      </div>
-    );
-  }
-}
-
-const CurrentClueContainer = createContainer(({ squares, clues }) => {
-  const cursor = cursorState();
-  const row = squares && squares[cursor.selected_row];
-  const square = row && row[cursor.selected_column];
-  if (!square) {
-    return {};
-  }
-  return {
-    clue: clues[cursor.selected_direction][square[`word_${cursor.selected_direction}`]],
-  };
-}, CurrentClue);
-
-class ClueBox extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onSelect = this.onSelect.bind(this);
-  }
-
-  onSelect(e) {
-    const target = e.target;
-    this.props.onSelect(parseInt(target.dataset.number, 10),
-                        target.dataset.direction);
-  }
-
-  isSelected(clue, direction) {
-    if (this.props.cursor[`word_${direction}`] !== clue.number) {
-      return false;
-    }
-    if (this.props.cursor.selected_direction === direction) {
-      return 'selected';
-    }
-    return 'otherword';
-  }
-
-  clueGroup(clues) {
-    return (
-      clues.map(c => (
-        <Clue
-          key={c._id}
-          number={c.number}
-          text={c.text}
-          direction={c.direction}
-          selected={this.isSelected(c, c.direction)}
-          onClick={this.onSelect}
-        />
-        ))
-    );
-  }
-
-  render() {
-    const acrossClues = this.clueGroup(this.props.clues.across, 'across');
-    const downClues = this.clueGroup(this.props.clues.down, 'down');
-    return (
-      <div id="clues">
-        <div className="section across">
-          <div className="title"> Across </div>
-          <div className="cluelist">
-            {acrossClues}
-          </div>
-        </div>
-        <div className="section down">
-          <div className="title"> Down </div>
-          <div className="cluelist">
-            {downClues}
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
-const ClueBoxContainer = withCursor(ClueBox);
-
-class Clue extends React.Component {
-  render() {
-    const classes = classNames('clue', `clue-${this.props.number}`, this.props.selected);
-    return (
-      <div
-        role="button"
-        className={classes}
-        onClick={this.props.onClick}
-        data-number={this.props.number}
-        data-direction={this.props.direction}
-      >
-        {this.props.number}. {this.props.text}
-      </div>
-    );
-  }
-}
-
 class Puzzle extends React.Component {
   render() {
     return (
       <div id="puzzle">
-        <MetadataContainer
-          puzzleId={this.props.puzzleId}
+        <Metadata
+          puzzle={this.props.puzzle}
           gameId={this.props.gameId}
         />
         <CurrentClueContainer
