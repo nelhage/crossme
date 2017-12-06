@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 
@@ -57,12 +57,12 @@ class PencilControl extends React.Component {
   }
 }
 
-const PencilControlContainer = createContainer(() => {
+const PencilControlContainer = withTracker(() => {
   return {
     isPencil: Session.get('pencil'),
     onSetPencil: p => (Session.set('pencil', p)),
   };
-}, PencilControl);
+})(PencilControl);
 
 class KeyboardShortcuts extends React.Component {
   constructor(props) {

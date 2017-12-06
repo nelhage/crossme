@@ -1,5 +1,5 @@
 import React from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 /* global Games */
 
@@ -52,7 +52,7 @@ class PlayerListEntry extends React.Component {
 
 }
 
-export default createContainer(({ gameId }) => {
+export default withTracker(({ gameId }) => {
   let players = [];
   const userId = Meteor.userId();
   if (gameId) {
@@ -71,4 +71,4 @@ export default createContainer(({ gameId }) => {
     loggedIn: !!userId,
     players,
   };
-}, PlayerList);
+})(PlayerList);
