@@ -167,19 +167,20 @@ class Puzzle extends React.Component {
     } else if (e.key === 'Enter') {
       this.game.switchDirection();
       e.preventDefault();
-    }
-
-    if (!this.props.gameId) {
-      return;
-    }
-
-    if (e.key === ' ') {
+    } else if (e.key === 'Tab') {
+      this.game.nextClue(e.shiftKey);
+      e.preventDefault();
+    } else if (!this.props.gameId) {
+      /* skip other keys if we're in preview mode */
+    } else if (e.key === ' ') {
       this.game.clear();
       e.preventDefault();
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       this.game.delete();
       e.preventDefault();
-    } else if (e.key.toLowerCase() >= 'a' && e.key.toLowerCase() <= 'z') {
+    } else if (e.key.length === 1 &&
+               e.key.toLowerCase() >= 'a' &&
+               e.key.toLowerCase() <= 'z') {
       this.game.letter(e.key);
       e.preventDefault();
     }

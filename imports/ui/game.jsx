@@ -13,6 +13,14 @@ export default class Game {
      */
   }
 
+  directionToDelta(direction) {
+    if (direction === 'across') {
+      return { dr: 0, dc: 1 };
+    } else {
+      return { dr: 1, dc: 0 };
+    }
+  }
+
   selectedSquare() {
     const row = this.state.cursor.selected_row;
     const col = this.state.cursor.selected_column;
@@ -124,23 +132,14 @@ export default class Game {
 
   delete() {
     this.clear();
-    if (this.state.cursor.selected_direction === 'across') {
-      this.move(0, -1, true);
-    } else {
-      this.move(1, -0, true);
-    }
+    const { dr, dc } = this.directionToDelta(this.state.cursor.selected_direction);
+    this.move(-dr, -dc, true);
   }
 
   letter(char) {
     const square = this.selectedSquare();
     this.delegate.setFill(square, char.toUpperCase());
-    let dr = 0;
-    let dc = 0;
-    if (this.state.cursor.selection_direction === 'down') {
-      dr = 1;
-    } else {
-      dc = 1;
-    }
+    const { dr, dc } = this.directionToDelta(this.state.cursor.selected_direction);
     const next = this.nextBlankInWord(square, dr, dc);
     if (next && this.state.profile.settingWithinWord === 'skip') {
       this.delegate.select(next);
@@ -158,5 +157,58 @@ export default class Game {
     } else {
       this.move(1, 0, true);
     }
+  }
+
+  nextClue(reverse) {
+    const byNumber = {};
+
+    // Build an index. We could cache this, but this way avoids
+    // thinking about invalidation, and guarantees we only do the
+    // O(n²) loop once per keypress, which is enough to be performant.
+    this.state.squares.forEach((row) => {
+      row.forEach((cell) => {
+        if (cell.number) {
+          byNumber[cell.number] = cell;
+        }
+      });
+    });
+
+    let square = null;
+    let direction = this.state.cursor.selected_direction;
+    let clue = this.selectedSquare()[`word_${direction}`];
+
+    for (let i = 0; i < 2; i += 1) {
+      const clues = this.state.clues[direction];
+      while (clue >= 0 && clue <= clues.length) {
+        if (reverse) {
+          clue -= 1;
+        } else {
+          clue += 1;
+        }
+        if (!(clue in clues)) {
+          continue;
+        }
+        square = byNumber[clue];
+        break;
+      }
+      if (square) {
+        break;
+      }
+      direction = direction === 'across' ? 'down' : 'across';
+      if (reverse) {
+        clue = this.state.clues[direction].length;
+      } else {
+        clue = 0;
+      }
+    }
+
+    if (!square) {
+      // ??? Can this ever happen
+      return;
+    }
+
+    const { dr, dc } = this.directionToDelta(direction);
+    square = this.nextBlankInWord(square, dr, dc) || square;
+    this.delegate.select(square, direction);
   }
 }

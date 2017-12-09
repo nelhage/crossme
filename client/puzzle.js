@@ -15,11 +15,6 @@ Deps.autorun(function () {
     Meteor.subscribe('puzzle', puz);
 });
 
-window.active_puzzle = function() {
-  var id = puzzle_id();
-  return id && Puzzles.findOne({_id: id});
-}
-
 function puzzle_id() {
   if (Session.get('previewid'))
     return Session.get('previewid');
@@ -90,128 +85,12 @@ function select(square) {
   return false;
 }
 
-function find(puz, row, col, dr, dc, predicate) {
-  var s;
-  while (true) {
-    if (row < 0 || row >= puz.height ||
-        col < 0 || col >= puz.width)
-      return null;
-    s = SquaresByPosition.find({row: row, column: col, puzzle: puz._id});
-    if (!s)
-      return null;
-    if (predicate(s))
-      return s;
-    row += dr;
-    col += dc;
-  }
-}
-
-function move(dr, dc, inword) {
-  Session.set('selected-direction', dr ? 'down' : 'across');
-
-  var row = Session.get('selected-row') || 0,
-      col = Session.get('selected-column') || 0;
-  var puz = active_puzzle();
-  var sel = selected_square();
-  var dst = find(puz, row+dr, col+dc, dr, dc, function (s) {
-    if (inword && ((dc && sel.word_across !== s.word_across) ||
-                   (dr && sel.word_down   !== s.word_down)))
-      return false;
-    return !s.black;
-  });
-  if (!dst) return false;
-  select(dst);
-  return false;
-}
-
-function find_blank_in_word(square, dr, dc) {
-  return find(Puzzles.findOne(square.puzzle),
-              square.row, square.column, dr, dc, function (s) {
-    if (s.black)
-      return null;
-    else if ((dc && (square.word_across !== s.word_across)) ||
-             (dr && (square.word_down !== s.word_down)))
-      return false;
-    var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
-    return f && f.letter === null;
-  });
-}
-
-function tabKey(k) {
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  var sel = selected_clue();
-  var cmp, sort;
-  if (k.shiftKey) {
-    cmp = '$lt';
-    sort = -1;
-  } else {
-    cmp = '$gt';
-    sort = 1;
-  }
-  var query = {};
-  query[cmp] = sel.number;
-  var clue = Clues.findOne({number: query, puzzle: sel.puzzle, direction: sel.direction},
-                         {sort: {number: sort}});
-  if (!clue)
-    clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction === 'down' ? 'across' : 'down'},
-                           {sort: {number: sort}});
-  var h = {puzzle: clue.puzzle};
-  h['word_' + clue.direction] = clue.number;
-  var s = Squares.findOne(h);
-  s = find_blank_in_word(s, dr, dc) || s;
-  select(s);
-  Session.set('selected-direction', clue.direction);
-  return false;
-}
-
-function handle_key(k) {
-  if (k.target.nodeName.toLowerCase() === 'input')
-    return true;
-
-  if (k.altKey || k.ctrlKey || k.metaKey)
-    return true;
-
-  if (!Session.get('gameid'))
-    return true;
-  else if (k.keyCode === 9)
-    return tabKey(k);
-  else if (k.keyCode === 191 && k.shiftKey) {
-    toggleKeyboardShortcuts();
-    return false;
-  } else if (k.keyCode === 27 && showingKeyboardShortcuts()) {
-    hideKeyboardShortcuts();
-    return false;
-  }
-
-  return true;
-}
-
-window.load_game = function(id) {
-  Router.go('game', {id: id});
-}
-
-window.load_preview = function(id) {
-  Router.go('preview', {id: id});
-}
-
 function puzzleState() {
   return {
     game: Session.get('gameid'),
     square: selected_square()._id,
     direction: Session.get('selected-direction')
   };
-}
-
-function showingKeyboardShortcuts() {
-  return $('#shortcuts-help').is(':visible');
-}
-
-function hideKeyboardShortcuts() {
-  return $('#shortcuts-help').hide();
 }
 
 function doReveal(eventKey, e) {
@@ -238,11 +117,10 @@ function handleUpload(files) {
   var i = 0;
   var uploadNext = function(error, id) {
     if (error) {
-      window.the_error = error;
       alert("Error uploading: " + files[i].name + ": " + error);
     } else {
       if (i === files.length - 1) {
-        load_preview(id);
+        Router.go('preview', {id: id});
       } else {
         i++;
         uploadFile(files[i], uploadNext);
@@ -272,7 +150,6 @@ function maybePing() {
 }
 
 Meteor.startup(function() {
-  $('body').on('keydown', handle_key);
   Meteor.setInterval(maybePing, 30 * 1000);
 });
 
