@@ -219,7 +219,6 @@ class Puzzle extends React.Component {
           <Sidebar
             doReveal={this.props.doReveal}
             doCheck={this.props.doCheck}
-            checkOk={this.props.checkOk}
             gameId={this.props.gameId}
             currentUser={this.props.currentUser}
           />}

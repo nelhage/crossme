@@ -21,7 +21,7 @@ class RevealControl extends React.Component {
 class CheckControl extends React.Component {
   render() {
     return (
-      <DropdownButton className={classNames({ 'check-ok': this.props.checkOk })} title="Check" id="dCheck" onSelect={this.props.doCheck}>
+      <DropdownButton title="Check" id="dCheck" onSelect={this.props.doCheck}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>
@@ -242,7 +242,7 @@ export default class Sidebar extends React.Component {
             <RevealControl doReveal={this.props.doReveal} />
           </li>
           <li>
-            <CheckControl checkOk={this.props.checkOk} doCheck={this.props.doCheck} />
+            <CheckControl doCheck={this.props.doCheck} />
           </li>
           <li>
             <PencilControlContainer />

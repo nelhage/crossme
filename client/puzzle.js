@@ -51,9 +51,6 @@ Template.app.helpers({
   gameId: function() {
     return Session.get('gameid');
   },
-  checkOk: function() {
-    return !!Session.get('check-ok');
-  },
 
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
@@ -77,7 +74,6 @@ function select(square) {
   Session.set('selected-column', square.column);
   Session.set('word-across', square.word_across);
   Session.set('word-down', square.word_down);
-  Session.set('check-ok', null);
   if (!Session.get('selected-direction'))
     Session.set('selected-direction', 'across');
   scroll_into_view($('#clues .across .clue.clue-'+ square.word_across));
@@ -105,9 +101,6 @@ function doCheck(eventKey, e) {
     if (error === undefined) {
       if (square) {
         select(Squares.findOne({_id: square}));
-        Session.set('check-ok', false);
-      } else {
-        Session.set('check-ok', true);
       }
     }
   });
