@@ -164,11 +164,17 @@ class Puzzle extends React.Component {
       const [dr, dc] = arrows[e.key];
       this.game.arrow(dr, dc);
       e.preventDefault();
-    } else if (e.key === ' ') {
-      this.game.clear();
-      e.preventDefault();
     } else if (e.key === 'Enter') {
       this.game.switchDirection();
+      e.preventDefault();
+    }
+
+    if (!this.props.gameId) {
+      return;
+    }
+
+    if (e.key === ' ') {
+      this.game.clear();
       e.preventDefault();
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       this.game.delete();
