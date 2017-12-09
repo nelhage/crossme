@@ -76,7 +76,6 @@ class Puzzle extends React.Component {
     this.game = new Game(this.delegate, {
       squares: this.props.squares,
       clues: this.props.clues,
-      fills: {},
     });
     this.startSync();
 
@@ -85,16 +84,26 @@ class Puzzle extends React.Component {
     this.keyDown = this.keyDown.bind(this);
   }
 
-  componentWillUpdate() {
-    this.game.state.squares = this.props.squares;
-    this.game.state.clues = this.props.clues;
+  componentWillReceiveProps(newProps) {
+    this.game.state.squares = newProps.squares;
+    this.game.state.clues = newProps.clues;
+    if (newProps.gameId !== this.props.gameId) {
+      this.startSync();
+    }
   }
 
   componentWillUnmount() {
-    this.handles.forEach(h => h.stop());
+    this.stopSync();
+  }
+
+  stopSync() {
+    if (this.handles) {
+      this.handles.forEach(h => h.stop());
+    }
   }
 
   startSync() {
+    this.stopSync();
     Tracker.nonreactive(() => {
       this.handles = [];
       this.handles.push(
@@ -107,6 +116,7 @@ class Puzzle extends React.Component {
           }
           this.game.state.cursor = cursorState();
         }));
+      this.game.state.fills = {};
       this.handles.push(
         Fills.find({ game: this.props.gameId }).observe({
           added: (e) => {
@@ -175,6 +185,9 @@ class Puzzle extends React.Component {
 
   render() {
     return (
+      /* eslint-disable jsx-a11y/no-static-element-interactions,
+                        jsx-a11y/no-noninteractive-tabindex
+      */
       <div id="puzzle" onKeyDown={this.keyDown} tabIndex="0">
         <Metadata
           puzzle={this.props.puzzle}
