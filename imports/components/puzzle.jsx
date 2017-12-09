@@ -6,8 +6,12 @@ import PuzzleCellContainer from './puzzle_cell.jsx';
 import ClueBoxContainer from './clue_box.jsx';
 import CurrentClueContainer from './current_clue.jsx';
 import Metadata from './metadata.jsx';
+import GameDelegate from '../ui/game_delegate.jsx';
 
-/* global Puzzles, Clues, Squares */
+import Game from '../ui/game.jsx';
+import { cursorState } from '../ui/cursor.jsx';
+
+/* global Puzzles, Clues, Squares, Tracker */
 
 const withPuzzle = withTracker(
   ({ puzzleId }) => {
@@ -68,31 +72,73 @@ class Puzzle extends React.Component {
   constructor(props) {
     super(props);
 
+    this.delegate = new GameDelegate(this);
+    this.game = new Game(this.delegate, {
+      squares: this.props.squares,
+      clues: this.props.clues,
+    });
+    this.startSync();
+
     this.selectClue = this.selectClue.bind(this);
-    this.select = this.select.bind(this);
     this.clickCell = this.clickCell.bind(this);
+    this.keyDown = this.keyDown.bind(this);
+  }
+
+  componentWillUpdate() {
+    this.game.state.squares = this.props.squares;
+    this.game.state.clues = this.props.clues;
+  }
+
+  componentWillUnmount() {
+    this.handles.forEach(h => h.stop());
+  }
+
+  startSync() {
+    this.handles = [];
+    this.handles.push(
+      Tracker.nonreactive(() => (
+        Tracker.autorun(() => {
+          const user = Meteor.user();
+          if (user) {
+            this.game.state.profile = user.profile;
+          } else {
+            this.game.state.profile = {};
+          }
+          this.game.state.cursor = cursorState();
+        }))));
+    /* TODO: fill */
   }
 
   selectClue(number, direction) {
     const s = Squares.findOne({ puzzle: this.props.puzzle.id, number });
-    Session.set('selected-direction', direction);
-    this.select(s);
+    this.delegate.select(s, direction);
   }
 
   clickCell({ row, column }) {
     const sq = this.props.squares[row][column];
     if (sq && !sq.black) {
-      this.select(sq);
+      this.delegate.select(sq);
     }
   }
 
-  scrollIntoView(e) {
-    if (e.length) {
-      const r = e[0].getClientRects()[0];
-      if (document.elementFromPoint(r.left, r.top) !== e[0] ||
-          document.elementFromPoint(r.right, r.bottom) !== e[0]) {
-        e[0].scrollIntoView();
-      }
+  keyDown(e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) {
+      return;
+    }
+    const arrows = {
+      ArrowRight: [0, 1],
+      ArrowLeft: [0, -1],
+      ArrowUp: [-1, 0],
+      ArrowDown: [1, 0],
+    };
+
+    if (e.key in arrows) {
+      const [dr, dc] = arrows[e.key];
+      this.game.arrow(dr, dc);
+      e.preventDefault();
+    } else if (e.key === 'Enter') {
+      this.game.switchDirection();
+      e.preventDefault();
     }
   }
 
@@ -100,22 +146,9 @@ class Puzzle extends React.Component {
     return this.props.squares[Session.get('selected-row')][Session.get('selected-column')];
   }
 
-  select(square) {
-    Session.set('selected-row', square.row);
-    Session.set('selected-column', square.column);
-    Session.set('word-across', square.word_across);
-    Session.set('word-down', square.word_down);
-    Session.set('check-ok', null);
-    if (!Session.get('selected-direction')) {
-      Session.set('selected-direction', 'across');
-    }
-    this.scrollIntoView($(`#clues .across .clue.clue-${square.word_across}`));
-    this.scrollIntoView($(`#clues .down .clue.clue-${square.word_down}`));
-  }
-
   render() {
     return (
-      <div id="puzzle">
+      <div id="puzzle" onKeyDown={this.keyDown} tabIndex="0">
         <Metadata
           puzzle={this.props.puzzle}
           gameId={this.props.gameId}

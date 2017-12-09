@@ -228,32 +228,7 @@ function handle_key(k) {
   }
   if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
-  if ((k.keyCode === 39 || k.keyCode === 37) &&
-      Session.get('selected-direction') === 'down' &&
-      Meteor.user() &&
-      Meteor.user().profile.settingArrows === "stay") {
-    Session.set('selected-direction', 'across');
-    return false;
-  }
-  else if ((k.keyCode === 38 || k.keyCode === 40) &&
-           Session.get('selected-direction') === 'across' &&
-           Meteor.user() &&
-           Meteor.user().profile.settingArrows === "stay") {
-    Session.set('selected-direction', 'down');
-    return false;
-  }
-  else if (k.keyCode === 39)
-    return move(0, 1);
-  else if (k.keyCode === 37)
-    return move(0, -1);
-  else if (k.keyCode === 38)
-    return move(-1, 0);
-  else if (k.keyCode === 40)
-    return move(1, 0);
-  else if (k.keyCode === 13) {
-    Session.set('selected-direction', Session.equals('selected-direction', 'across') ? 'down' : 'across');
-    return false;
-  }
+
   if (!Session.get('gameid'))
     return true;
   else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
