@@ -19,6 +19,13 @@
     font-weight: bold;
 }
 
+#details div.solved {
+    font-size: 200%;
+    border: 5px solid #0c0;
+    margin: 5px;
+    float: right;
+}
+
 #details .preview {
     background-color: #88f;
     font-size: 24px;
