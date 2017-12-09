@@ -43,4 +43,8 @@ export default class GameDelegate {
   clearFill(square) {
     Meteor.call('clearLetter', this.component.props.gameId, square._id);
   }
+
+  togglePencil() {
+    Session.set('pencil', !Session.get('pencil'))
+  }
 }

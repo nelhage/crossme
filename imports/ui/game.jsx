@@ -48,19 +48,36 @@ export default class Game {
     }
   }
 
-  findBlankInWord(square, dr, dc) {
+  nextBlankInWord(square, dr, dc) {
     return this.find(
       square.row, square.column, dr, dc,
       (s) => {
         if (s.black) {
-          return null;
+          return false;
         } else if ((dc && (square.word_across !== s.word_across)) ||
                    (dr && (square.word_down !== s.word_down))) {
           return false;
         }
-        const fill = this.state.fills[s.row][s.column];
+        const fill = this.state.fills[s._id];
         return fill && fill.letter === null;
       });
+  }
+
+  firstBlankInWord(square, dr, dc) {
+    let prev = null;
+    this.find(
+      square.row, square.column, -dr, -dc,
+      (s) => {
+        if (s.black) {
+          return true;
+        }
+        const fill = this.state.fills[s._id];
+        if (fill && fill.letter === null) {
+          prev = s;
+        }
+        return false;
+      });
+    return prev;
   }
 
   move(dr, dc, inword) {
@@ -82,6 +99,7 @@ export default class Game {
     this.delegate.select(dst, direction);
   }
 
+  /* UI handlers */
   switchDirection() {
     this.delegate.setDirection(
       this.state.cursor.selected_direction === 'across' ? 'down' : 'across',
@@ -98,5 +116,47 @@ export default class Game {
     }
 
     this.move(dr, dc);
+  }
+
+  clear() {
+    this.delegate.clearFill(this.selectedSquare());
+  }
+
+  delete() {
+    this.clear();
+    if (this.state.cursor.selected_direction === 'across') {
+      this.move(0, -1, true);
+    } else {
+      this.move(1, -0, true);
+    }
+  }
+
+  letter(char) {
+    const square = this.selectedSquare();
+    this.delegate.setFill(square, char.toUpperCase());
+    let dr = 0;
+    let dc = 0;
+    if (this.state.cursor.selection_direction === 'down') {
+      dr = 1;
+    } else {
+      dc = 1;
+    }
+    const next = this.nextBlankInWord(square, dr, dc);
+    if (next && this.state.profile.settingWithinWord === 'skip') {
+      this.delegate.select(next);
+      return;
+    }
+    if (!next && this.state.profile.settingEndWordBack) {
+      const first = this.firstBlankInWord(square, dr, dc);
+      if (first) {
+        this.delegate.select(first);
+        return;
+      }
+    }
+    if (this.state.cursor.selected_direction === 'across') {
+      this.move(0, 1, true);
+    } else {
+      this.move(1, 0, true);
+    }
   }
 }

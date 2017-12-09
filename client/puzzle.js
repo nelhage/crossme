@@ -106,18 +106,6 @@ function find(puz, row, col, dr, dc, predicate) {
   }
 }
 
-function first_blank(word) {
-  var h = {puzzle: word.puzzle}
-  h['word_' + word.direction] = word.number;
-  first = Squares.findOne(h);
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  return find_blank_in_word(first, dr, dc) || false;
-}
-
 function move(dr, dc, inword) {
   Session.set('selected-direction', dr ? 'down' : 'across');
 
@@ -133,44 +121,6 @@ function move(dr, dc, inword) {
   });
   if (!dst) return false;
   select(dst);
-  return false;
-}
-
-function letter(keycode) {
-  var s = String.fromCharCode(keycode);
-  var square = selected_square();
-  Meteor.call('setLetter', Session.get('gameid'), square._id, s, isPencil());
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  var sq = find_blank_in_word(square, dr, dc);
-  var first = first_blank(selected_clue());
-  if (sq && Meteor.user() && Meteor.user().profile.settingWithinWord == "skip")
-    select(sq);
-  else if (sq === null && first && Meteor.user() && Meteor.user().profile.settingEndWordBack)
-    select(first);
-  else if (Session.get('selected-direction') == 'across')
-    move(0, 1, true);
-  else
-    move(1, 0, true);
-  return false;
-}
-
-function clearCell() {
-  var square = selected_square();
-  Meteor.call('clearLetter', Session.get('gameid'), square._id);
-  Session.set('check-ok', null);
-  return false;
-}
-
-function deleteKey() {
-  clearCell();
-  if (Session.get('selected-direction') == 'across')
-    move(0, -1, true);
-  else
-    move(-1, 0, true);
   return false;
 }
 
@@ -222,22 +172,11 @@ function handle_key(k) {
   if (k.target.nodeName.toLowerCase() === 'input')
     return true;
 
-  if (k.altKey && k.keyCode === 80) {
-    Session.set('pencil', !Session.get('pencil'))
-    return false;
-  }
   if (k.altKey || k.ctrlKey || k.metaKey)
     return true;
 
   if (!Session.get('gameid'))
     return true;
-  else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
-    return letter(k.keyCode);
-  else if (k.keyCode === ' '.charCodeAt(0))
-    return clearCell();
-  else if (k.keyCode === 8 ||
-           k.keyCode === 46)
-    return deleteKey();
   else if (k.keyCode === 9)
     return tabKey(k);
   else if (k.keyCode === 191 && k.shiftKey) {

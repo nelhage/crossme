@@ -11,7 +11,7 @@ import GameDelegate from '../ui/game_delegate.jsx';
 import Game from '../ui/game.jsx';
 import { cursorState } from '../ui/cursor.jsx';
 
-/* global Puzzles, Clues, Squares, Tracker */
+/* global Puzzles, Clues, Fills, Squares, Tracker */
 
 const withPuzzle = withTracker(
   ({ puzzleId }) => {
@@ -76,6 +76,7 @@ class Puzzle extends React.Component {
     this.game = new Game(this.delegate, {
       squares: this.props.squares,
       clues: this.props.clues,
+      fills: {},
     });
     this.startSync();
 
@@ -94,9 +95,9 @@ class Puzzle extends React.Component {
   }
 
   startSync() {
-    this.handles = [];
-    this.handles.push(
-      Tracker.nonreactive(() => (
+    Tracker.nonreactive(() => {
+      this.handles = [];
+      this.handles.push(
         Tracker.autorun(() => {
           const user = Meteor.user();
           if (user) {
@@ -105,8 +106,20 @@ class Puzzle extends React.Component {
             this.game.state.profile = {};
           }
           this.game.state.cursor = cursorState();
-        }))));
-    /* TODO: fill */
+        }));
+      this.handles.push(
+        Fills.find({ game: this.props.gameId }).observe({
+          added: (e) => {
+            this.game.state.fills[e.square] = e;
+          },
+          changed: (e) => {
+            this.game.state.fills[e.square] = e;
+          },
+          removed: (e) => {
+            delete this.game.state.fills[e.square];
+          },
+        }));
+    });
   }
 
   selectClue(number, direction) {
@@ -122,9 +135,14 @@ class Puzzle extends React.Component {
   }
 
   keyDown(e) {
+    if (e.altKey && e.key === 'p') {
+      this.delegate.togglePencil();
+    }
+
     if (e.altKey || e.ctrlKey || e.metaKey) {
       return;
     }
+
     const arrows = {
       ArrowRight: [0, 1],
       ArrowLeft: [0, -1],
@@ -136,8 +154,17 @@ class Puzzle extends React.Component {
       const [dr, dc] = arrows[e.key];
       this.game.arrow(dr, dc);
       e.preventDefault();
+    } else if (e.key === ' ') {
+      this.game.clear();
+      e.preventDefault();
     } else if (e.key === 'Enter') {
       this.game.switchDirection();
+      e.preventDefault();
+    } else if (e.key === 'Delete' || e.key === 'Backspace') {
+      this.game.delete();
+      e.preventDefault();
+    } else if (e.key.toLowerCase() >= 'a' && e.key.toLowerCase() <= 'z') {
+      this.game.letter(e.key);
       e.preventDefault();
     }
   }
