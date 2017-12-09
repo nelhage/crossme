@@ -172,27 +172,37 @@ export default class Game {
       });
     });
 
-    let square = null;
     let direction = this.state.cursor.selected_direction;
     let clue = this.selectedSquare()[`word_${direction}`];
+    const firstClue = clue;
 
-    for (let i = 0; i < 2; i += 1) {
+    for (let i = 0; i < 4; i += 1) {
       const clues = this.state.clues[direction];
+
       while (clue >= 0 && clue <= clues.length) {
         if (reverse) {
           clue -= 1;
         } else {
           clue += 1;
         }
+
         if (!(clue in clues)) {
           continue;
         }
-        square = byNumber[clue];
-        break;
+
+        const square = byNumber[clue];
+        const { dr, dc } = this.directionToDelta(direction);
+        const blank = this.nextBlankInWord(square, dr, dc);
+        if (blank) {
+          this.delegate.select(blank, direction);
+          return;
+        }
+        if ((i === 2 && (reverse ? clue < firstClue : clue > firstClue)) || i === 3) {
+          this.delegate.select(square, direction);
+          return;
+        }
       }
-      if (square) {
-        break;
-      }
+
       direction = direction === 'across' ? 'down' : 'across';
       if (reverse) {
         clue = this.state.clues[direction].length;
@@ -200,14 +210,5 @@ export default class Game {
         clue = 0;
       }
     }
-
-    if (!square) {
-      // ??? Can this ever happen
-      return;
-    }
-
-    const { dr, dc } = this.directionToDelta(direction);
-    square = this.nextBlankInWord(square, dr, dc) || square;
-    this.delegate.select(square, direction);
   }
 }
