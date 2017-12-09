@@ -16,9 +16,8 @@ export default class Game {
   directionToDelta(direction) {
     if (direction === 'across') {
       return { dr: 0, dc: 1 };
-    } else {
-      return { dr: 1, dc: 0 };
     }
+    return { dr: 1, dc: 0 };
   }
 
   selectedSquare() {

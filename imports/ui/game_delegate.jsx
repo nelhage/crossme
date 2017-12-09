@@ -45,6 +45,6 @@ export default class GameDelegate {
   }
 
   togglePencil() {
-    Session.set('pencil', !Session.get('pencil'))
+    Session.set('pencil', !Session.get('pencil'));
   }
 }
