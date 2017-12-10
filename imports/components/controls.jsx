@@ -64,6 +64,25 @@ const PencilControlContainer = withTracker(() => {
   };
 })(PencilControl);
 
+class RebusControl extends React.Component {
+  click() {
+    Session.set('rebus', true);
+  }
+
+  render() {
+    return (
+      <div className="btn-group">
+        <button
+          className="btn"
+          onClick={this.click.bind(this)}
+        >
+          Rebus
+        </button>
+      </div>
+    );
+  }
+}
+
 class KeyboardShortcuts extends React.Component {
   constructor(props) {
     super(props);
@@ -246,6 +265,9 @@ export default class Sidebar extends React.Component {
           </li>
           <li>
             <PencilControlContainer />
+          </li>
+          <li>
+            <RebusControl />
           </li>
           <li className="player-label"> Now playing:</li>
           <li>

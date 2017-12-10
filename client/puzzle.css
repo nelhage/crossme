@@ -82,13 +82,27 @@
     vertical-align: baseline;
     position: absolute;
     left: 4px;
+    top: 2px;
+}
+
+#puzzlegrid .cell.rebus .fill {
+    font-size: 15px;
+    left: 0px;
     top: 4px;
+}
+
+#puzzlegrid .cell input.fill {
+    width: 3em;
+    z-index: 100;
+    left: -1em;
 }
 
 #puzzlegrid .cell .cellbody {
     position: relative;
-    width: 29px;
-    height: 29px;
+    left: -1px;
+    top: -1px;
+    width: 31px;
+    height: 31px;
     margin: 2px;
 }
 

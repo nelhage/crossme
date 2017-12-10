@@ -8,6 +8,7 @@ export default class GameDelegate {
     Session.set('selected-column', square.column);
     Session.set('word-across', square.word_across);
     Session.set('word-down', square.word_down);
+    Session.set('rebus', false);
     if (direction) {
       Session.set('selected-direction', direction);
     } else if (!Session.get('selected-direction')) {

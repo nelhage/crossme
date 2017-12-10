@@ -51,6 +51,7 @@ class PuzzleGrid extends React.Component {
           square={cell}
           gameId={this.props.gameId}
           onClick={() => this.props.onClickCell({ row: i, column: c })}
+          delegate={this.props.delegate}
         />
       ));
       return (
@@ -145,6 +146,15 @@ class Puzzle extends React.Component {
   }
 
   keyDown(e) {
+    if (e.target.nodeName === 'INPUT') {
+      if (e.key === 'Tab') {
+        this.game.nextClue(e.shiftKey);
+        e.target.blur();
+        e.preventDefault();
+      }
+      return;
+    }
+
     if (e.altKey && e.key === 'p') {
       this.delegate.togglePencil();
     }
@@ -195,7 +205,7 @@ class Puzzle extends React.Component {
       /* eslint-disable jsx-a11y/no-static-element-interactions,
                         jsx-a11y/no-noninteractive-tabindex
       */
-      <div id="puzzle" onKeyDown={this.keyDown} tabIndex="0">
+      <div id="puzzle" onKeyDown={this.keyDown} tabIndex="0" autoFocus="true">
         <Metadata
           puzzle={this.props.puzzle}
           gameId={this.props.gameId}
@@ -210,6 +220,7 @@ class Puzzle extends React.Component {
           onClickCell={this.clickCell}
           squares={this.props.squares}
           puzzle={this.props.puzzle}
+          delegate={this.delegate}
         />
         <ClueBoxContainer
           onSelect={this.selectClue}
