@@ -3,157 +3,23 @@
 </head>
 
 <body>
-  {{> header }}
-  {{> puzzle }}
-  {{> gaq}}
+  {{> app}}
 </body>
 
-<template name='puzzle'>
-  {{#if show}}
-  <div id='puzzle'>
-    {{#with puzzle}}
-    {{> metadata}}
-    {{/with}}
-    {{> currentclue }}
-    <div id='puzzlegrid'>
-      {{#each rows}}
-      {{> row }}
-      {{/each}}
-    </div>
-    <div id='clues'>
-      {{> clues}}
-    </div>
-    {{#if showControls}}
-    <div id='controls'>
-      {{> React
-          component=Sidebar
-          doReveal=doReveal
-          doCheck=doCheck
-          isPencil=isPencil
-          currentUser=currentUser
-          players=players
-      }}
-    </div>
-    {{/if}}
+<template name='app'>
+  <div id='app'>
+    {{> React
+        component=App
+        onUpload=handleUpload
+        currentUser=currentUser
+        puzzleId=puzzleId
+        gameId=gameId
+        currentUser=currentUser
+        onClickCell=onClickCell
+        onSelect=selectClue
+        doReveal=doReveal
+        doCheck=doCheck
+        checkOk=checkOk
+        }}
   </div>
-  {{else}}
-  {{> root }}
-  {{/if}}
-</template>
-
-<template name='root'>
-  <div class="container">
-    <h2>Welcome to CrossMe!</h2>
-
-    <p>CrossMe is an online collaborative crossword-puzzle solver,
-    written in <a href="http://www.meteor.com/">Meteor</a> by <a
-    href="https://nelhage.com/">Nelson Elhage</a>.</p>
-
-    <p>To get started, just click "New Game" above, select a puzzle
-    (I've uploaded most of the recently NYT puzzles), and get started!
-    In the popup, you can click "New Game" to get going right away, or
-    "Preview" to view the puzzle before you start playing.</p>
-
-    <p>CrossMe is <a
-    href="https://github.com/nelhage/crossme">open-source</a>.  Please
-    open an issue on github if you have any issues, or just drop me an
-    <a href="mailto:nelhage@nelhage.com">email</a>.</p>
-  </div>
-</template>
-
-<template name='metadata'>
-  <div id='details'>
-    <div class='title'>
-      <span class='label'>Title</span>
-      <span class='value'>{{title}}</span>
-      {{#if preview}}
-      <span class='preview label'>Preview</span>
-      <button class='btn'>Start Game</button>
-      {{/if}}
-    </div>
-    <div class='author'>
-      <span class='label'>By</span>
-      <span class='value'>{{author}}</span>
-    </div>
-  </div>
-</template>
-
-<template name='currentclue'>
-  {{#with clue}}
-  <div id='theclue'>
-    <span class='label'>
-      <span class='number'>{{number}}</span>
-      <span class='direction'>{{direction}}</span>
-    </span>
-    <span class='text'>{{text}}</span>
-    <div class='clear'></div>
-  </div>
-  {{/with}}
-</template>
-
-<template name='row'>
-  <div class='row'>
-    {{#each cells}}
-    {{> cell }}
-    {{/each}}
-  </div>
-</template>
-
-<template name='cell'>
-  <div class='cell {{css_class}}'>
-    <div class='circle'>
-      {{#if number}}
-      <div class='numberlabel'>
-        {{ number }}
-      </div>
-      {{/if}}
-      <div class='cellbody'>
-        <div class='fill'>
-          {{fill}}
-        </div>
-      </div>
-    </div>
-  </div>
-</template>
-
-<template name='clues'>
-  <div class='section across'>
-    <div class='title'> Across </div>
-    <div class='cluelist'>
-      {{#each across_clues}}
-      {{> clue}}
-      {{/each}}
-    </div>
-  </div>
-  <div class='section down'>
-    <div class='title'> Down </div>
-    <div class='cluelist'>
-      {{#each down_clues}}
-      {{> clue}}
-      {{/each}}
-    </div>
-  </div>
-</template>
-
-<template name='clue'>
-  <div class='clue {{css_class}}'>
-    {{number}}. {{text}}
-  </div>
-</template>
-
-<template name='gaq'>
-  {{#if show}}
-  {{#with settings}}
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-  ga('create', '{{id}}', '{{domain}}');
-  ga('send', 'pageview');
-
-</script>
-  {{/with}}
-  {{/if}}
 </template>

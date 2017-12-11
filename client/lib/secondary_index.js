@@ -25,11 +25,11 @@ SecondaryIndex.prototype._added = function(o) {
 }
 
 SecondaryIndex.prototype._removed = function(o) {
-  var ent = this.cacheEntry(old);
+  var ent = this.cacheEntry(o);
   ent._id = null;
   ent.dep.changed();
   if (!ent.dep.hasDependents()) {
-    delete this.cache[this.cacheKey(old)];
+    delete this.cache[this.cacheKey(o)];
   }
 }
 

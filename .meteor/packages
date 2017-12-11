@@ -3,17 +3,18 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-bootstrap
-accounts-google@1.2.0
-accounts-ui@1.1.9
+accounts-google@1.3.0
+accounts-ui@1.2.0
 standard-app-packages@1.0.9
-standard-minifier-css@1.3.4
-standard-minifier-js@2.1.0
+standard-minifier-css@1.3.5
+standard-minifier-js@2.2.0
 iron:router
-shell-server@0.2.3
-force-ssl@1.0.14
-google-config-ui
-dynamic-import
-babel-runtime
+shell-server@0.3.0
+force-ssl@1.1.0
+google-config-ui@1.0.0
+dynamic-import@0.2.0
+babel-runtime@1.1.1
 react-template-helper
 react
+twbs:bootstrap
+react-meteor-data

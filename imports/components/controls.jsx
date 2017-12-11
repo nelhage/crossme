@@ -1,8 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import { createContainer } from 'meteor/react-meteor-data';
+
 import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 
-import PlayerList from './player_list.jsx';
+import PlayerListContainer from './player_list.jsx';
 
 class RevealControl extends React.Component {
   render() {
@@ -30,7 +32,7 @@ class CheckControl extends React.Component {
 
 class PencilControl extends React.Component {
   click(e) {
-    Session.set('pencil', $(e.currentTarget).data('pencil'));
+    this.props.onSetPencil(e.currentTarget.dataset.pencil === 'true');
   }
 
   render() {
@@ -54,6 +56,13 @@ class PencilControl extends React.Component {
     );
   }
 }
+
+const PencilControlContainer = createContainer(() => {
+  return {
+    isPencil: Session.get('pencil'),
+    onSetPencil: p => (Session.set('pencil', p)),
+  };
+}, PencilControl);
 
 class KeyboardShortcuts extends React.Component {
   constructor(props) {
@@ -147,60 +156,70 @@ class UserPreferences extends React.Component {
             <Modal.Body>
               <form className="form">
                 <h5>After changing direction with the arrow keys:</h5>
-                <label className="radio" htmlFor="settingArrows">
-                  <input
-                    type="radio"
-                    name="settingArrows"
-                    value="stay"
-                    checked={this.isSettingChecked('settingArrows', 'stay', true)}
-                    onChange={onChange}
-                  />
-                  Stay in the same square
-                </label>
-                <label className="radio" htmlFor="settingArrows">
-                  <input
-                    type="radio"
-                    name="settingArrows"
-                    value="move"
-                    checked={this.isSettingChecked('settingArrows', 'move', false)}
-                    onChange={onChange}
-                  />
-                  Move in the direction of the arrow
-                </label>
+                <div className="radio">
+                  <label htmlFor="settingArrows">
+                    <input
+                      type="radio"
+                      name="settingArrows"
+                      value="stay"
+                      checked={this.isSettingChecked('settingArrows', 'stay', true)}
+                      onChange={onChange}
+                    />
+                    Stay in the same square
+                  </label>
+                </div>
+                <div className="radio">
+                  <label htmlFor="settingArrows">
+                    <input
+                      type="radio"
+                      name="settingArrows"
+                      value="move"
+                      checked={this.isSettingChecked('settingArrows', 'move', false)}
+                      onChange={onChange}
+                    />
+                    Move in the direction of the arrow
+                  </label>
+                </div>
 
                 <h5>Within a word:</h5>
-                <label className="radio" htmlFor="settingWithinWord">
-                  <input
-                    type="radio"
-                    name="settingWithinWord"
-                    value="skip"
-                    checked={this.isSettingChecked('settingWithinWord', 'skip', true)}
-                    onChange={onChange}
-                  />
-                  Skip over filled squares
-                </label>
-                <label className="radio" htmlFor="settingWithinWord">
-                  <input
-                    type="radio"
-                    name="settingWithinWord"
-                    value="overwrite"
-                    checked={this.isSettingChecked('settingWithinWord', 'overwrite', false)}
-                    onChange={onChange}
-                  />
-                  Overwrite filled in squares
-                </label>
+                <div className="radio">
+                  <label htmlFor="settingWithinWord">
+                    <input
+                      type="radio"
+                      name="settingWithinWord"
+                      value="skip"
+                      checked={this.isSettingChecked('settingWithinWord', 'skip', true)}
+                      onChange={onChange}
+                    />
+                    Skip over filled squares
+                  </label>
+                </div>
+                <div className="radio">
+                  <label htmlFor="settingWithinWord">
+                    <input
+                      type="radio"
+                      name="settingWithinWord"
+                      value="overwrite"
+                      checked={this.isSettingChecked('settingWithinWord', 'overwrite', false)}
+                      onChange={onChange}
+                    />
+                    Overwrite filled in squares
+                  </label>
+                </div>
 
                 <h5>At the end of a word:</h5>
-                <label className="checkbox" htmlFor="settingEndWordBack">
-                  <input
-                    type="checkbox"
-                    name="settingEndWordBack"
-                    value="back"
-                    checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
-                    onChange={onChange}
-                  />
-                  Jump back to first blank in the word (if any)
-                </label>
+                <div className="checkbox">
+                  <label htmlFor="settingEndWordBack">
+                    <input
+                      type="checkbox"
+                      name="settingEndWordBack"
+                      value="back"
+                      checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
+                      onChange={onChange}
+                    />
+                    Jump back to first blank in the word (if any)
+                  </label>
+                </div>
               </form>
             </Modal.Body>
             <Modal.Footer>
@@ -217,7 +236,7 @@ class UserPreferences extends React.Component {
 export default class Sidebar extends React.Component {
   render() {
     return (
-      <div>
+      <div id="controls">
         <ul className="nav nav-pills nav-stacked">
           <li>
             <RevealControl doReveal={this.props.doReveal} />
@@ -226,11 +245,11 @@ export default class Sidebar extends React.Component {
             <CheckControl checkOk={this.props.checkOk} doCheck={this.props.doCheck} />
           </li>
           <li>
-            <PencilControl isPencil={this.props.isPencil} />
+            <PencilControlContainer />
           </li>
           <li className="player-label"> Now playing:</li>
           <li>
-            <PlayerList players={this.props.players} loggedIn={this.props.currentUser} />
+            <PlayerListContainer gameId={this.props.gameId} />
           </li>
         </ul>
         <KeyboardShortcuts />

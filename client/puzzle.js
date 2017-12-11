@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import Sidebar from "../imports/components/controls.jsx";
+import App from "../imports/components/app.jsx";
 
 FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
 SquaresByPosition = new SecondaryIndex(Squares, ["puzzle", "row", "column"]);
@@ -13,20 +13,6 @@ Deps.autorun(function () {
   var puz = Session.get('previewid');
   if (puz)
     Meteor.subscribe('puzzle', puz);
-});
-Deps.autorun(function () {
-  if (Session.get('gameid') && puzzle_id()) {
-    var s = selected_square();
-    if (!s || s.black) {
-      s = find(active_puzzle(), 0, 0, 0, 1, function (s) { return !s.black });
-      if (s) {
-        select(s);
-      }
-    } else {
-      Session.set('word-across', s.word_across);
-      Session.set('word-down', s.word_down);
-    }
-  }
 });
 
 window.active_puzzle = function() {
@@ -54,7 +40,7 @@ function selected_square() {
 function selected_clue() {
   var s = selected_square();
   var dir = Session.get('selected-direction');
-  return s && Clues.findOne({puzzle:s.puzzle,
+  return s && Clues.findOne({puzzle: s.puzzle,
                              direction: dir,
                              number: selected_square()['word_' + dir]});
 }
@@ -63,68 +49,46 @@ function isPencil() {
   return Session.equals('pencil', true);
 }
 
-Template.puzzle.helpers({
-  show: function() {
-    return !!active_puzzle();
+
+function selectClue(number, direction) {
+  var s = Squares.findOne({puzzle: puzzle_id(), number: number});
+  Session.set('selected-direction', direction);
+  select(s);
+}
+
+Template.app.helpers({
+  puzzleId: function() {
+    return puzzle_id();
   },
-  showControls: function() {
-    return !!Session.get('gameid');
-  },
-  puzzle: active_puzzle,
-  rows: function() {
-    var rows = [];
-    var puz = active_puzzle();
-    for (var r = 0; r < puz.height; r++) {
-      rows.push({puzzle: puz, row: r});
-    }
-    return rows;
+  gameId: function() {
+    return Session.get('gameid');
   },
   checkOk: function() {
     return !!Session.get('check-ok');
   },
-  isPencil: function() {
-    return !!isPencil();
-  },
-  players: function() {
-    var id = Session.get('gameid');
-    var game = id && Games.findOne({_id: id});
-    if (!game || !game.players) {
-      return [];
-    }
-    return game.players.map(function (who) {
-      // Apparently {{each}} requires every element you return to have an _id.
-      who._id = who.userId;
-      who.user = Meteor.users.findOne({_id: who.userId});
-      who.isMe = (who.user._id === Meteor.userId());
-      return who;
-    });
-  },
 
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
-  Sidebar: function() { return Sidebar; },
-});
 
-Template.currentclue.helpers({
-    clue: selected_clue,
-});
-
-Template.metadata.helpers({
-  preview: function() {
-    return !!Session.get('previewid');
+  onClickCell: function() {
+    return clickCell;
   },
+
+  selectClue: function() {
+    return selectClue;
+  },
+
+  handleUpload: function() { return handleUpload },
+
+  App: function() { return App; }
 });
 
-Template.metadata.events({
-  'click button': function() {
-    var puz = Session.get('previewid');
-    Meteor.call('newGame', puz, function (error, id) {
-      if (!error)
-        load_game(id);
-    });
-    return false;
-  }
-});
+function clickCell({row, column}) {
+  const sq = SquaresByPosition.find(
+    {puzzle: puzzle_id(), row: row, column: column});
+  if (sq && !sq.black)
+    select(sq);
+}
 
 function scroll_into_view(e) {
   if (e.length) {
@@ -334,96 +298,6 @@ function handle_key(k) {
   return true;
 }
 
-Template.row.helpers({
-  cells: function() {
-    return Squares.find({puzzle: this.puzzle._id, row: this.row},{sort: {column: 1}});
-  }
-});
-
-Template.cell.helpers({
-  number: function() {
-    return this.number;
-  },
-  fill: function() {
-    if (!Session.get('gameid'))
-      return '';
-    var f = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-    return f ? (f.letter || '') : '';
-  },
-  css_class: function() {
-    var classes = []
-    if (this.black)
-      return 'filled';
-    if (this.circled)
-      classes.push('circled');
-    if (Session.equals('selected-row', this.row) &&
-             Session.equals('selected-column', this.column))
-      classes.push('selected');
-    else if (Session.equals('word-across', this.word_across))
-      classes.push(Session.equals('selected-direction', 'across') ? 'inword' : 'otherword');
-    else if (Session.equals('word-down', this.word_down))
-      classes.push(Session.equals('selected-direction', 'down') ? 'inword' : 'otherword');
-    if (Session.get('gameid')) {
-      var fill = FillsBySquare.find({square: this._id, game: Session.get('gameid')});
-      if (fill && fill.reveal)
-        classes.push('reveal');
-      else if (fill && fill.checked === 'checking')
-        classes.push('wrong');
-      else if (fill && fill.checked === 'checked')
-        classes.push('checked');
-      if (fill && fill.pencil)
-        classes.push('pencil');
-      if (fill && fill.correct && this.letter === fill.letter)
-        classes.push('correct');
-    }
-    return classes.join(' ');
-  },
-});
-
-Template.cell.events({
-  'click': function () {
-    if (!this.black)
-      select(this);
-  }
-});
-
-
-Template.clues.helpers({
-  across_clues: function() {
-    return Clues.find({puzzle: puzzle_id(), direction: 'across'}, {sort: {number: 1}});
-  },
-  down_clues: function() {
-    return Clues.find({puzzle: puzzle_id(), direction: 'down'}, {sort: {number: 1}});
-  },
-  number: function() {
-    return this.number;
-  },
-});
-
-Template.clue.events({
-  'click': function() {
-    var s = Squares.findOne({puzzle: this.puzzle, number: this.number});
-    Session.set('selected-direction', this.direction);
-    select(s);
-  }
-})
-
-Template.clue.helpers({
-  text: function() {
-    return this.text;
-  },
-  css_class: function() {
-    var classes = ['clue-' + this.number];
-    if (Session.equals('word-' + this.direction, this.number)) {
-      if (Session.equals('selected-direction', this.direction))
-        classes.push('selected');
-      else
-        classes.push('otherword');
-    }
-    return classes.join(' ');
-  },
-});
-
 window.load_game = function(id) {
   Router.go('game', {id: id});
 }
@@ -466,6 +340,37 @@ function doCheck(eventKey, e) {
       }
     }
   });
+}
+
+function handleUpload(files) {
+  var i = 0;
+  var uploadNext = function(error, id) {
+    if (error) {
+      window.the_error = error;
+      alert("Error uploading: " + files[i].name + ": " + error);
+    } else {
+      if (i === files.length - 1) {
+        load_preview(id);
+      } else {
+        i++;
+        uploadFile(files[i], uploadNext);
+      }
+    }
+  }
+  uploadFile(files[0], uploadNext);
+}
+
+function uploadFile(file, cb) {
+    var fr = new FileReader();
+    fr.onerror = function() {
+        cb(fr.error, null);
+    };
+    fr.onload = function() {
+        Meteor.call('uploadPuzzle', fr.result, function (error, id) {
+            cb(error, id);
+        });
+    };
+    fr.readAsBinaryString(file);
 }
 
 function maybePing() {
