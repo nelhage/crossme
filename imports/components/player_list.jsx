@@ -1,5 +1,5 @@
 import React from 'react';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 /* global Games */
 
@@ -25,9 +25,22 @@ class PlayerList extends React.Component {
 }
 
 class PlayerListEntry extends React.Component {
+  constructor(props) {
+    super(props);
+    if (this.props.isMe) {
+      this.state = { profile_name: this.props.user.profile.name };
+    }
+
+    this.submitName = this.submitName.bind(this);
+    this.nameChanged = this.nameChanged.bind(this);
+  }
+
+  submitName() {
+    Meteor.call('setName', this.state.profile_name);
+  }
+
   nameChanged(e) {
-    e.preventDefault();
-    Meteor.call('setName', $(e.currentTarget).val());
+    this.setState({ profile_name: e.target.value });
   }
 
   render() {
@@ -37,8 +50,9 @@ class PlayerListEntry extends React.Component {
           <input
             className="my-name"
             type="text"
-            value={this.props.user.profile.name}
+            value={this.state.profile_name}
             onChange={this.nameChanged}
+            onBlur={this.submitName}
           />
         </li>
       );
@@ -52,7 +66,7 @@ class PlayerListEntry extends React.Component {
 
 }
 
-export default createContainer(({ gameId }) => {
+export default withTracker(({ gameId }) => {
   let players = [];
   const userId = Meteor.userId();
   if (gameId) {
@@ -71,4 +85,4 @@ export default createContainer(({ gameId }) => {
     loggedIn: !!userId,
     players,
   };
-}, PlayerList);
+})(PlayerList);

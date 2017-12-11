@@ -15,11 +15,6 @@ Deps.autorun(function () {
     Meteor.subscribe('puzzle', puz);
 });
 
-window.active_puzzle = function() {
-  var id = puzzle_id();
-  return id && Puzzles.findOne({_id: id});
-}
-
 function puzzle_id() {
   if (Session.get('previewid'))
     return Session.get('previewid');
@@ -49,13 +44,6 @@ function isPencil() {
   return Session.equals('pencil', true);
 }
 
-
-function selectClue(number, direction) {
-  var s = Squares.findOne({puzzle: puzzle_id(), number: number});
-  Session.set('selected-direction', direction);
-  select(s);
-}
-
 Template.app.helpers({
   puzzleId: function() {
     return puzzle_id();
@@ -63,32 +51,14 @@ Template.app.helpers({
   gameId: function() {
     return Session.get('gameid');
   },
-  checkOk: function() {
-    return !!Session.get('check-ok');
-  },
 
   doReveal: function() { return doReveal; },
   doCheck: function() { return doCheck; },
-
-  onClickCell: function() {
-    return clickCell;
-  },
-
-  selectClue: function() {
-    return selectClue;
-  },
 
   handleUpload: function() { return handleUpload },
 
   App: function() { return App; }
 });
-
-function clickCell({row, column}) {
-  const sq = SquaresByPosition.find(
-    {puzzle: puzzle_id(), row: row, column: column});
-  if (sq && !sq.black)
-    select(sq);
-}
 
 function scroll_into_view(e) {
   if (e.length) {
@@ -104,206 +74,11 @@ function select(square) {
   Session.set('selected-column', square.column);
   Session.set('word-across', square.word_across);
   Session.set('word-down', square.word_down);
-  Session.set('check-ok', null);
   if (!Session.get('selected-direction'))
     Session.set('selected-direction', 'across');
   scroll_into_view($('#clues .across .clue.clue-'+ square.word_across));
   scroll_into_view($('#clues .down .clue.clue-' + square.word_down));
   return false;
-}
-
-function find(puz, row, col, dr, dc, predicate) {
-  var s;
-  while (true) {
-    if (row < 0 || row >= puz.height ||
-        col < 0 || col >= puz.width)
-      return null;
-    s = SquaresByPosition.find({row: row, column: col, puzzle: puz._id});
-    if (!s)
-      return null;
-    if (predicate(s))
-      return s;
-    row += dr;
-    col += dc;
-  }
-}
-
-function first_blank(word) {
-  var h = {puzzle: word.puzzle}
-  h['word_' + word.direction] = word.number;
-  first = Squares.findOne(h);
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  return find_blank_in_word(first, dr, dc) || false;
-}
-
-function move(dr, dc, inword) {
-  Session.set('selected-direction', dr ? 'down' : 'across');
-
-  var row = Session.get('selected-row') || 0,
-      col = Session.get('selected-column') || 0;
-  var puz = active_puzzle();
-  var sel = selected_square();
-  var dst = find(puz, row+dr, col+dc, dr, dc, function (s) {
-    if (inword && ((dc && sel.word_across !== s.word_across) ||
-                   (dr && sel.word_down   !== s.word_down)))
-      return false;
-    return !s.black;
-  });
-  if (!dst) return false;
-  select(dst);
-  return false;
-}
-
-function letter(keycode) {
-  var s = String.fromCharCode(keycode);
-  var square = selected_square();
-  Meteor.call('setLetter', Session.get('gameid'), square._id, s, isPencil());
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  var sq = find_blank_in_word(square, dr, dc);
-  var first = first_blank(selected_clue());
-  if (sq && Meteor.user() && Meteor.user().profile.settingWithinWord == "skip")
-    select(sq);
-  else if (sq === null && first && Meteor.user() && Meteor.user().profile.settingEndWordBack)
-    select(first);
-  else if (Session.get('selected-direction') == 'across')
-    move(0, 1, true);
-  else
-    move(1, 0, true);
-  return false;
-}
-
-function clearCell() {
-  var square = selected_square();
-  Meteor.call('clearLetter', Session.get('gameid'), square._id);
-  Session.set('check-ok', null);
-  return false;
-}
-
-function deleteKey() {
-  clearCell();
-  if (Session.get('selected-direction') == 'across')
-    move(0, -1, true);
-  else
-    move(-1, 0, true);
-  return false;
-}
-
-function find_blank_in_word(square, dr, dc) {
-  return find(Puzzles.findOne(square.puzzle),
-              square.row, square.column, dr, dc, function (s) {
-    if (s.black)
-      return null;
-    else if ((dc && (square.word_across !== s.word_across)) ||
-             (dr && (square.word_down !== s.word_down)))
-      return false;
-    var f = FillsBySquare.find({square: s._id, game: Session.get('gameid')});
-    return f && f.letter === null;
-  });
-}
-
-function tabKey(k) {
-  var dr = 0, dc = 0;
-  if (Session.get('selected-direction') === 'down')
-    dr = 1;
-  else
-    dc = 1;
-  var sel = selected_clue();
-  var cmp, sort;
-  if (k.shiftKey) {
-    cmp = '$lt';
-    sort = -1;
-  } else {
-    cmp = '$gt';
-    sort = 1;
-  }
-  var query = {};
-  query[cmp] = sel.number;
-  var clue = Clues.findOne({number: query, puzzle: sel.puzzle, direction: sel.direction},
-                         {sort: {number: sort}});
-  if (!clue)
-    clue = Clues.findOne({puzzle: sel.puzzle, direction: sel.direction === 'down' ? 'across' : 'down'},
-                           {sort: {number: sort}});
-  var h = {puzzle: clue.puzzle};
-  h['word_' + clue.direction] = clue.number;
-  var s = Squares.findOne(h);
-  s = find_blank_in_word(s, dr, dc) || s;
-  select(s);
-  Session.set('selected-direction', clue.direction);
-  return false;
-}
-
-function handle_key(k) {
-  if (k.target.nodeName.toLowerCase() === 'input')
-    return true;
-
-  if (k.altKey && k.keyCode === 80) {
-    Session.set('pencil', !Session.get('pencil'))
-    return false;
-  }
-  if (k.altKey || k.ctrlKey || k.metaKey)
-    return true;
-  if ((k.keyCode === 39 || k.keyCode === 37) &&
-      Session.get('selected-direction') === 'down' &&
-      Meteor.user() &&
-      Meteor.user().profile.settingArrows === "stay") {
-    Session.set('selected-direction', 'across');
-    return false;
-  }
-  else if ((k.keyCode === 38 || k.keyCode === 40) &&
-           Session.get('selected-direction') === 'across' &&
-           Meteor.user() &&
-           Meteor.user().profile.settingArrows === "stay") {
-    Session.set('selected-direction', 'down');
-    return false;
-  }
-  else if (k.keyCode === 39)
-    return move(0, 1);
-  else if (k.keyCode === 37)
-    return move(0, -1);
-  else if (k.keyCode === 38)
-    return move(-1, 0);
-  else if (k.keyCode === 40)
-    return move(1, 0);
-  else if (k.keyCode === 13) {
-    Session.set('selected-direction', Session.equals('selected-direction', 'across') ? 'down' : 'across');
-    return false;
-  }
-  if (!Session.get('gameid'))
-    return true;
-  else if (k.keyCode >= 'A'.charCodeAt(0) && k.keyCode <= 'Z'.charCodeAt(0))
-    return letter(k.keyCode);
-  else if (k.keyCode === ' '.charCodeAt(0))
-    return clearCell();
-  else if (k.keyCode === 8 ||
-           k.keyCode === 46)
-    return deleteKey();
-  else if (k.keyCode === 9)
-    return tabKey(k);
-  else if (k.keyCode === 191 && k.shiftKey) {
-    toggleKeyboardShortcuts();
-    return false;
-  } else if (k.keyCode === 27 && showingKeyboardShortcuts()) {
-    hideKeyboardShortcuts();
-    return false;
-  }
-
-  return true;
-}
-
-window.load_game = function(id) {
-  Router.go('game', {id: id});
-}
-
-window.load_preview = function(id) {
-  Router.go('preview', {id: id});
 }
 
 function puzzleState() {
@@ -312,14 +87,6 @@ function puzzleState() {
     square: selected_square()._id,
     direction: Session.get('selected-direction')
   };
-}
-
-function showingKeyboardShortcuts() {
-  return $('#shortcuts-help').is(':visible');
-}
-
-function hideKeyboardShortcuts() {
-  return $('#shortcuts-help').hide();
 }
 
 function doReveal(eventKey, e) {
@@ -334,9 +101,6 @@ function doCheck(eventKey, e) {
     if (error === undefined) {
       if (square) {
         select(Squares.findOne({_id: square}));
-        Session.set('check-ok', false);
-      } else {
-        Session.set('check-ok', true);
       }
     }
   });
@@ -346,11 +110,10 @@ function handleUpload(files) {
   var i = 0;
   var uploadNext = function(error, id) {
     if (error) {
-      window.the_error = error;
       alert("Error uploading: " + files[i].name + ": " + error);
     } else {
       if (i === files.length - 1) {
-        load_preview(id);
+        Router.go('preview', {id: id});
       } else {
         i++;
         uploadFile(files[i], uploadNext);
@@ -380,7 +143,6 @@ function maybePing() {
 }
 
 Meteor.startup(function() {
-  $('body').on('keydown', handle_key);
   Meteor.setInterval(maybePing, 30 * 1000);
 });
 

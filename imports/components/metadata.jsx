@@ -1,8 +1,15 @@
 import React from 'react';
+import { withTracker } from 'meteor/react-meteor-data';
 
-/* global Router */
+/* global Router, Games */
 
-export default class Metadata extends React.Component {
+const withGame = withTracker(({ gameId }) => {
+  return {
+    game: Games.findOne({ _id: gameId }),
+  };
+});
+
+class Metadata extends React.Component {
   startGame() {
     const id = this.props.puzzle._id;
     Meteor.call('newGame', id, function (error, gotId) {
@@ -18,6 +25,10 @@ export default class Metadata extends React.Component {
         <div className="title">
           <span className="label label-default">Title</span>
           <span className="value"> {this.props.puzzle.title}</span>
+          {this.props.game && this.props.game.solved && (
+            <span className="label label-success">Solved!</span>
+          )}
+
           {(!this.props.gameId) && (
             <span>
               <span className="preview label">Preview</span>
@@ -33,3 +44,5 @@ export default class Metadata extends React.Component {
     );
   }
 }
+
+export default withGame(Metadata);

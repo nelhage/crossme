@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import { _ } from 'meteor/underscore';
 
@@ -59,7 +59,7 @@ class RecentGames extends React.Component {
   }
 }
 
-const RecentGamesContainer = createContainer(({ currentUser }) => {
+const RecentGamesContainer = withTracker(({ currentUser }) => {
   return {
     games: Games.find(
       { 'players.userId': currentUser._id },
@@ -77,7 +77,7 @@ const RecentGamesContainer = createContainer(({ currentUser }) => {
         };
       }),
   };
-}, RecentGames);
+})(RecentGames);
 
 class NewGameModal extends React.Component {
   doPreview(evt) {
@@ -178,13 +178,12 @@ class NewGame extends React.Component {
   }
 }
 
-const NewGameContainer = createContainer(({ onUpload }) => {
+const NewGameContainer = withTracker(() => {
   const puzzles = Puzzles.find().fetch();
   return {
-    onUpload,
     puzzles,
   };
-}, NewGame);
+})(NewGame);
 
 export default class Header extends React.Component {
   render() {

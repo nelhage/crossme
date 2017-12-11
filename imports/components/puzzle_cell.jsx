@@ -6,6 +6,13 @@ import { cursorState } from '../ui/cursor.jsx';
 /* global FillsBySquare */
 
 class PuzzleCell extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.setSquare = (e) => {
+      this.props.delegate.setFill(this.props.square, e.target.value);
+    };
+  }
+
   computeClasses() {
     if (this.props.black) {
       return 'filled';
@@ -20,6 +27,7 @@ class PuzzleCell extends React.PureComponent {
       checked: (this.props.fill.checked === 'checked'),
       correct: (this.props.fill.correct && this.props.letter === this.props.fill.letter),
       pencil: this.props.fill.pencil,
+      rebus: this.props.fill.letter && this.props.fill.letter.length > 1,
     };
 
     return classes;
@@ -28,8 +36,9 @@ class PuzzleCell extends React.PureComponent {
   render() {
     const classes = this.computeClasses();
 
+    /* eslint-disable jsx-a11y/no-autofocus */
     return (
-      <div role="button" className={classNames('cell', classes)} onClick={this.props.onClick} >
+      <div role="button" className={classNames('cell', classes)} onClick={!this.props.rebus && this.props.onClick} >
         <div className="circle">
           {this.props.number && (
             <div className="numberlabel">
@@ -37,9 +46,18 @@ class PuzzleCell extends React.PureComponent {
             </div>
           )}
           <div className="cellbody">
-            <div className="fill">
-              {this.props.fill.letter}
-            </div>
+            {this.props.rebus ? (
+              <input
+                className="fill"
+                defaultValue={this.props.fill.letter}
+                onBlur={this.setSquare}
+                autoFocus="true"
+              />
+            ) : (
+              <div className="fill">
+                {this.props.fill.letter}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -59,10 +77,10 @@ const withFill = withTracker(
 
 const wrapCell = withTracker(
   ({ square, gameId, onClick }) => {
-    const cursor = cursorState();
     if (!square) {
       return { };
     }
+    const cursor = cursorState();
     const props = {
       gameId,
       number: square.number,
@@ -71,12 +89,13 @@ const wrapCell = withTracker(
       letter: square.letter,
       selected: (
         cursor.selected_row === square.row &&
-          cursor.selected_column === square.column
+        cursor.selected_column === square.column
       ),
       onClick,
     };
 
     if (props.selected) {
+      props.rebus = Session.get('rebus');
       return props;
     }
 

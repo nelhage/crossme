@@ -1,4 +1,4 @@
-/* eslint-disable */
+/* global Router */
 
 Router.route('/', function() {
   Session.set('gameid', null);

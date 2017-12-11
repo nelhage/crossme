@@ -19,6 +19,13 @@
     font-weight: bold;
 }
 
+#details div.solved {
+    font-size: 200%;
+    border: 5px solid #0c0;
+    margin: 5px;
+    float: right;
+}
+
 #details .preview {
     background-color: #88f;
     font-size: 24px;
@@ -75,13 +82,28 @@
     vertical-align: baseline;
     position: absolute;
     left: 4px;
+    top: 2px;
+}
+
+#puzzlegrid .cell.rebus .fill {
+    font-size: 15px;
+    left: 0px;
     top: 4px;
+}
+
+#puzzlegrid .cell input.fill {
+    width: 3em;
+    z-index: 100;
+    left: -1em;
+    text-transform: uppercase;
 }
 
 #puzzlegrid .cell .cellbody {
     position: relative;
-    width: 29px;
-    height: 29px;
+    left: -1px;
+    top: -1px;
+    width: 31px;
+    height: 31px;
     margin: 2px;
 }
 
@@ -186,10 +208,6 @@
 #controls {
     float: left;
     padding-left: 10px;
-}
-
-#controls button.check-ok {
-    color: #3f3;
 }
 
 #controls .player-label {

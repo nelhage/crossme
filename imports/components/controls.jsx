@@ -1,6 +1,6 @@
 import React from 'react';
 import classNames from 'classnames';
-import { createContainer } from 'meteor/react-meteor-data';
+import { withTracker } from 'meteor/react-meteor-data';
 
 import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 
@@ -21,7 +21,7 @@ class RevealControl extends React.Component {
 class CheckControl extends React.Component {
   render() {
     return (
-      <DropdownButton className={classNames({ 'check-ok': this.props.checkOk })} title="Check" id="dCheck" onSelect={this.props.doCheck}>
+      <DropdownButton title="Check" id="dCheck" onSelect={this.props.doCheck}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>
@@ -57,12 +57,31 @@ class PencilControl extends React.Component {
   }
 }
 
-const PencilControlContainer = createContainer(() => {
+const PencilControlContainer = withTracker(() => {
   return {
     isPencil: Session.get('pencil'),
     onSetPencil: p => (Session.set('pencil', p)),
   };
-}, PencilControl);
+})(PencilControl);
+
+class RebusControl extends React.Component {
+  click() {
+    Session.set('rebus', true);
+  }
+
+  render() {
+    return (
+      <div className="btn-group">
+        <button
+          className="btn"
+          onClick={this.click.bind(this)}
+        >
+          Rebus
+        </button>
+      </div>
+    );
+  }
+}
 
 class KeyboardShortcuts extends React.Component {
   constructor(props) {
@@ -242,10 +261,13 @@ export default class Sidebar extends React.Component {
             <RevealControl doReveal={this.props.doReveal} />
           </li>
           <li>
-            <CheckControl checkOk={this.props.checkOk} doCheck={this.props.doCheck} />
+            <CheckControl doCheck={this.props.doCheck} />
           </li>
           <li>
             <PencilControlContainer />
+          </li>
+          <li>
+            <RebusControl />
           </li>
           <li className="player-label"> Now playing:</li>
           <li>

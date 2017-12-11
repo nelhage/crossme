@@ -16,25 +16,28 @@ function find_word(puz, cell) {
 Meteor.methods({
     uploadPuzzle: function (buf) {
       var puz = new PuzFile(new Buffer(buf, 'binary'));
+      var puzid;
       var existing = Puzzles.findOne({title: puz.title, author: puz.author});
       if (existing) {
-        return existing._id;
+        puzid =  existing._id;
+      } else {
+        puzid = Puzzles.insert({
+          title: puz.title,
+          author: puz.author,
+          copyright: puz.copyright,
+          note: puz.note,
+          width: puz.width,
+          height: puz.height
+        });
       }
-      var puzid = Puzzles.insert({
-        title: puz.title,
-        author: puz.author,
-        copyright: puz.copyright,
-        note: puz.note,
-        width: puz.width,
-        height: puz.height
-      });
       for (var r = 0; r < puz.height; r++) {
         for (var c = 0; c < puz.width; c++) {
-          var h = {
+          var key = {
             puzzle: puzid,
             row: r,
             column: c
           };
+          var h = _.clone(key);
           if (puz.circled[r][c]) {
             h.circled = true;
           }
@@ -47,17 +50,17 @@ Meteor.methods({
           };
           if (puz.numbers[r][c])
             h.number = puz.numbers[r][c];
-          Squares.insert(h);
+          Squares.upsert(key, h);
         }
       }
       function store_clue(clue, index, direction) {
         if (clue) {
-          Clues.insert({
+          const q = {
             puzzle: puzid,
-            text: clue,
             direction: direction,
             number: index
-          });
+          };
+          Clues.upsert(q, _.extend(q, { text: clue }));
         }
       }
       puz.down_clues.forEach(function (clue, index) {

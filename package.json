@@ -47,7 +47,8 @@
         {
           "requireReturnForObjectLiteral": true
         }
-      ]
+      ],
+      "no-continue": "off"
     },
     "globals": {
       "Meteor": false,
