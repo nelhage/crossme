@@ -44,6 +44,9 @@ class PlayerListEntry extends React.Component {
   }
 
   render() {
+    if (!this.props.user || !this.props.users.profile) {
+      return null;
+    }
     if (this.props.isMe) {
       return (
         <li>
