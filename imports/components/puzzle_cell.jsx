@@ -10,7 +10,7 @@ class PuzzleCell extends React.PureComponent {
     super(props);
     this.setSquare = (e) => {
       this.props.delegate.setFill(this.props.square, e.target.value);
-    }
+    };
   }
 
   computeClasses() {
@@ -36,8 +36,9 @@ class PuzzleCell extends React.PureComponent {
   render() {
     const classes = this.computeClasses();
 
+    /* eslint-disable jsx-a11y/no-autofocus */
     return (
-        <div role="button" className={classNames('cell', classes)} onClick={!this.props.rebus && this.props.onClick} >
+      <div role="button" className={classNames('cell', classes)} onClick={!this.props.rebus && this.props.onClick} >
         <div className="circle">
           {this.props.number && (
             <div className="numberlabel">
@@ -65,7 +66,7 @@ class PuzzleCell extends React.PureComponent {
 }
 
 const withFill = withTracker(
-  ({ square, gameId, selected }) => {
+  ({ square, gameId }) => {
     if (!square) {
       return { fill: {} };
     }
@@ -75,7 +76,7 @@ const withFill = withTracker(
   });
 
 const wrapCell = withTracker(
-  ({ square, gameId, onClick, fill }) => {
+  ({ square, gameId, onClick }) => {
     if (!square) {
       return { };
     }
