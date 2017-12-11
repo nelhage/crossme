@@ -95,6 +95,7 @@
     width: 3em;
     z-index: 100;
     left: -1em;
+    text-transform: uppercase;
 }
 
 #puzzlegrid .cell .cellbody {

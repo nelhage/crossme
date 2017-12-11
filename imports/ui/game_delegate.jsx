@@ -37,7 +37,11 @@ export default class GameDelegate {
   }
 
   setFill(square, fill) {
-    Meteor.call('setLetter', this.component.props.gameId, square._id, fill, this.isPencil());
+    Meteor.call('setLetter',
+                this.component.props.gameId,
+                square._id,
+                fill.toUpperCase(),
+                this.isPencil());
   }
 
   clearFill(square) {
