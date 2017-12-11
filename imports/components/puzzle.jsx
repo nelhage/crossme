@@ -78,7 +78,7 @@ class Puzzle extends React.Component {
       squares: this.props.squares,
       clues: this.props.clues,
     });
-    this.startSync();
+    this.startSync(props.gameId);
 
     this.selectClue = this.selectClue.bind(this);
     this.clickCell = this.clickCell.bind(this);
@@ -93,7 +93,7 @@ class Puzzle extends React.Component {
     this.game.state.squares = newProps.squares;
     this.game.state.clues = newProps.clues;
     if (newProps.gameId !== this.props.gameId) {
-      this.startSync();
+      this.startSync(newProps.gameId);
     }
   }
 
@@ -107,7 +107,7 @@ class Puzzle extends React.Component {
     }
   }
 
-  startSync() {
+  startSync(gameId) {
     this.stopSync();
     Tracker.nonreactive(() => {
       this.handles = [];
@@ -123,7 +123,7 @@ class Puzzle extends React.Component {
         }));
       this.game.state.fills = {};
       this.handles.push(
-        Fills.find({ game: this.props.gameId }).observe({
+        Fills.find({ game: gameId }).observe({
           added: (e) => {
             this.game.state.fills[e.square] = e;
           },
