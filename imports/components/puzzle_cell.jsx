@@ -94,9 +94,7 @@ const wrapCell = withTracker(
     };
 
     if (props.selected) {
-      if ((fill && fill.letter && fill.letter.length > 1) || Session.get('rebus')) {
-        props.rebus = true;
-      }
+      props.rebus = Session.get('rebus');
       return props;
     }
 

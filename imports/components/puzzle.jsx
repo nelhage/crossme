@@ -85,6 +85,10 @@ class Puzzle extends React.Component {
     this.keyDown = this.keyDown.bind(this);
   }
 
+  componentDidMount() {
+    this.div.focus();
+  }
+
   componentWillReceiveProps(newProps) {
     this.game.state.squares = newProps.squares;
     this.game.state.clues = newProps.clues;
@@ -151,7 +155,13 @@ class Puzzle extends React.Component {
         this.game.nextClue(e.shiftKey);
         e.target.blur();
         e.preventDefault();
+      } else if (e.key === 'Enter') {
+        e.target.blur();
+        e.preventDefault();
+        Session.set('rebus', false);
+        this.div.focus();
       }
+
       return;
     }
 
@@ -205,7 +215,12 @@ class Puzzle extends React.Component {
       /* eslint-disable jsx-a11y/no-static-element-interactions,
                         jsx-a11y/no-noninteractive-tabindex
       */
-      <div id="puzzle" onKeyDown={this.keyDown} tabIndex="0" autoFocus="true">
+      <div
+        id="puzzle"
+        onKeyDown={this.keyDown}
+        tabIndex="0"
+        ref={(div) => { this.div = div; }}
+      >
         <Metadata
           puzzle={this.props.puzzle}
           gameId={this.props.gameId}
