@@ -138,7 +138,7 @@ class Puzzle extends React.Component {
   }
 
   selectClue(number, direction) {
-    const s = Squares.findOne({ puzzle: this.props.puzzle.id, number });
+    const s = Squares.findOne({ puzzle: this.props.puzzle._id, number });
     this.delegate.select(s, direction);
   }
 
