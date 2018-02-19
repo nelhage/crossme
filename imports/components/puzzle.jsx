@@ -86,7 +86,7 @@ class Puzzle extends React.Component {
   }
 
   componentDidMount() {
-    this.div.focus();
+    window.addEventListener('keydown', this.keyDown);
   }
 
   componentWillReceiveProps(newProps) {
@@ -98,6 +98,7 @@ class Puzzle extends React.Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('keydown', this.keyDown);
     this.stopSync();
   }
 
@@ -159,7 +160,6 @@ class Puzzle extends React.Component {
         e.target.blur();
         e.preventDefault();
         Session.set('rebus', false);
-        this.div.focus();
       }
 
       return;
@@ -212,14 +212,8 @@ class Puzzle extends React.Component {
 
   render() {
     return (
-      /* eslint-disable jsx-a11y/no-static-element-interactions,
-                        jsx-a11y/no-noninteractive-tabindex
-      */
       <div
         id="puzzle"
-        onKeyDown={this.keyDown}
-        tabIndex="0"
-        ref={(div) => { this.div = div; }}
       >
         <Metadata
           puzzle={this.props.puzzle}
