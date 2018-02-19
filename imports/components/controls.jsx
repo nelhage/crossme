@@ -7,9 +7,19 @@ import { DropdownButton, MenuItem, Modal, Button } from 'react-bootstrap';
 import PlayerListContainer from './player_list.jsx';
 
 class RevealControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onSelect = this.onSelect.bind(this);
+  }
+
+  onSelect(eventKey, event) {
+    event.currentTarget.blur();
+    this.props.doReveal(eventKey, event);
+  }
+
   render() {
     return (
-      <DropdownButton title="Reveal" id="dReveal" onSelect={this.props.doReveal}>
+      <DropdownButton title="Reveal" id="dReveal" onSelect={this.onSelect}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>
@@ -19,9 +29,19 @@ class RevealControl extends React.Component {
 }
 
 class CheckControl extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onSelect = this.onSelect.bind(this);
+  }
+
+  onSelect(eventKey, event) {
+    event.currentTarget.blur();
+    this.props.doCheck(eventKey, event);
+  }
+
   render() {
     return (
-      <DropdownButton title="Check" id="dCheck" onSelect={this.props.doCheck}>
+      <DropdownButton title="Check" id="dCheck" onSelect={this.onSelect}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>

@@ -90,14 +90,12 @@ function puzzleState() {
 }
 
 function doReveal(eventKey, e) {
-  e.currentTarget.blur();
   var target = $(e.currentTarget).data('target');
   Meteor.call('reveal', puzzleState(), target);
   return true;
 }
 
 function doCheck(eventKey, e) {
-  e.currentTarget.blur();
   var target = $(e.currentTarget).data('target');
   Meteor.call('check', puzzleState(), target, function (error, square) {
     if (error === undefined) {
