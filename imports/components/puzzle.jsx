@@ -83,6 +83,7 @@ class Puzzle extends React.Component {
     this.selectClue = this.selectClue.bind(this);
     this.clickCell = this.clickCell.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    this.resetFocus = this.resetFocus.bind(this);
   }
 
   componentDidMount() {
@@ -206,6 +207,10 @@ class Puzzle extends React.Component {
     }
   }
 
+  resetFocus() {
+    this.div.focus();
+  }
+
   selectedSquare() {
     return this.props.squares[Session.get('selected-row')][Session.get('selected-column')];
   }
@@ -239,6 +244,7 @@ class Puzzle extends React.Component {
           <Sidebar
             doReveal={this.props.doReveal}
             doCheck={this.props.doCheck}
+            resetFocus={this.resetFocus}
             gameId={this.props.gameId}
             currentUser={this.props.currentUser}
           />}
