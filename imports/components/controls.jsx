@@ -9,7 +9,7 @@ import PlayerListContainer from './player_list.jsx';
 class RevealControl extends React.Component {
   render() {
     return (
-      <DropdownButton title="Reveal" id="dReveal" onSelect={this.props.doReveal}>
+      <DropdownButton title="Reveal" id="dReveal" onSelect={this.props.doReveal} onToggle={this.props.onToggle}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>
@@ -21,7 +21,7 @@ class RevealControl extends React.Component {
 class CheckControl extends React.Component {
   render() {
     return (
-      <DropdownButton title="Check" id="dCheck" onSelect={this.props.doCheck}>
+      <DropdownButton title="Check" id="dCheck" onSelect={this.props.doCheck} onToggle={this.props.onToggle}>
         <MenuItem data-target="square">Square</MenuItem>
         <MenuItem data-target="word">Word</MenuItem>
         <MenuItem data-target="grid">Grid</MenuItem>
@@ -253,15 +253,27 @@ class UserPreferences extends React.Component {
 }
 
 export default class Sidebar extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.onToggle = this.onToggle.bind(this);
+  }
+
+  onToggle(isOpen) {
+    if (!isOpen && this.props.resetFocus) {
+      this.props.resetFocus();
+    }
+  }
+
   render() {
     return (
       <div id="controls">
         <ul className="nav nav-pills nav-stacked">
           <li>
-            <RevealControl doReveal={this.props.doReveal} />
+            <RevealControl doReveal={this.props.doReveal} onToggle={this.onToggle} />
           </li>
           <li>
-            <CheckControl doCheck={this.props.doCheck} />
+            <CheckControl doCheck={this.props.doCheck} onToggle={this.onToggle} />
           </li>
           <li>
             <PencilControlContainer />
