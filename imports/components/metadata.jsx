@@ -42,13 +42,15 @@ class Metadata extends React.Component {
           {' '}
           <span className="value">{this.props.puzzle.author}</span>
         </div>
-        {this.props.puzzle.note && (
-           <div className="note">
-             <span className="label label-default">Note</span>
-             {' '}
-             <span className="value">{this.props.puzzle.note}</span>
-           </div>
-        )}
+        {
+          this.props.puzzle.note && (
+            <div className="note">
+              <span className="label label-default">Note</span>
+              {' '}
+              <span className="value">{this.props.puzzle.note}</span>
+            </div>
+          )
+        }
       </div>
     );
   }
