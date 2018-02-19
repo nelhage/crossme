@@ -24,7 +24,8 @@ class Metadata extends React.Component {
       <div id="details">
         <div className="title">
           <span className="label label-default">Title</span>
-          <span className="value"> {this.props.puzzle.title}</span>
+          {' '}
+          <span className="value">{this.props.puzzle.title}</span>
           {this.props.game && this.props.game.solved && (
             <span className="label label-success">Solved!</span>
           )}
@@ -38,8 +39,18 @@ class Metadata extends React.Component {
         </div>
         <div className="author">
           <span className="label label-default">By</span>
+          {' '}
           <span className="value">{this.props.puzzle.author}</span>
         </div>
+        {
+          this.props.puzzle.note && (
+            <div className="note">
+              <span className="label label-default">Note</span>
+              {' '}
+              <span className="value">{this.props.puzzle.note}</span>
+            </div>
+          )
+        }
       </div>
     );
   }
