@@ -86,7 +86,7 @@ class Puzzle extends React.Component {
   }
 
   componentDidMount() {
-    window.addEventListener('keydown', this.keyDown)
+    window.addEventListener('keydown', this.keyDown);
     this.div.focus();
   }
 
@@ -99,7 +99,7 @@ class Puzzle extends React.Component {
   }
 
   componentWillUnmount() {
-    window.removeEventListener('keydown', this.keyDown)
+    window.removeEventListener('keydown', this.keyDown);
     this.stopSync();
   }
 
