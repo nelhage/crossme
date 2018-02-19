@@ -5,8 +5,9 @@ CrossMe is a collaborative crossword puzzle solver written in Meteor.
 
 You can try a live version at https://crossme.herokuapp.com/
 
-CrossMe supports puzzles in the ".puz" format used by "Across Lite"
-[1]. You can find format documentation online [2].
+CrossMe supports puzzles in the ".puz" format used
+by ["Across Lite"][1]. You can find format documentation
+in [docs/file_format.md][2].
 
-[1] http://www.litsoft.com/across/alite/download/
-[2] https://code.google.com/p/puz/wiki/FileFormat
+[1]: http://www.litsoft.com/across/alite/download/
+[2]: docs/file_format.md
