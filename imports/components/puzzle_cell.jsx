@@ -9,7 +9,7 @@ class PuzzleCell extends React.PureComponent {
   constructor(props) {
     super(props);
     this.setSquare = (e) => {
-      this.props.delegate.setFill(this.props.square, e.target.value);
+      this.props.delegate.setFill(this.props.square, e.target.value.trim());
     };
   }
 
