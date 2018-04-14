@@ -108,7 +108,7 @@ PuzFile.prototype.read_special = function(off) {
       }
     } else if (section == "RTBL") {
       let ascii = new Iconv('ISO-8859-1', 'UTF-8').convert(data);
-      let pat = /([ 0-9]{2}):([^;]+);/g
+      let pat = /([ 0-9]{1,2}):([^;]+);/g
       while (true) {
         let match = pat.exec(ascii);
         if (!match)
