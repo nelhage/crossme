@@ -1,4 +1,5 @@
 /* eslint-disable */
+import parse_date from '../imports/lib/parse_date.js';
 
 function find_word(puz, cell) {
   var row = cell.row, col = cell.column;
@@ -27,7 +28,12 @@ Meteor.methods({
           copyright: puz.copyright,
           note: puz.note,
           width: puz.width,
-          height: puz.height
+          height: puz.height,
+          date: parse_date([
+            puz.title,
+            puz.note,
+            puz.copyright
+          ]),
         });
       }
       for (var r = 0; r < puz.height; r++) {

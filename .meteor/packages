@@ -18,3 +18,5 @@ react-template-helper
 react
 twbs:bootstrap
 react-meteor-data
+momentjs:moment
+meteortesting:mocha
