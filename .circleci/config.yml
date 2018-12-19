@@ -8,4 +8,4 @@ jobs:
       - run: curl https://install.meteor.com | /bin/sh
       - run: npm install
       - run: npm run lint
-      - run: npm run test
+      - run: npm run test --allow-superuser
