@@ -33,6 +33,7 @@
   },
   "scripts": {
     "lint": "eslint --ext=.js,.jsx .",
+    "test": "meteor test --once --driver-package meteortesting:mocha",
     "pretest": "npm run lint --silent"
   },
   "eslintConfig": {
