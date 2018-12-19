@@ -179,7 +179,7 @@ class NewGame extends React.Component {
 }
 
 const NewGameContainer = withTracker(() => {
-  const puzzles = Puzzles.find().fetch();
+  const puzzles = Puzzles.find({}, { sort: { date: -1 } }).fetch();
   return {
     puzzles,
   };
