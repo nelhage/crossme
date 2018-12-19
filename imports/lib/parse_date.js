@@ -7,7 +7,7 @@ const DATE_PATTERNS = [
   },
   {
     re: /\d{1,2}\/\d{1,2}\/\d{2,4}/g,
-    pat: 'MM/DD/YYY',
+    pat: 'MM/DD/YYYY',
   },
 ];
 const MIN_DATE = moment('1940-01-01');
@@ -19,7 +19,7 @@ function parseDateOne(field) {
     const pat = DATE_PATTERNS[i];
     const matches = field.match(pat.re);
     if (!matches) {
-      return null;
+      continue;
     }
     for (let j = 0; j < matches.length; j += 1) {
       const match = matches[j];
