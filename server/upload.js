@@ -1,4 +1,5 @@
 /* eslint-disable */
+import parse_date from '../imports/lib/parse_date.js';
 
 function find_word(puz, cell) {
   var row = cell.row, col = cell.column;
@@ -27,7 +28,12 @@ Meteor.methods({
           copyright: puz.copyright,
           note: puz.note,
           width: puz.width,
-          height: puz.height
+          height: puz.height,
+          date: parse_date([
+            puz.title,
+            puz.note,
+            puz.copyright
+          ]),
         });
       }
       for (var r = 0; r < puz.height; r++) {
@@ -71,4 +77,18 @@ Meteor.methods({
       });
       return puzid;
     }
+});
+
+Meteor.startup(() => {
+  Puzzles.find({date: null}).forEach((doc) => {
+    const date = parse_date([
+      doc.title,
+      doc.note,
+      doc.copyright
+    ]);
+    if (date !== null) {
+      console.log("Updating date for id=%s doc=%j", doc._id, doc);
+      Puzzles.update({_id: doc._id}, {$set: {date: date}});
+    }
+  });
 });
