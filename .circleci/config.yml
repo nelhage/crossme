@@ -1,10 +1,11 @@
-machine:
-  node:
-    version: 0.10.43
-dependencies:
-  override:
-    - curl https://install.meteor.com | /bin/sh
-    - npm install
-checkout:
-  post:
-    - git submodule update --init
+version: 2
+jobs:
+  build:
+    docker:
+      - image: node:10.14.2-stretch
+    steps:
+      - checkout
+      - run: curl https://install.meteor.com | /bin/sh
+      - run: npm install
+      - run: npm run lint
+      - run: npm run test
