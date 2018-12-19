@@ -34,6 +34,11 @@ function parseDateOne(field) {
 
 export default function parseDate(fields) {
   for (let i = 0; i < fields.length; i += 1) {
+    const field = fields[i];
+    if (!field) {
+      continue;
+    }
+
     const date = parseDateOne(fields[i]);
     if (date !== null) {
       return date.format('Y-MM-DD');

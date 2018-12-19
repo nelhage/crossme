@@ -78,3 +78,17 @@ Meteor.methods({
       return puzid;
     }
 });
+
+Meteor.startup(() => {
+  Puzzles.find({date: null}).forEach((doc) => {
+    const date = parse_date([
+      doc.title,
+      doc.note,
+      doc.copyright
+    ]);
+    if (date !== null) {
+      console.log("Updating date for id=%s doc=%j", doc._id, doc);
+      Puzzles.update({_id: doc._id}, {$set: {date: date}});
+    }
+  });
+});
