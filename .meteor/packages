@@ -20,3 +20,4 @@ twbs:bootstrap
 react-meteor-data
 momentjs:moment
 meteortesting:mocha
+artwells:accounts-guest

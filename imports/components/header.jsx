@@ -23,20 +23,23 @@ class UserInfo extends React.Component {
   }
 
   render() {
+    let user = this.props.currentUser;
+    if (user && user.profile.guest) {
+      user = null;
+    }
     return (
       <li className="dropdown" id="userinfo">
         <a className="dropdown-toggle" data-toggle="dropdown">
-          {this.props.currentUser ?
-            <span>{this.props.currentUser.profile.name} <b className="caret" /></span>
-              :
+          { user ?
+            <span>{user.profile.name} <b className="caret" /></span>
+            :
             <span>Login <b className="caret" /></span>
-              }
+          }
         </a>
         <div className="dropdown-menu" role="menu">
-          {!this.props.currentUser &&
-            <p>Log in to remember your recent games, and show up in player
-                lists!</p>
-            }
+          {!user &&
+           <p>Log in to save your game list across sessions!</p>
+          }
           <p ref={(c) => { this.loginNode = c; }} />
         </div>
       </li>
