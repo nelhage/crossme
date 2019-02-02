@@ -150,6 +150,7 @@ export default class Game {
         if (!fill || !fill.letter) {
           return true;
         }
+        return false;
       });
     if (next && !next.black) {
       this.delegate.select(next);

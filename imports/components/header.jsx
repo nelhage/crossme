@@ -38,7 +38,7 @@ class UserInfo extends React.Component {
         </a>
         <div className="dropdown-menu" role="menu">
           {!user &&
-           <p>Log in to save your game list across sessions!</p>
+            <p>Log in to save your game list across sessions!</p>
           }
           <p ref={(c) => { this.loginNode = c; }} />
         </div>
