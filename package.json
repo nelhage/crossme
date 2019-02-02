@@ -53,7 +53,8 @@
           "requireReturnForObjectLiteral": true
         }
       ],
-      "no-continue": "off"
+      "no-continue": "off",
+      "jsx-a11y/label-has-for": "off"
     },
     "globals": {
       "Meteor": false,

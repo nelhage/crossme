@@ -189,8 +189,6 @@ class UserPreferences extends React.Component {
   render() {
     if (this.props.currentUser) {
       const onChange = this.updateSetting.bind(this);
-      // We nest inside our <label>s, instead of using htmlFor.
-      /* eslint-disable jsx-a11y/label-has-for */
       return (
         <div>
           <a role="button" className="sidebar-link" onClick={this.open.bind(this)}>Settings</a>
