@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, Button, Navbar, Nav, NavItem, NavDropdown, MenuItem } from 'react-bootstrap';
+import Select from 'react-select';
 import { withTracker } from 'meteor/react-meteor-data';
 
 import { _ } from 'meteor/underscore';
@@ -85,14 +86,14 @@ const RecentGamesContainer = withTracker(({ currentUser }) => {
 class NewGameModal extends React.Component {
   doPreview(evt) {
     evt.preventDefault();
-    const id = this.switchPuzzle.value;
+    const id = this.switchPuzzle.state.value.value;
     this.props.onClose();
     Router.go('preview', { id });
   }
 
   newGame(evt) {
     evt.preventDefault();
-    const id = this.switchPuzzle.value;
+    const id = this.switchPuzzle.state.value.value;
     Meteor.call('newGame', id, (error, gotId) => {
       this.props.onClose();
       if (!error) {
@@ -114,11 +115,12 @@ class NewGameModal extends React.Component {
   }
 
   render() {
-    const puzzles = this.props.puzzles.map(puzzle => (
-      <option key={puzzle._id} value={puzzle._id}>
-        {puzzle.title}
-      </option>
-      ));
+    const puzzles = this.props.puzzles.map((puzzle) => {
+      return {
+        value: puzzle._id,
+        label: puzzle.title,
+      };
+    });
     return (
       <Modal show={this.props.showModal} onHide={this.props.onClose}>
         <Modal.Header>
@@ -128,9 +130,11 @@ class NewGameModal extends React.Component {
           <div id="selector">
             <form className="form-inline">
               <label htmlFor="switchpuzzle">Puzzle:</label>
-              <select id="switchpuzzle" ref={(c) => { this.switchPuzzle = c; }}>
-                {puzzles}
-              </select>
+              <Select
+                options={puzzles}
+                id="switchpuzzle"
+                ref={(c) => { this.switchPuzzle = c; }}
+              />
               <Button className="btn-preview" onClick={this.doPreview.bind(this)}>Preview</Button>
               <Button className="btn-primary" onClick={this.newGame.bind(this)}>New Game</Button>
             </form>

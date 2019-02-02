@@ -18,7 +18,8 @@
     "react-addons-transition-group": "^15.6.0",
     "react-addons-update": "^15.6.0",
     "react-bootstrap": "^0.31.5",
-    "react-dom": "^15.6.1"
+    "react-dom": "^15.6.1",
+    "react-select": "^2.3.0"
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",

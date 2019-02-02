@@ -21,3 +21,4 @@ react-meteor-data
 momentjs:moment
 meteortesting:mocha
 artwells:accounts-guest
+natestrauser:select2
