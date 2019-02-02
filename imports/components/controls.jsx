@@ -178,8 +178,12 @@ class UserPreferences extends React.Component {
   updateSetting(e) {
     const target = $(e.currentTarget);
     const inputName = target.attr('name');
-    const inputValue = target.attr('value');
-    Meteor.call('updateSetting', inputName, inputValue);
+    if (target.context.checked) {
+      const inputValue = target.attr('value');
+      Meteor.call('updateSetting', inputName, inputValue);
+    } else {
+      Meteor.call('updateSetting', inputName, false);
+    }
   }
 
   render() {
@@ -196,10 +200,11 @@ class UserPreferences extends React.Component {
               <form className="form">
                 <h5>After changing direction with the arrow keys:</h5>
                 <div className="radio">
-                  <label htmlFor="settingArrows">
+                  <label>
                     <input
                       type="radio"
                       name="settingArrows"
+                      id="inputSettingArrowsStay"
                       value="stay"
                       checked={this.isSettingChecked('settingArrows', 'stay', true)}
                       onChange={onChange}
@@ -208,10 +213,11 @@ class UserPreferences extends React.Component {
                   </label>
                 </div>
                 <div className="radio">
-                  <label htmlFor="settingArrows">
+                  <label>
                     <input
                       type="radio"
                       name="settingArrows"
+                      id="inputSettingArrowsMove"
                       value="move"
                       checked={this.isSettingChecked('settingArrows', 'move', false)}
                       onChange={onChange}
@@ -222,10 +228,11 @@ class UserPreferences extends React.Component {
 
                 <h5>Within a word:</h5>
                 <div className="radio">
-                  <label htmlFor="settingWithinWord">
+                  <label>
                     <input
                       type="radio"
                       name="settingWithinWord"
+                      id="inputSettingWithinWordSkip"
                       value="skip"
                       checked={this.isSettingChecked('settingWithinWord', 'skip', true)}
                       onChange={onChange}
@@ -234,10 +241,11 @@ class UserPreferences extends React.Component {
                   </label>
                 </div>
                 <div className="radio">
-                  <label htmlFor="settingWithinWord">
+                  <label>
                     <input
                       type="radio"
                       name="settingWithinWord"
+                      id="inputSettingWithinWordOverwrite"
                       value="overwrite"
                       checked={this.isSettingChecked('settingWithinWord', 'overwrite', false)}
                       onChange={onChange}
@@ -248,10 +256,11 @@ class UserPreferences extends React.Component {
 
                 <h5>At the end of a word:</h5>
                 <div className="checkbox">
-                  <label htmlFor="settingEndWordBack">
+                  <label>
                     <input
                       type="checkbox"
                       name="settingEndWordBack"
+                      id="inputSettingEndWordBack"
                       value="back"
                       checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
                       onChange={onChange}
