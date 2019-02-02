@@ -139,22 +139,32 @@ export default class Game {
     const square = this.selectedSquare();
     this.delegate.setFill(square, char.toUpperCase());
     const { dr, dc } = this.directionToDelta(this.state.cursor.selected_direction);
-    const next = this.nextBlankInWord(square, dr, dc);
-    if (next && this.state.profile.settingWithinWord === 'skip') {
+
+    const next = this.find(
+      square.row + dr, square.column + dc, dr, dc,
+      (sq) => {
+        if (sq.black || this.state.profile.settingWithinWord !== 'skip') {
+          return true;
+        }
+        const fill = this.state.fills[sq._id];
+        if (!fill || !fill.letter) {
+          return true;
+        }
+      });
+    if (next && !next.black) {
       this.delegate.select(next);
       return;
     }
-    if (!next && this.state.profile.settingEndWordBack) {
+    // At end of word
+    if (this.state.profile.settingEndWordBack) {
       const first = this.firstBlankInWord(square, dr, dc);
       if (first) {
         this.delegate.select(first);
         return;
       }
     }
-    if (this.state.cursor.selected_direction === 'across') {
-      this.move(0, 1, true);
-    } else {
-      this.move(1, 0, true);
+    if (this.state.profile.settingEndWordNext) {
+      this.nextClue();
     }
   }
 

@@ -169,7 +169,7 @@ class UserPreferences extends React.Component {
 
   isSettingChecked(setting, value, isDefault) {
     const curValue = this.props.currentUser.profile[setting];
-    if (setting === undefined) {
+    if (!setting) {
       return isDefault ? 'checked' : '';
     }
     return curValue === value ? 'checked' : '';
@@ -262,10 +262,23 @@ class UserPreferences extends React.Component {
                       name="settingEndWordBack"
                       id="inputSettingEndWordBack"
                       value="back"
-                      checked={this.isSettingChecked('settingEndWordBack', 'back', true)}
+                      checked={this.isSettingChecked('settingEndWordBack', 'back', false)}
                       onChange={onChange}
                     />
                     Jump back to first blank in the word (if any)
+                  </label>
+                </div>
+                <div className="checkbox">
+                  <label>
+                    <input
+                      type="checkbox"
+                      name="settingEndWordNext"
+                      id="inputSettingEndWordNext"
+                      value="next"
+                      checked={this.isSettingChecked('settingEndWordNext', 'next', false)}
+                      onChange={onChange}
+                    />
+                    Jump to the next word (if no next blank)
                   </label>
                 </div>
               </form>
