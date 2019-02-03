@@ -13,8 +13,8 @@ func handleReq(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	port := ":8080"
-	if len(os.Args) > 1 {
-		port = os.Args[1]
+	if envPort := os.Getenv("PORT"); envPort != "" {
+		port = fmt.Sprintf(":%s", envPort)
 	}
 	http.HandleFunc("/", handleReq)
 	log.Fatal(http.ListenAndServe(port, nil))
