@@ -22,3 +22,4 @@ momentjs:moment
 meteortesting:mocha
 artwells:accounts-guest
 natestrauser:select2
+reactive-dict

@@ -65,7 +65,7 @@ export default class Game {
                    (dr && (square.word_down !== s.word_down))) {
           return false;
         }
-        const fill = this.state.fills[s._id];
+        const fill = this.state.fills.get(s._id);
         return fill && fill.letter === null;
       });
   }
@@ -78,7 +78,7 @@ export default class Game {
         if (s.black) {
           return true;
         }
-        const fill = this.state.fills[s._id];
+        const fill = this.state.fills.get(s._id);
         if (fill && fill.letter === null) {
           prev = s;
         }
@@ -146,7 +146,7 @@ export default class Game {
         if (sq.black || this.state.profile.settingWithinWord !== 'skip') {
           return true;
         }
-        const fill = this.state.fills[sq._id];
+        const fill = this.state.fills.get(sq._id);
         if (!fill || !fill.letter) {
           return true;
         }

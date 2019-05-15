@@ -1,5 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { ReactiveDict } from 'meteor/reactive-dict'
 
 import Sidebar from './controls.jsx';
 import PuzzleCellContainer from './puzzle_cell.jsx';
@@ -50,6 +51,7 @@ class PuzzleGrid extends React.Component {
           key={cell._id}
           square={cell}
           gameId={this.props.gameId}
+          fills={this.props.fills}
           onClick={() => this.props.onClickCell({ row: i, column: c })}
           delegate={this.props.delegate}
         />
@@ -124,17 +126,17 @@ class Puzzle extends React.Component {
           }
           this.game.state.cursor = cursorState();
         }));
-      this.game.state.fills = {};
+      this.game.state.fills = new ReactiveDict();
       this.handles.push(
         Fills.find({ game: gameId }).observe({
           added: (e) => {
-            this.game.state.fills[e.square] = e;
+            this.game.state.fills.set(e.square, e);
           },
           changed: (e) => {
-            this.game.state.fills[e.square] = e;
+            this.game.state.fills.set(e.square, e);
           },
           removed: (e) => {
-            delete this.game.state.fills[e.square];
+            this.game.state.fills.set(e.square, undefined);
           },
         }));
     });
@@ -241,6 +243,7 @@ class Puzzle extends React.Component {
           onClickCell={this.clickCell}
           squares={this.props.squares}
           puzzle={this.props.puzzle}
+          fills={this.game.state.fills}
           delegate={this.delegate}
         />
         <ClueBoxContainer

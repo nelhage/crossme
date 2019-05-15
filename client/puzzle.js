@@ -2,8 +2,6 @@
 
 import App from "../imports/components/app.jsx";
 
-FillsBySquare = new SecondaryIndex(Fills, ["square", "game"]);
-
 Deps.autorun(function () {
   Meteor.subscribe('puzzles');
   var id = Session.get('gameid');

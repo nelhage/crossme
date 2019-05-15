@@ -3,8 +3,6 @@ import classNames from 'classnames';
 import { withTracker } from 'meteor/react-meteor-data';
 import { cursorState } from '../ui/cursor.jsx';
 
-/* global FillsBySquare */
-
 class PuzzleCell extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -66,12 +64,12 @@ class PuzzleCell extends React.PureComponent {
 }
 
 const withFill = withTracker(
-  ({ square, gameId }) => {
+  ({ fills, square }) => {
     if (!square) {
       return { fill: {} };
     }
     return {
-      fill: FillsBySquare.find({ square: square._id, game: gameId }) || {},
+      fill: fills.get(square._id) || {},
     };
   });
 
