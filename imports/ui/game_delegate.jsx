@@ -1,3 +1,5 @@
+/* global Squares */
+
 export default class GameDelegate {
   constructor(component) {
     this.component = component;
@@ -42,6 +44,28 @@ export default class GameDelegate {
                 square._id,
                 fill.toUpperCase(),
                 this.isPencil());
+  }
+
+  reveal(square, direction, target) {
+    Meteor.call('reveal', {
+      game: this.component.props.gameId,
+      square: square._id,
+      direction,
+    }, target);
+  }
+
+  check(square, direction, target) {
+    const self = this;
+    Meteor.call('check', {
+      game: this.component.props.gameId,
+      square: square._id,
+      direction,
+    }, target, function (error, dst) {
+      if (error !== undefined) {
+        return;
+      }
+      self.select(Squares.findOne({ _id: dst }));
+    });
   }
 
   clearFill(square) {

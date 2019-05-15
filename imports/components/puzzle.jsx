@@ -83,6 +83,8 @@ class Puzzle extends React.Component {
     this.selectClue = this.selectClue.bind(this);
     this.clickCell = this.clickCell.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    this.reveal = this.reveal.bind(this);
+    this.check = this.check.bind(this);
   }
 
   componentDidMount() {
@@ -206,8 +208,18 @@ class Puzzle extends React.Component {
     }
   }
 
-  selectedSquare() {
-    return this.props.squares[Session.get('selected-row')][Session.get('selected-column')];
+  reveal(what) {
+    this.delegate.reveal(
+      this.game.selectedSquare(),
+      this.game.state.cursor.selected_direction,
+      what);
+  }
+
+  check(what) {
+    this.delegate.check(
+      this.game.selectedSquare(),
+      this.game.state.cursor.selected_direction,
+      what);
   }
 
   render() {
@@ -237,8 +249,8 @@ class Puzzle extends React.Component {
         />
         {this.props.gameId &&
           <Sidebar
-            doReveal={this.props.doReveal}
-            doCheck={this.props.doCheck}
+            doReveal={this.reveal}
+            doCheck={this.check}
             gameId={this.props.gameId}
             currentUser={this.props.currentUser}
           />}

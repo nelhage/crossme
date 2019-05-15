@@ -14,7 +14,7 @@ class RevealControl extends React.Component {
 
   onSelect(eventKey, event) {
     event.currentTarget.blur();
-    this.props.doReveal(eventKey, event);
+    this.props.doReveal(event.currentTarget.dataset.target);
   }
 
   render() {
@@ -36,7 +36,7 @@ class CheckControl extends React.Component {
 
   onSelect(eventKey, event) {
     event.currentTarget.blur();
-    this.props.doCheck(eventKey, event);
+    this.props.doCheck(event.currentTarget.dataset.target);
   }
 
   render() {
