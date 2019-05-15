@@ -1,7 +1,7 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
 
-/* global Router, Games */
+/* global FlowRouter, Games */
 
 const withGame = withTracker(({ gameId }) => {
   return {
@@ -14,7 +14,7 @@ class Metadata extends React.Component {
     const id = this.props.puzzle._id;
     Meteor.call('newGame', id, function (error, gotId) {
       if (!error) {
-        Router.go('game', { id: gotId });
+        FlowRouter.go('game', { id: gotId });
       }
     });
   }

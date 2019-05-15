@@ -40,7 +40,7 @@ function handleUpload(files) {
       alert("Error uploading: " + files[i].name + ": " + error);
     } else {
       if (i === files.length - 1) {
-        Router.go('preview', {id: id});
+        FlowRouter.go('preview', {id: id});
       } else {
         i++;
         uploadFile(files[i], uploadNext);

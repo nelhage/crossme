@@ -8,7 +8,7 @@ import { _ } from 'meteor/underscore';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
-/* global Router */
+/* global FlowRouter */
 /* global Games, Puzzles */
 
 class UserInfo extends React.Component {
@@ -88,7 +88,7 @@ class NewGameModal extends React.Component {
     evt.preventDefault();
     const id = this.switchPuzzle.state.value.value;
     this.props.onClose();
-    Router.go('preview', { id });
+    FlowRouter.go('preview', { id });
   }
 
   newGame(evt) {
@@ -97,7 +97,7 @@ class NewGameModal extends React.Component {
     Meteor.call('newGame', id, (error, gotId) => {
       this.props.onClose();
       if (!error) {
-        Router.go('game', { id: gotId });
+        FlowRouter.go('game', { id: gotId });
       }
     });
   }
