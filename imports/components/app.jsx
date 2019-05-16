@@ -9,12 +9,12 @@ class Home extends React.Component {
   render() {
     return (
       <div className="container">
+        <meta name="viewport" content="width=device-width" />
         <h2>Welcome to CrossMe!</h2>
 
         <p>CrossMe is an online collaborative crossword-puzzle solver,
-          written in <a href="http://www.meteor.com/">Meteor</a> by <a
-            href="https://nelhage.com/"
-          >Nelson Elhage</a>.</p>
+          written in <a href="http://www.meteor.com/">Meteor</a> by
+          <a href="https://nelhage.com/">Nelson Elhage</a>.</p>
 
         <p>To get started, just click &quot;New Game&quot; above, select a puzzle
           (I&apos;ve uploaded most of the recently NYT puzzles), and get started!
