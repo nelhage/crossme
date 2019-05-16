@@ -23,6 +23,9 @@ export default class Game {
   selectedSquare() {
     const row = this.state.cursor.selected_row;
     const col = this.state.cursor.selected_column;
+    if (typeof row == 'undefined' || typeof col == 'undefined') {
+      return undefined;
+    }
     return this.state.squares[row][col];
   }
 

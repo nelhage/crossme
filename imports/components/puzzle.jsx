@@ -149,7 +149,13 @@ class Puzzle extends React.Component {
 
   clickCell({ row, column }) {
     const sq = this.props.squares[row][column];
-    if (sq && !sq.black) {
+    if (!sq || sq.black) {
+      return;
+    }
+    const selected = this.game.selectedSquare();
+    if (selected && sq._id === selected._id) {
+      this.game.switchDirection()
+    } else {
       this.delegate.select(sq);
     }
   }
