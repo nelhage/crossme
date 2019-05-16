@@ -45,7 +45,7 @@ class ClueBox extends React.Component {
     const acrossClues = this.clueGroup(this.props.clues.across, 'across');
     const downClues = this.clueGroup(this.props.clues.down, 'down');
     return (
-      <div id="clues" className="visible-md-block visible-lg-block">
+      <div id="clues" className="visible-md-inline-block visible-lg-inline-block">
         <div className="section across">
           <div className="title"> Across </div>
           <div className="cluelist">
