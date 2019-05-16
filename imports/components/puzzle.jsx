@@ -77,6 +77,7 @@ class PuzzleGrid extends React.Component {
     // before it hits the DOM.
     return (
       <div id="puzzlegrid">
+        <meta name="viewport" content={`width=${this.computeWidth()}, user-scalable=no`} id="viewport-meta" />
         <input
           id="puzzleinput"
           defaultValue=""
