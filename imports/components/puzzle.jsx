@@ -44,6 +44,10 @@ const withPuzzle = withTracker(
   });
 
 class PuzzleGrid extends React.Component {
+  computeWidth() {
+    return (this.props.puzzle.width * 31) + 10;
+  }
+
   render() {
     const rows = this.props.squares.map((row, i) => {
       const cells = row.map((cell, c) => (
@@ -73,13 +77,13 @@ class PuzzleGrid extends React.Component {
     // before it hits the DOM.
     return (
       <div id="puzzlegrid">
-        {rows}
         <input
           id="puzzleinput"
           defaultValue=""
           type="password"
           onInput={this.props.onInput}
         />
+        {rows}
       </div>
     );
   }
@@ -274,12 +278,12 @@ class Puzzle extends React.Component {
           clues={this.props.clues}
         />
         {this.props.gameId &&
-          <Sidebar
-            doReveal={this.reveal}
-            doCheck={this.check}
-            gameId={this.props.gameId}
-            currentUser={this.props.currentUser}
-          />}
+        <Sidebar
+          doReveal={this.reveal}
+          doCheck={this.check}
+          gameId={this.props.gameId}
+          currentUser={this.props.currentUser}
+        />}
       </div>
     );
   }

@@ -70,7 +70,7 @@
     height: 30px;
     border-right: 1px solid black;
     border-bottom: 1px solid black;
-    float: left;
+    display: inline-block;
     padding: 0px;
     margin: 0px;
 }

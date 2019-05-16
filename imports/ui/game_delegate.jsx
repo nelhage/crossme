@@ -28,11 +28,8 @@ export default class GameDelegate {
 
   scrollIntoView(e) {
     if (e.length) {
-      const r = e[0].getClientRects()[0];
-      if (document.elementFromPoint(r.left, r.top) !== e[0] ||
-          document.elementFromPoint(r.right, r.bottom) !== e[0]) {
-        e[0].scrollIntoView();
-      }
+      const node = e[0];
+      node.parentNode.scrollTop = node.offsetTop - node.parentNode.offsetTop;
     }
   }
 
