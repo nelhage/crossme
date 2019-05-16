@@ -85,6 +85,13 @@
     top: 2px;
 }
 
+#puzzleinput {
+    width: 0;
+    height: 0;
+    border: none;
+    position: absolute;
+}
+
 #puzzlegrid .cell.rebus .fill {
     font-size: 15px;
     left: 0px;

@@ -63,9 +63,23 @@ class PuzzleGrid extends React.Component {
       );
     });
 
+    // In order to support mobile devices, we create an
+    // off-screen <input> field, which we ensure is always focused
+    // as long as the cursor is on a crossword cell. This forces
+    // mobile devices to pop up a keyboard, and we then listen for
+    // onInput events to catch keystrokes. We use a password field //
+    //because that forces a letter-by-letter keyboard and input mode,
+    // avoiding potentially buffering input in the keyboard itself
+    // before it hits the DOM.
     return (
       <div id="puzzlegrid">
         {rows}
+        <input
+          id="puzzleinput"
+          defaultValue=""
+          type="password"
+          onInput={this.props.onInput}
+        />
       </div>
     );
   }
@@ -85,6 +99,7 @@ class Puzzle extends React.Component {
     this.selectClue = this.selectClue.bind(this);
     this.clickCell = this.clickCell.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    this.onInput = this.onInput.bind(this);
     this.reveal = this.reveal.bind(this);
     this.check = this.check.bind(this);
   }
@@ -104,6 +119,12 @@ class Puzzle extends React.Component {
   componentWillUnmount() {
     window.removeEventListener('keydown', this.keyDown);
     this.stopSync();
+  }
+
+  onInput(e) {
+    this.game.letter(e.target.value);
+    e.target.value = '';
+    e.preventDefault();
   }
 
   stopSync() {
@@ -161,7 +182,7 @@ class Puzzle extends React.Component {
   }
 
   keyDown(e) {
-    if (e.target.nodeName === 'INPUT') {
+    if (e.target.nodeName === 'INPUT' && e.target.classList.contains('fill')) {
       if (e.key === 'Tab') {
         this.game.nextClue(e.shiftKey);
         e.target.blur();
@@ -208,11 +229,6 @@ class Puzzle extends React.Component {
     } else if (e.key === 'Delete' || e.key === 'Backspace') {
       this.game.delete();
       e.preventDefault();
-    } else if (e.key.length === 1 &&
-               e.key.toLowerCase() >= 'a' &&
-               e.key.toLowerCase() <= 'z') {
-      this.game.letter(e.key);
-      e.preventDefault();
     }
   }
 
@@ -247,6 +263,7 @@ class Puzzle extends React.Component {
         <PuzzleGrid
           gameId={this.props.gameId}
           onClickCell={this.clickCell}
+          onInput={this.onInput}
           squares={this.props.squares}
           puzzle={this.props.puzzle}
           fills={this.game.state.fills}

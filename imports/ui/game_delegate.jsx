@@ -18,10 +18,12 @@ export default class GameDelegate {
     }
     this.scrollIntoView($(`#clues .across .clue.clue-${square.word_across}`));
     this.scrollIntoView($(`#clues .down .clue.clue-${square.word_down}`));
+    document.getElementById('puzzleinput').focus();
   }
 
   setDirection(direction) {
     Session.set('selected-direction', direction);
+    document.getElementById('puzzleinput').focus();
   }
 
   scrollIntoView(e) {
