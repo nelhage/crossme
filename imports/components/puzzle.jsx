@@ -1,5 +1,6 @@
 import React from 'react';
 import { withTracker } from 'meteor/react-meteor-data';
+import { Tracker } from 'meteor/tracker';
 import { ReactiveDict } from 'meteor/reactive-dict';
 
 import Sidebar from './controls.jsx';
@@ -12,7 +13,7 @@ import GameDelegate from '../ui/game_delegate.jsx';
 import Game from '../ui/game.jsx';
 import { cursorState } from '../ui/cursor.jsx';
 
-/* global Puzzles, Clues, Fills, Squares, Tracker */
+/* global Puzzles, Clues, Fills, Squares */
 
 const withPuzzle = withTracker(
   ({ puzzleId }) => {
