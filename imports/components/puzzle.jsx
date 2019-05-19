@@ -21,6 +21,7 @@ const withPuzzle = withTracker(
       Meteor.subscribe('game', gameId);
       const game = Games.findOne({ _id: gameId });
       if (game) {
+        /* eslint-disable no-param-reassign */
         puzzleId = game.puzzle;
       }
     } else if (puzzleId) {

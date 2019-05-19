@@ -17,6 +17,7 @@ export default function handleUpload(files) {
   let i = 0;
   const uploadNext = function(error, id) {
     if (error) {
+      /* eslint-disable no-alert */
       alert(`Error uploading: ${files[i].name}: ${error}`);
     } else if (i === files.length - 1) {
       FlowRouter.go('preview', { id });
