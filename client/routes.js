@@ -1,25 +1,35 @@
+import React from 'react';
+
+import { render } from 'react-dom';
+import App from '../imports/components/app.jsx';
+
 /* global FlowRouter */
 
 FlowRouter.route('/', {
   action() {
-    Session.set('gameid', null);
-    Session.set('previewid', null);
+    render(
+      <App />,
+      document.getElementById('app'));
   },
   name: 'root',
 });
 
 FlowRouter.route('/game/:id', {
   action(params) {
-    Session.set('gameid', params.id);
-    Session.set('previewid', null);
+    render(
+      <App
+        gameId={params.id}
+      />,
+      document.getElementById('app'));
   },
   name: 'game',
 });
 
 FlowRouter.route('/preview/:id', {
   action(params) {
-    Session.set('gameid', null);
-    Session.set('previewid', params.id);
+    render(
+      <App puzzleId={params.id} />,
+      document.getElementById('app'));
   },
   name: 'preview',
 });

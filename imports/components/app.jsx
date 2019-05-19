@@ -1,5 +1,7 @@
 import React from 'react';
 
+import { withTracker } from 'meteor/react-meteor-data';
+
 import Header from './header.jsx';
 import Puzzle from './puzzle.jsx';
 
@@ -29,11 +31,15 @@ class Home extends React.Component {
   }
 }
 
+const withCurrentUser = withTracker(() => {
+  return { currentUser: Meteor.user() };
+});
 
-export default class App extends React.Component {
+
+class App extends React.Component {
   render() {
     let body = null;
-    if (this.props.puzzleId) {
+    if (this.props.gameId || this.props.puzzleId) {
       body = (
         <Puzzle
           puzzleId={this.props.puzzleId}
@@ -51,10 +57,12 @@ export default class App extends React.Component {
       <div>
         <Header
           currentUser={this.props.currentUser}
-          onUpload={this.props.onUpload}
         />
         {body}
       </div>
     );
   }
 }
+
+
+export default withCurrentUser(App);

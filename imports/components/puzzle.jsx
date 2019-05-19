@@ -13,10 +13,19 @@ import GameDelegate from '../ui/game_delegate.jsx';
 import Game from '../ui/game.jsx';
 import { cursorState } from '../ui/cursor.jsx';
 
-/* global Puzzles, Clues, Fills, Squares */
+/* global Games, Puzzles, Clues, Fills, Squares */
 
 const withPuzzle = withTracker(
-  ({ puzzleId }) => {
+  ({ puzzleId, gameId }) => {
+    if (gameId) {
+      Meteor.subscribe('game', gameId);
+      const game = Games.findOne({ _id: gameId });
+      if (game) {
+        puzzleId = game.puzzle;
+      }
+    } else if (puzzleId) {
+      Meteor.subscribe('puzzle', puzzleId);
+    }
     const puzzle = Puzzles.findOne({ _id: puzzleId }) || { _id: puzzleId, width: 1, height: 1 };
     const squares = Squares.find({ puzzle: puzzleId }, { sort: { row: 1, column: 1 } }).fetch();
     const grid = [];
@@ -41,6 +50,7 @@ const withPuzzle = withTracker(
       puzzle,
       squares: grid,
       clues,
+      puzzleId,
     };
   });
 

@@ -8,6 +8,8 @@ import { _ } from 'meteor/underscore';
 import { Template } from 'meteor/templating';
 import { Blaze } from 'meteor/blaze';
 
+import handleUpload from '../ui/upload.jsx';
+
 /* global FlowRouter */
 /* global Games, Puzzles */
 
@@ -110,7 +112,7 @@ class NewGameModal extends React.Component {
       return;
     }
 
-    this.props.onUpload(files);
+    handleUpload(files);
     this.props.onClose();
   }
 
@@ -177,7 +179,6 @@ class NewGame extends React.Component {
         <NewGameModal
           showModal={this.state.showModal}
           onClose={this.close.bind(this)}
-          onUpload={this.props.onUpload}
           puzzles={this.props.puzzles}
         />
       </NavItem>
@@ -186,6 +187,7 @@ class NewGame extends React.Component {
 }
 
 const NewGameContainer = withTracker(() => {
+  Meteor.subscribe('puzzles');
   const puzzles = Puzzles.find({}, { sort: { date: -1 } }).fetch();
   return {
     puzzles,
@@ -202,7 +204,7 @@ export default class Header extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
         <Nav>
-          <NewGameContainer onUpload={this.props.onUpload} />
+          <NewGameContainer />
           {this.props.currentUser &&
             <RecentGamesContainer currentUser={this.props.currentUser} />
           }
