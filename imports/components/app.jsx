@@ -37,6 +37,24 @@ const withCurrentUser = withTracker(() => {
 
 
 class App extends React.Component {
+  componentDidMount() {
+    this.timerId = setInterval(
+      () => this.ping(),
+      30 * 1000,
+    );
+    this.ping();
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timerId);
+  }
+
+  ping() {
+    if (this.props.gameId && this.props.currentUser) {
+      Meteor.call('ping', this.props.gameId);
+    }
+  }
+
   render() {
     let body = null;
     if (this.props.gameId || this.props.puzzleId) {
