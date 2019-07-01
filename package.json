@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@babel/runtime": "^7.3.1",
+    "@babel/runtime": "^7.4.5",
     "babel-runtime": "^6.26.0",
     "chai": "^4.2.0",
     "classnames": "^2.2.6",
@@ -8,7 +8,7 @@
     "iconv": "^2.3.2",
     "meteor-node-stubs": "^0.2.11",
     "moment": "^2.23.0",
-    "react": "^15.6.1",
+    "react": "^15.6.2",
     "react-addons-create-fragment": "^15.6.0",
     "react-addons-css-transition-group": "^15.6.0",
     "react-addons-linked-state-mixin": "^15.6.0",
@@ -18,8 +18,8 @@
     "react-addons-transition-group": "^15.6.0",
     "react-addons-update": "^15.6.0",
     "react-bootstrap": "^0.31.5",
-    "react-dom": "^15.6.1",
-    "react-select": "^2.3.0"
+    "react-dom": "^15.6.2",
+    "react-select": "^2.4.4"
   },
   "devDependencies": {
     "@meteorjs/eslint-config-meteor": "^1.0.5",
