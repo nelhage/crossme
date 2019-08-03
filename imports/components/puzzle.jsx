@@ -213,8 +213,11 @@ class Puzzle extends React.Component {
       return;
     }
 
-    if (e.altKey && e.key === 'p') {
+    // On MacOS, the altKey modifier has been applied to the key already
+    // before it gets sent to the keyDown, so 'p' is already 'π'.
+    if (e.altKey && (e.key === 'p' || e.key === 'π')) {
       this.delegate.togglePencil();
+      e.stopPropagation();
     }
 
     if (e.altKey || e.ctrlKey || e.metaKey) {
