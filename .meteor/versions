@@ -35,8 +35,6 @@ ecmascript-runtime-client@0.8.0
 ecmascript-runtime-server@0.7.1
 ejson@1.1.0
 fetch@0.1.1
-force-ssl@1.1.0
-force-ssl-common@1.1.0
 geojson-utils@1.0.10
 google-config-ui@1.0.1
 google-oauth@1.2.6
