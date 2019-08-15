@@ -63,7 +63,7 @@ class ClueBox extends React.Component {
   }
 }
 
-class Clue extends React.Component {
+class Clue extends React.PureComponent {
   render() {
     const classes = classNames('clue', `clue-${this.props.number}`, this.props.selected);
     return (
