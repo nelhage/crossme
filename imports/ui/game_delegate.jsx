@@ -16,25 +16,12 @@ export default class GameDelegate {
     } else if (!Session.get('selected-direction')) {
       Session.set('selected-direction', 'across');
     }
-    this.scrollIntoView($(`#clues .across .clue.clue-${square.word_across}`));
-    this.scrollIntoView($(`#clues .down .clue.clue-${square.word_down}`));
     document.getElementById('puzzleinput').focus();
   }
 
   setDirection(direction) {
     Session.set('selected-direction', direction);
     document.getElementById('puzzleinput').focus();
-  }
-
-  scrollIntoView(e) {
-    if (e.length) {
-      const node = e[0];
-      const nodeRect = node.getBoundingClientRect();
-      const parentRect = node.parentNode.getBoundingClientRect();
-      if (nodeRect.bottom < parentRect.top || nodeRect.top > parentRect.bottom) {
-        node.parentNode.scrollTop = node.offsetTop - node.parentNode.offsetTop;
-      }
-    }
   }
 
   isPencil() {

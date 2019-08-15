@@ -64,6 +64,17 @@ class ClueBox extends React.Component {
 }
 
 class Clue extends React.PureComponent {
+  scrollIntoView(node) {
+    if (!node) {
+      return;
+    }
+    const nodeRect = node.getBoundingClientRect();
+    const parentRect = node.parentNode.getBoundingClientRect();
+    if (nodeRect.bottom < parentRect.top || nodeRect.top > parentRect.bottom) {
+      node.parentNode.scrollTop = node.offsetTop - node.parentNode.offsetTop;
+    }
+  }
+
   render() {
     const classes = classNames('clue', `clue-${this.props.number}`, this.props.selected);
     return (
@@ -73,6 +84,7 @@ class Clue extends React.PureComponent {
         onClick={this.props.onClick}
         data-number={this.props.number}
         data-direction={this.props.direction}
+        ref={this.props.selected ? this.scrollIntoView : undefined}
       >
         {this.props.number}. {this.props.text}
       </div>
