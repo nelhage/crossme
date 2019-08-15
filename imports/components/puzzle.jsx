@@ -162,6 +162,9 @@ class Puzzle extends React.Component {
           } else {
             this.game.state.profile = {};
           }
+        }));
+      this.handles.push(
+        Tracker.autorun(() => {
           this.game.state.cursor = cursorState();
         }));
       this.game.state.fills = new ReactiveDict();
