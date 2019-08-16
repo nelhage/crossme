@@ -55,6 +55,7 @@
         }
       ],
       "no-continue": "off",
+      "no-param-reassign": "off",
       "jsx-a11y/label-has-for": "off"
     },
     "globals": {
