@@ -1,0 +1,4 @@
+#!/bin/bash
+set -eu
+cd "$(dirname "$0")/.."
+protoc --go_out=paths=source_relative:. pb/*.proto
