@@ -1,8 +1,11 @@
 import React from "react";
 
+import "./style/puzzle.css";
+
 import { Puzzle } from "../types";
 
 import { Metadata } from "./metadata";
+import { PuzzleGrid } from "./puzzle_grid";
 
 export interface PuzzleProps {
   puzzle: Puzzle;
@@ -13,6 +16,17 @@ export class PuzzleComponent extends React.Component<PuzzleProps> {
     return (
       <div id="puzzle">
         <Metadata puzzle={this.props.puzzle} solved={false} />
+        <PuzzleGrid
+          puzzle={this.props.puzzle}
+          /*
+            gameId={this.props.gameId}
+          onClickCell={this.clickCell}
+          onInput={this.onInput}
+          squares={this.props.squares}
+          puzzle={this.props.puzzle}
+          fills={this.game.state.fills}
+          delegate={this.delegate} */
+        />
       </div>
       /*
         <CurrentClueContainer
@@ -20,16 +34,8 @@ export class PuzzleComponent extends React.Component<PuzzleProps> {
           clues={this.props.clues}
           squares={this.props.squares}
         />
-        <PuzzleGrid
-          gameId={this.props.gameId}
-          onClickCell={this.clickCell}
-          onInput={this.onInput}
-          squares={this.props.squares}
-          puzzle={this.props.puzzle}
-          fills={this.game.state.fills}
-          delegate={this.delegate}
-        />
-        <ClueBoxContainer onSelect={this.selectClue} clues={this.props.clues} />
+        */
+      /*        <ClueBoxContainer onSelect={this.selectClue} clues={this.props.clues} />
         {this.props.gameId && (
           <Sidebar
             doReveal={this.reveal}

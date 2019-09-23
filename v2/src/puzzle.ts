@@ -9,107 +9,961 @@ const puzzle: Puzzle = Object.freeze({
   height: 15,
   date: "",
   squares: [
-    { black: false, fill: "Y", number: 1 },
-    { black: false, fill: "A", number: 2 },
-    { black: false, fill: "M", number: 3 },
-    { black: true },
-    { black: false, fill: "I", number: 4 },
-    { black: false, fill: "N", number: 5 },
-    { black: false, fill: "D", number: 6 },
-    { black: false, fill: "E", number: 7 },
-    { black: false, fill: "B", number: 8 },
-    { black: false, fill: "T", number: 9 },
-    { black: true },
-    { black: false, fill: "A", number: 10 },
-    { black: false, fill: "C", number: 11 },
-    { black: false, fill: "M", number: 12 },
-    { black: false, fill: "E", number: 13 },
-    { black: false, fill: "O", number: 14 },
-    { black: true },
-    { black: false, fill: "S", number: 15 },
-    { black: true },
-    { black: false, fill: "M", number: 16 },
-    { black: false, fill: "M", number: 17 },
-    { black: false, fill: "E", number: 18 },
-    { black: true },
-    { black: false, fill: "A", number: 19 },
-    { black: false, fill: "A", number: 20 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "D", number: 21 },
-    { black: false, fill: "V", number: 22 },
-    { black: true },
-    { black: false, fill: "S", number: 23 },
-    { black: false, fill: "M", number: 24 },
-    { black: false, fill: "A", number: 25 },
-    { black: false, fill: "U", number: 26 },
-    { black: false, fill: "R", number: 27 },
-    { black: false, fill: "G", number: 28 },
-    { black: false, fill: "A", number: 29 },
-    { black: true },
-    { black: true },
-    { black: false, fill: "S", number: 30 },
-    { black: true },
-    { black: false, fill: "C", number: 31 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "N", number: 32 },
-    { black: false, fill: "O", number: 33 },
-    { black: true },
-    { black: false, fill: "P", number: 34 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "B", number: 35 },
-    { black: false, fill: "W", number: 36 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "S", number: 37 },
-    { black: true },
-    { black: false, fill: "E", number: 38 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "A", number: 39 },
-    { black: true },
-    { black: false, fill: "B", number: 40 },
-    { black: true },
-    { black: true },
-    { black: false, fill: "R", number: 41 },
-    { black: false, fill: "P", number: 42 },
-    { black: false, fill: "M", number: 43 },
-    { black: false, fill: "B", number: 44 },
-    { black: false, fill: "T", number: 45 },
-    { black: false, fill: "R", number: 46 },
-    { black: false, fill: "S", number: 47 },
-    { black: false, fill: "R", number: 48 },
-    { black: true },
-    { black: false, fill: "S", number: 49 },
-    { black: true },
-    { black: true },
-    { black: true },
-    { black: false, fill: "O", number: 50 },
-    { black: false, fill: "E", number: 51 },
-    { black: false, fill: "S", number: 52 },
-    { black: true },
-    { black: false, fill: "W", number: 53 },
-    { black: false, fill: "R", number: 54 },
-    { black: false, fill: "H", number: 55 },
-    { black: false, fill: "O", number: 56 },
-    { black: false, fill: "V", number: 57 },
-    { black: true },
-    { black: false, fill: "E", number: 58 },
-    { black: true },
-    { black: false, fill: "G", number: 59 },
-    { black: false, fill: "A", number: 60 },
-    { black: true },
-    { black: false, fill: "R", number: 61 },
-    { black: true },
-    { black: false, fill: "S", number: 62 }
-  ] as Cell[],
+    [
+      {
+        black: false,
+        fill: "Y",
+        clue: 1
+      },
+      {
+        black: false,
+        fill: "A",
+        clue: 2
+      },
+      {
+        black: false,
+        fill: "M",
+        clue: 3
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "I",
+        clue: 4
+      },
+      {
+        black: false,
+        fill: "N",
+        clue: 5
+      },
+      {
+        black: false,
+        fill: "D",
+        clue: 6
+      },
+      {
+        black: false,
+        fill: "E",
+        clue: 7
+      },
+      {
+        black: false,
+        fill: "B",
+        clue: 8
+      },
+      {
+        black: false,
+        fill: "T",
+        clue: 9
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "A",
+        clue: 10
+      },
+      {
+        black: false,
+        fill: "C",
+        clue: 11
+      },
+      {
+        black: false,
+        fill: "M",
+        clue: 12
+      },
+      {
+        black: false,
+        fill: "E",
+        clue: 13
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "O",
+        clue: 14
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 15
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "M",
+        clue: 16
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "G"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "M",
+        clue: 17
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: false,
+        fill: "E",
+        clue: 18
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "Y"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "A",
+        clue: 19
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "O"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "A",
+        clue: 20
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "M"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "D",
+        clue: 21
+      },
+      {
+        black: false,
+        fill: "M"
+      },
+      {
+        black: false,
+        fill: "V",
+        clue: 22
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 23
+      },
+      {
+        black: false,
+        fill: "K"
+      },
+      {
+        black: false,
+        fill: "I"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "M",
+        clue: 24
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "A",
+        clue: 25
+      },
+      {
+        black: false,
+        fill: "U",
+        clue: 26
+      },
+      {
+        black: false,
+        fill: "R",
+        clue: 27
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "G",
+        clue: 28
+      },
+      {
+        black: false,
+        fill: "U"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "S"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "A",
+        clue: 29
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 30
+      },
+      {
+        black: false,
+        fill: "P"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "Y"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "C",
+        clue: 31
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "M"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "T"
+      }
+    ],
+    [
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "N",
+        clue: 32
+      },
+      {
+        black: false,
+        fill: "O",
+        clue: 33
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "P",
+        clue: 34
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: true
+      }
+    ],
+    [
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "B",
+        clue: 35
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "X"
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "G"
+      },
+      {
+        black: false,
+        fill: "W",
+        clue: 36
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      }
+    ],
+    [
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 37
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "E",
+        clue: 38
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "A",
+        clue: 39
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "Y"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "B",
+        clue: 40
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "R",
+        clue: 41
+      },
+      {
+        black: false,
+        fill: "P",
+        clue: 42
+      },
+      {
+        black: false,
+        fill: "M",
+        clue: 43
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "B",
+        clue: 44
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "Z"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "T",
+        clue: 45
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "R",
+        clue: 46
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 47
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "T"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "R",
+        clue: 48
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 49
+      },
+      {
+        black: false,
+        fill: "O"
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "O",
+        clue: 50
+      },
+      {
+        black: false,
+        fill: "U"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "E"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "E",
+        clue: 51
+      },
+      {
+        black: false,
+        fill: "G"
+      },
+      {
+        black: false,
+        fill: "G"
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 52
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "W",
+        clue: 53
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "R",
+        clue: 54
+      },
+      {
+        black: false,
+        fill: "H",
+        clue: 55
+      },
+      {
+        black: false,
+        fill: "O",
+        clue: 56
+      },
+      {
+        black: false,
+        fill: "L"
+      },
+      {
+        black: false,
+        fill: "M"
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "T"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "V",
+        clue: 57
+      },
+      {
+        black: false,
+        fill: "I"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "T"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "E",
+        clue: 58
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: false,
+        fill: "U"
+      },
+      {
+        black: false,
+        fill: "R"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "G",
+        clue: 59
+      },
+      {
+        black: false,
+        fill: "U"
+      },
+      {
+        black: false,
+        fill: "N"
+      }
+    ],
+    [
+      {
+        black: false,
+        fill: "A",
+        clue: 60
+      },
+      {
+        black: false,
+        fill: "N"
+      },
+      {
+        black: false,
+        fill: "D"
+      },
+      {
+        black: false,
+        fill: "Y"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "R",
+        clue: 61
+      },
+      {
+        black: false,
+        fill: "A"
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: false,
+        fill: "H"
+      },
+      {
+        black: false,
+        fill: "E"
+      },
+      {
+        black: false,
+        fill: "S"
+      },
+      {
+        black: true
+      },
+      {
+        black: false,
+        fill: "S",
+        clue: 62
+      },
+      {
+        black: false,
+        fill: "P"
+      },
+      {
+        black: false,
+        fill: "A"
+      }
+    ]
+  ],
   down_clues: [
     {
       number: 1,

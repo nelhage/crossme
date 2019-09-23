@@ -4,7 +4,7 @@ export interface BlackCell {
 
 export interface LetterCell {
   black: false;
-  letter: string;
+  fill: string;
   clue?: number;
   circled?: boolean;
 }
@@ -24,7 +24,7 @@ export interface Puzzle {
   width: number;
   height: number;
   date?: string;
-  squares: Cell[];
+  squares: Cell[][];
   across_clues: Clue[];
   down_clues: Clue[];
 }
