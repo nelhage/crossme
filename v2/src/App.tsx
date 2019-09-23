@@ -1,5 +1,9 @@
 import React from 'react';
+import {Puzzle} from './types';
+import ThePuzzle from './puzzle';
 import './App.css';
+
+export const puz: Puzzle = ThePuzzle;
 
 const App: React.FC = () => {
   return (
