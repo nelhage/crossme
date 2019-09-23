@@ -10,3 +10,15 @@ jobs:
       - run: curl https://install.meteor.com | /bin/sh
       - run: npm install
       - run: npm run test
+      - restore_cache:
+          keys:
+            - v2-npm-{{ checksum "v2/package-lock.json" }}
+            - v2-npm-
+      - run: cd v2 && npm install
+      - run: cd v2 && npm run build
+      - run: cd v2 && npm run prettier -- --check
+      - run: cd v2 && npm run test
+      - save_cache:
+          key: v2-npm-{{ checksum "v2/package-lock.json" }}
+          paths:
+            - v2/node_modules
