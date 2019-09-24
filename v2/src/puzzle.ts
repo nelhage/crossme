@@ -1,4 +1,4 @@
-import { Puzzle, Cell } from "./types";
+import { Puzzle } from "./types";
 
 const puzzle: Puzzle = Object.freeze({
   title:
