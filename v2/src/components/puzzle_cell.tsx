@@ -3,9 +3,17 @@ import classNames from "classnames";
 
 import { Cell } from "../types";
 
-interface PuzzleCellProps {
+export enum InWord {
+  SELECTED,
+  IN_WORD,
+  OTHER_WORD
+}
+
+export interface PuzzleCellProps {
   square: Cell;
   fill?: string;
+
+  inword?: InWord;
 }
 
 export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
@@ -13,12 +21,9 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
     if (this.props.square.black) {
       throw new Error("can't compute classes for black cell");
     }
-    const classes = {
+    const classes = Object.create({
       circled: this.props.square.circled
       /*
-  selected: this.props.selected,
-      inword: this.props.inWord,
-      otherword: this.props.otherWord,
       reveal: this.props.fill.reveal,
       wrong: (this.props.fill.checked === 'checking'),
       checked: (this.props.fill.checked === 'checked'),
@@ -26,7 +31,17 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
       pencil: this.props.fill.pencil,
       rebus: this.props.fill.letter && this.props.fill.letter.length > 1,
       */
-    };
+    });
+    switch (this.props.inword) {
+      case InWord.SELECTED:
+        classes.selected = true;
+        break;
+      case InWord.IN_WORD:
+        classes.inword = true;
+        break;
+      case InWord.OTHER_WORD:
+        classes.otherword = true;
+    }
 
     return classes;
   }
@@ -50,8 +65,8 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
         // onClick={!this.props.rebus && this.props.onClick}
       >
         <div className="circle">
-          {this.props.square.clue && (
-            <div className="numberlabel">{this.props.square.clue}</div>
+          {this.props.square.number && (
+            <div className="numberlabel">{this.props.square.number}</div>
           )}
           <div className="cellbody">
             {this.props.fill && this.props.fill.length > 1 ? (

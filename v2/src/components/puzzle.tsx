@@ -14,6 +14,14 @@ export interface PuzzleProps {
 }
 
 export class PuzzleComponent extends React.Component<PuzzleProps> {
+  row(): number {
+    return 1;
+  }
+
+  column(): number {
+    return 1;
+  }
+
   acrossClue(): number {
     return 14;
   }
@@ -52,6 +60,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps> {
         <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
           puzzle={this.props.puzzle}
+          row={this.row()}
+          column={this.column()}
+          direction={this.direction()}
           /*
             gameId={this.props.gameId}
           onClickCell={this.clickCell}
@@ -62,7 +73,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps> {
           delegate={this.delegate} */
         />
         <ClueBox
-          //onSelect={this.selectClue}
+          // onSelect={this.selectClue}
           puzzle={this.props.puzzle}
           down_clue={this.downClue()}
           across_clue={this.acrossClue()}

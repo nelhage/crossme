@@ -5,8 +5,10 @@ export interface BlackCell {
 export interface LetterCell {
   black: false;
   fill: string;
-  clue?: number;
+  number?: number;
   circled?: boolean;
+  clue_across: number;
+  clue_down: number;
 }
 
 export type Cell = BlackCell | LetterCell;

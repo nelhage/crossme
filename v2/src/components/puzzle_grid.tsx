@@ -1,11 +1,14 @@
 import React from "react";
 
-import { Puzzle } from "../types";
+import * as Types from "../types";
 
-import { PuzzleCell } from "./puzzle_cell";
+import { PuzzleCell, PuzzleCellProps, InWord } from "./puzzle_cell";
 
 export interface PuzzleGridProps {
-  puzzle: Puzzle;
+  puzzle: Types.Puzzle;
+  row: number;
+  column: number;
+  direction: Types.Direction;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
@@ -14,18 +17,43 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   }
 
   render() {
-    const rows = this.props.puzzle.squares.map((row, i) => {
-      const cells = row.map((cell, c) => (
-        <PuzzleCell
-          key={c}
-          square={cell}
-          // fills={this.props.fills}
-          // onClick={() => this.props.onClickCell({ row: i, column: c })}
-          // delegate={this.props.delegate}
-        />
-      ));
+    const active_cell = this.props.puzzle.squares[this.props.row][
+      this.props.column
+    ];
+    if (active_cell.black) {
+      throw new Error("selected black cell");
+    }
+    const rows = this.props.puzzle.squares.map((row, r) => {
+      const cells = row.map((cell, c) => {
+        const props: PuzzleCellProps = { square: cell };
+        if (!cell.black) {
+          if (r === this.props.row && c === this.props.column) {
+            props.inword = InWord.SELECTED;
+          } else if (cell.clue_across === active_cell.clue_across) {
+            props.inword =
+              this.props.direction == Types.Direction.ACROSS
+                ? InWord.IN_WORD
+                : InWord.OTHER_WORD;
+          } else if (cell.clue_down == active_cell.clue_down) {
+            props.inword =
+              this.props.direction == Types.Direction.DOWN
+                ? InWord.IN_WORD
+                : InWord.OTHER_WORD;
+          }
+        }
+
+        return (
+          <PuzzleCell
+            key={c}
+            {...props}
+            // fills={this.props.fills}
+            // onClick={() => this.props.onClickCell({ row: i, column: c })}
+            // delegate={this.props.delegate}
+          />
+        );
+      });
       return (
-        <div className="row" key={i}>
+        <div className="row" key={r}>
           {cells}
         </div>
       );
