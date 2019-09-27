@@ -28,3 +28,8 @@ export interface Puzzle {
   across_clues: Clue[];
   down_clues: Clue[];
 }
+
+export enum Direction {
+  DOWN = "down",
+  ACROSS = "across"
+}

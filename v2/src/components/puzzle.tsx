@@ -2,20 +2,54 @@ import React from "react";
 
 import "./style/puzzle.css";
 
-import { Puzzle } from "../types";
+import { Clue, Puzzle, Direction } from "../types";
 
 import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
+import { CurrentClue } from "./current_clue";
+import { ClueBox } from "./clue_box";
 
 export interface PuzzleProps {
   puzzle: Puzzle;
 }
 
 export class PuzzleComponent extends React.Component<PuzzleProps> {
+  acrossClue(): number {
+    return 14;
+  }
+
+  downClue(): number {
+    return 2;
+  }
+
+  direction(): Direction {
+    return Direction.DOWN;
+  }
+
+  selectedClueNumber(): number {
+    return this.direction() === Direction.DOWN
+      ? this.downClue()
+      : this.acrossClue();
+  }
+
+  selectedClue(): Clue {
+    const clues =
+      this.direction() === Direction.DOWN
+        ? this.props.puzzle.down_clues
+        : this.props.puzzle.across_clues;
+    const num = this.selectedClueNumber();
+    const clue = clues.find(c => c.number === num);
+    if (clue) {
+      return clue;
+    }
+    throw new Error("illegal clue");
+  }
+
   render() {
     return (
       <div id="puzzle">
         <Metadata puzzle={this.props.puzzle} solved={false} />
+        <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
           puzzle={this.props.puzzle}
           /*
@@ -27,15 +61,17 @@ export class PuzzleComponent extends React.Component<PuzzleProps> {
           fills={this.game.state.fills}
           delegate={this.delegate} */
         />
+        <ClueBox
+          //onSelect={this.selectClue}
+          puzzle={this.props.puzzle}
+          down_clue={this.downClue()}
+          across_clue={this.acrossClue()}
+          direction={this.direction()}
+        />
       </div>
       /*
-        <CurrentClueContainer
-          puzzleId={this.props.puzzleId}
-          clues={this.props.clues}
-          squares={this.props.squares}
-        />
-        */
-      /*        <ClueBoxContainer onSelect={this.selectClue} clues={this.props.clues} />
+       */
+      /*
         {this.props.gameId && (
           <Sidebar
             doReveal={this.reveal}
