@@ -11,6 +11,7 @@ export enum InWord {
 
 export interface PuzzleCellProps {
   square: Cell;
+  onClick: () => any;
   fill?: string;
 
   inword?: InWord;
@@ -58,9 +59,11 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
     const classes = this.computeClasses();
 
     /* eslint-disable jsx-a11y/no-autofocus */
+    const rebus = this.props.fill && this.props.fill.length > 1;
     return (
       <div
         role="button"
+        onClick={rebus ? undefined : this.props.onClick}
         className={classNames("cell", classes)}
         // onClick={!this.props.rebus && this.props.onClick}
       >
@@ -69,7 +72,7 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
             <div className="numberlabel">{this.props.square.number}</div>
           )}
           <div className="cellbody">
-            {this.props.fill && this.props.fill.length > 1 ? (
+            {rebus ? (
               <input
                 className="fill"
                 defaultValue={this.props.fill}

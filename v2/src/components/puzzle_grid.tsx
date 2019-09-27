@@ -9,6 +9,8 @@ export interface PuzzleGridProps {
   row: number;
   column: number;
   direction: Types.Direction;
+
+  onClickCell: (arg: { row: number; column: number }) => any;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
@@ -25,7 +27,10 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     }
     const rows = this.props.puzzle.squares.map((row, r) => {
       const cells = row.map((cell, c) => {
-        const props: PuzzleCellProps = { square: cell };
+        const props: PuzzleCellProps = {
+          square: cell,
+          onClick: () => this.props.onClickCell({ row: r, column: c })
+        };
         if (!cell.black) {
           if (r === this.props.row && c === this.props.column) {
             props.inword = InWord.SELECTED;
@@ -42,15 +47,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           }
         }
 
-        return (
-          <PuzzleCell
-            key={c}
-            {...props}
-            // fills={this.props.fills}
-            // onClick={() => this.props.onClickCell({ row: i, column: c })}
-            // delegate={this.props.delegate}
-          />
-        );
+        return <PuzzleCell key={c} {...props} />;
       });
       return (
         <div className="row" key={r}>

@@ -19,6 +19,11 @@ export interface PuzzleState {
   direction: Direction;
 }
 
+interface Position {
+  row: number;
+  column: number;
+}
+
 export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   constructor(props: PuzzleProps) {
     super(props);
@@ -27,7 +32,27 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       column: 2,
       direction: Direction.DOWN
     };
+
+    this.onClick = this.onClick.bind(this);
   }
+
+  onClick({ row, column }: Position) {
+    const cell = this.props.puzzle.squares[row][column];
+    if (!cell || cell.black) {
+      return;
+    }
+    if (row === this.state.row && column === this.state.column) {
+      this.setState({
+        direction:
+          this.state.direction === Direction.DOWN
+            ? Direction.ACROSS
+            : Direction.DOWN
+      });
+    } else {
+      this.setState({ row: row, column: column });
+    }
+  }
+
   row(): number {
     return this.state.row;
   }
@@ -85,9 +110,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           row={this.row()}
           column={this.column()}
           direction={this.direction()}
+          onClickCell={this.onClick}
           /*
             gameId={this.props.gameId}
-          onClickCell={this.clickCell}
           onInput={this.onInput}
           squares={this.props.squares}
           puzzle={this.props.puzzle}
