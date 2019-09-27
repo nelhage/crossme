@@ -31,12 +31,12 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
             props.inword = InWord.SELECTED;
           } else if (cell.clue_across === active_cell.clue_across) {
             props.inword =
-              this.props.direction == Types.Direction.ACROSS
+              this.props.direction === Types.Direction.ACROSS
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
-          } else if (cell.clue_down == active_cell.clue_down) {
+          } else if (cell.clue_down === active_cell.clue_down) {
             props.inword =
-              this.props.direction == Types.Direction.DOWN
+              this.props.direction === Types.Direction.DOWN
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
           }

@@ -2,7 +2,7 @@ import React from "react";
 
 import "./style/puzzle.css";
 
-import { Clue, Puzzle, Direction } from "../types";
+import { Clue, Puzzle, Direction, LetterCell } from "../types";
 
 import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
@@ -13,25 +13,47 @@ export interface PuzzleProps {
   puzzle: Puzzle;
 }
 
-export class PuzzleComponent extends React.Component<PuzzleProps> {
+export interface PuzzleState {
+  row: number;
+  column: number;
+  direction: Direction;
+}
+
+export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
+  constructor(props: PuzzleProps) {
+    super(props);
+    this.state = {
+      row: 1,
+      column: 2,
+      direction: Direction.DOWN
+    };
+  }
   row(): number {
-    return 1;
+    return this.state.row;
   }
 
   column(): number {
-    return 1;
-  }
-
-  acrossClue(): number {
-    return 14;
-  }
-
-  downClue(): number {
-    return 2;
+    return this.state.column;
   }
 
   direction(): Direction {
-    return Direction.DOWN;
+    return this.state.direction;
+  }
+
+  selectedSquare(): LetterCell {
+    const cell = this.props.puzzle.squares[this.row()][this.column()];
+    if (cell.black) {
+      throw new Error("selected black cell");
+    }
+    return cell;
+  }
+
+  acrossClue(): number {
+    return this.selectedSquare().clue_across;
+  }
+
+  downClue(): number {
+    return this.selectedSquare().clue_down;
   }
 
   selectedClueNumber(): number {
