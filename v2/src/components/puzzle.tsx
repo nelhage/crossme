@@ -63,10 +63,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           });
           return cell;
         }
+        return false;
       });
-      if (cell) {
-        return cell;
-      }
+      return cell;
     });
   }
 
