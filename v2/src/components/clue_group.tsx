@@ -9,6 +9,8 @@ export interface ClueGroupProps {
   direction: Types.Direction;
   selected: number;
   clues: Types.Clue[];
+
+  onSelect: (evt: Types.SelectClueEvent) => void;
 }
 
 function classFor(selected: boolean, active: boolean): string {
@@ -25,7 +27,8 @@ export const ClueGroup: React.FC<ClueGroupProps> = ({
   active,
   direction,
   selected,
-  clues
+  clues,
+  onSelect
 }) => {
   const contents = clues.map(c => (
     <Clue
@@ -35,7 +38,7 @@ export const ClueGroup: React.FC<ClueGroupProps> = ({
       direction={direction}
       selected={c.number === selected}
       className={classFor(c.number === selected, active)}
-      //onClick={this.onSelect}
+      onClick={onSelect}
     />
   ));
 

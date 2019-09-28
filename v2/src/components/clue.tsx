@@ -2,14 +2,16 @@ import React from "react";
 
 import classNames from "classnames";
 
-import { Direction } from "../types";
+import * as Types from "../types";
 
 export interface ClueProps {
   number: number;
   text: string;
-  direction: Direction;
+  direction: Types.Direction;
   selected: boolean;
   className: string;
+
+  onClick: (evt: Types.SelectClueEvent) => void;
 }
 
 export class Clue extends React.PureComponent<ClueProps> {
@@ -31,11 +33,18 @@ export class Clue extends React.PureComponent<ClueProps> {
       `clue-${this.props.number}`,
       this.props.className
     );
+    const onClick = (evt: React.MouseEvent<HTMLDivElement>) => {
+      const target = evt.target as HTMLDivElement;
+      this.props.onClick({
+        number: parseInt(target.dataset.number as string, 10),
+        direction: target.dataset.direction as Types.Direction
+      });
+    };
     return (
       <div
         role="button"
         className={classes}
-        // onClick={this.props.onClick}
+        onClick={onClick}
         data-number={this.props.number}
         data-direction={this.props.direction}
         ref={this.props.selected ? this.scrollIntoView : undefined}

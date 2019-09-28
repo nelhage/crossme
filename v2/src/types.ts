@@ -35,3 +35,13 @@ export enum Direction {
   DOWN = "down",
   ACROSS = "across"
 }
+
+export interface Position {
+  row: number;
+  column: number;
+}
+
+export interface SelectClueEvent {
+  direction: Direction;
+  number: number;
+}

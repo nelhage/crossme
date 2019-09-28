@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Puzzle, Direction } from "../types";
+import { Puzzle, Direction, SelectClueEvent } from "../types";
 import { ClueGroup } from "./clue_group";
 
 export interface ClueBoxProps {
@@ -8,6 +8,8 @@ export interface ClueBoxProps {
   across_clue: number;
   down_clue: number;
   direction: Direction;
+
+  onSelect: (evt: SelectClueEvent) => any;
 }
 
 export const ClueBox: React.FC<ClueBoxProps> = props => (
@@ -19,6 +21,7 @@ export const ClueBox: React.FC<ClueBoxProps> = props => (
         direction={Direction.ACROSS}
         selected={props.across_clue}
         clues={props.puzzle.across_clues}
+        onSelect={props.onSelect}
       />
     </div>
     <div className="section down">
@@ -28,6 +31,7 @@ export const ClueBox: React.FC<ClueBoxProps> = props => (
         direction={Direction.DOWN}
         selected={props.down_clue}
         clues={props.puzzle.down_clues}
+        onSelect={props.onSelect}
       />
     </div>
   </div>
