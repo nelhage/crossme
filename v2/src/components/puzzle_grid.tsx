@@ -47,7 +47,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           }
         }
 
-        return <PuzzleCell key={c} {...props} />;
+        return <PuzzleCell key={`${r},${c}`} {...props} />;
       });
       return (
         <div className="row" key={r}>
