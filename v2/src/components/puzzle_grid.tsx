@@ -10,7 +10,7 @@ export interface PuzzleGridProps {
   column: number;
   direction: Types.Direction;
 
-  onClickCell: (arg: Types.Position) => any;
+  onClickCell: (arg: Types.Position) => void;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
