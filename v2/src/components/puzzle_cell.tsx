@@ -11,8 +11,12 @@ export enum InWord {
 
 export interface PuzzleCellProps {
   square: Cell;
-  onClick: () => any;
+  row: number;
+  column: number;
+
   fill?: string;
+
+  onClick: (evt: React.MouseEvent<HTMLDivElement>) => any;
 
   inword?: InWord;
 }
@@ -63,9 +67,10 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
     return (
       <div
         role="button"
+        data-row={this.props.row}
+        data-column={this.props.column}
         onClick={rebus ? undefined : this.props.onClick}
         className={classNames("cell", classes)}
-        // onClick={!this.props.rebus && this.props.onClick}
       >
         <div className="circle">
           {this.props.square.number && (

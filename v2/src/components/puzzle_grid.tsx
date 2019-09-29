@@ -10,12 +10,25 @@ export interface PuzzleGridProps {
   column: number;
   direction: Types.Direction;
 
-  onClickCell: (arg: { row: number; column: number }) => any;
+  onClickCell: (arg: Types.Position) => any;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
-  computeWidth() {
+  constructor(props: PuzzleGridProps) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  computeWidth(): number {
     return this.props.puzzle.width * 31 + 10;
+  }
+
+  onClick(evt: React.MouseEvent<HTMLDivElement>) {
+    const target = evt.currentTarget as HTMLDivElement;
+    (window as any).clickTarget = target;
+    const row = parseInt(target.dataset.row as string, 10);
+    const column = parseInt(target.dataset.column as string, 10);
+    this.props.onClickCell({ row: row, column: column });
   }
 
   render() {
@@ -29,7 +42,9 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
       const cells = row.map((cell, c) => {
         const props: PuzzleCellProps = {
           square: cell,
-          onClick: () => this.props.onClickCell({ row: r, column: c })
+          onClick: this.onClick,
+          row: r,
+          column: c
         };
         if (!cell.black) {
           if (r === this.props.row && c === this.props.column) {
