@@ -30,6 +30,92 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
     this.onClickCell = this.onClickCell.bind(this);
     this.onSelectClue = this.onSelectClue.bind(this);
+    this.keyDown = this.keyDown.bind(this);
+  }
+
+  keyDown(e: KeyboardEvent) {
+    if (e.altKey || e.ctrlKey || e.metaKey) {
+      return;
+    }
+
+    switch (e.key) {
+      case "ArrowRight":
+        this.arrow(0, 1);
+        break;
+      case "ArrowLeft":
+        this.arrow(0, -1);
+        break;
+      case "ArrowUp":
+        this.arrow(-1, 0);
+        break;
+      case "ArrowDown":
+        this.arrow(1, 0);
+        break;
+      default:
+        return;
+    }
+    e.preventDefault();
+  }
+
+  arrow(dr: number, dc: number) {
+    const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
+    // TODO: settingArrows
+    if (direction !== this.state.direction) {
+      this.setState({ direction });
+      return;
+    }
+    this.move(dr, dc);
+  }
+
+  move(dr: number, dc: number, inword?: boolean) {
+    const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
+
+    const row = this.state.row;
+    const col = this.state.column;
+
+    const sel = this.selectedSquare();
+    const dst = this.find(row + dr, col + dc, dr, dc, (pos: Types.Position) => {
+      const sq = this.props.puzzle.squares[pos.row][pos.column];
+      if (sq.black) {
+        return false;
+      }
+      if (
+        inword &&
+        ((dc && sel.clue_across !== sq.clue_across) ||
+          (dr && sel.clue_down !== sq.clue_down))
+      ) {
+        return false;
+      }
+      return true;
+    });
+
+    if (!dst) return;
+    this.setState(Object.assign({}, dst, { direction }));
+  }
+
+  find(
+    row: number,
+    column: number,
+    dr: number,
+    dc: number,
+    predicate: (pos: Types.Position) => boolean
+  ): Types.Position | null {
+    const pos: Types.Position = { row, column };
+    while (true) {
+      if (
+        pos.row < 0 ||
+        pos.row >= this.props.puzzle.height ||
+        pos.column < 0 ||
+        pos.column >= this.props.puzzle.width
+      ) {
+        return null;
+      }
+      if (predicate(pos)) {
+        return pos;
+      }
+      pos.row += dr;
+      pos.column += dc;
+    }
   }
 
   onClickCell({ row, column }: Types.Position) {
@@ -114,6 +200,14 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       return clue;
     }
     throw new Error("illegal clue");
+  }
+
+  componentDidMount() {
+    window.addEventListener("keydown", this.keyDown);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("keydown", this.keyDown);
   }
 
   render() {
