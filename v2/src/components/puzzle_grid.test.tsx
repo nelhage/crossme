@@ -26,9 +26,11 @@ it("renders a grid", () => {
   const { container, rerender } = render(
     <PuzzleGrid
       puzzle={ThePuzzle}
-      row={1}
-      column={2}
-      direction={Types.Direction.ACROSS}
+      cursor={{
+        row: 1,
+        column: 2,
+        direction: Types.Direction.ACROSS
+      }}
       onClickCell={() => null}
     />
   );
@@ -38,9 +40,11 @@ it("renders a grid", () => {
   rerender(
     <PuzzleGrid
       puzzle={ThePuzzle}
-      row={9}
-      column={6}
-      direction={Types.Direction.DOWN}
+      cursor={{
+        row: 9,
+        column: 9,
+        direction: Types.Direction.DOWN
+      }}
       onClickCell={() => null}
     />
   );

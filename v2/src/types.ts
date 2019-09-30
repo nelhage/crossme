@@ -45,3 +45,15 @@ export interface SelectClueEvent {
   direction: Direction;
   number: number;
 }
+
+export interface Cursor {
+  readonly row: number;
+  readonly column: number;
+  readonly direction: Direction;
+}
+
+export interface CursorUpdate {
+  readonly row?: number;
+  readonly column?: number;
+  readonly direction?: Direction;
+}

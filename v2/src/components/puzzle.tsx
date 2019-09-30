@@ -84,38 +84,15 @@ export class PuzzleComponent extends React.Component<
     this.setState(game => Crossword.selectClue(game, evt));
   }
 
-  row(): number {
-    return this.state.cursor.row;
-  }
-
-  column(): number {
-    return this.state.cursor.column;
+  selectedClueNumber(): number {
+    const square = Crossword.selectedSquare(this.state);
+    return this.state.cursor.direction === Types.Direction.DOWN
+      ? square.clue_down
+      : square.clue_across;
   }
 
   direction(): Types.Direction {
     return this.state.cursor.direction;
-  }
-
-  selectedSquare(): Types.LetterCell {
-    const cell = this.props.puzzle.squares[this.row()][this.column()];
-    if (cell.black) {
-      throw new Error("selected black cell");
-    }
-    return cell;
-  }
-
-  acrossClue(): number {
-    return this.selectedSquare().clue_across;
-  }
-
-  downClue(): number {
-    return this.selectedSquare().clue_down;
-  }
-
-  selectedClueNumber(): number {
-    return this.direction() === Types.Direction.DOWN
-      ? this.downClue()
-      : this.acrossClue();
   }
 
   selectedClue(): Types.Clue {
@@ -140,15 +117,14 @@ export class PuzzleComponent extends React.Component<
   }
 
   render() {
+    const sel = Crossword.selectedSquare(this.state);
     return (
       <div id="puzzle">
         <Metadata puzzle={this.props.puzzle} solved={false} />
         <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
           puzzle={this.props.puzzle}
-          row={this.row()}
-          column={this.column()}
-          direction={this.direction()}
+          cursor={this.state.cursor}
           onClickCell={this.onClickCell}
           /*
             gameId={this.props.gameId}
@@ -159,10 +135,9 @@ export class PuzzleComponent extends React.Component<
           delegate={this.delegate} */
         />
         <ClueBox
-          // onSelect={this.selectClue}
           puzzle={this.props.puzzle}
-          down_clue={this.downClue()}
-          across_clue={this.acrossClue()}
+          down_clue={sel.clue_down}
+          across_clue={sel.clue_across}
           direction={this.direction()}
           onSelect={this.onSelectClue}
         />

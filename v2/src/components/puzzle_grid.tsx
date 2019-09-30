@@ -6,9 +6,7 @@ import { PuzzleCell, PuzzleCellProps, InWord } from "./puzzle_cell";
 
 export interface PuzzleGridProps {
   puzzle: Types.Puzzle;
-  row: number;
-  column: number;
-  direction: Types.Direction;
+  cursor: Types.Cursor;
 
   onClickCell: (arg: Types.Position) => void;
 }
@@ -32,8 +30,8 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   }
 
   render() {
-    const active_cell = this.props.puzzle.squares[this.props.row][
-      this.props.column
+    const active_cell = this.props.puzzle.squares[this.props.cursor.row][
+      this.props.cursor.column
     ];
     if (active_cell.black) {
       throw new Error("selected black cell");
@@ -47,16 +45,16 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           column: c
         };
         if (!cell.black) {
-          if (r === this.props.row && c === this.props.column) {
+          if (r === this.props.cursor.row && c === this.props.cursor.column) {
             props.inword = InWord.SELECTED;
           } else if (cell.clue_across === active_cell.clue_across) {
             props.inword =
-              this.props.direction === Types.Direction.ACROSS
+              this.props.cursor.direction === Types.Direction.ACROSS
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
           } else if (cell.clue_down === active_cell.clue_down) {
             props.inword =
-              this.props.direction === Types.Direction.DOWN
+              this.props.cursor.direction === Types.Direction.DOWN
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
           }

@@ -1,23 +1,11 @@
 import * as Types from "./types";
 
-export interface Cursor {
-  readonly row: number;
-  readonly column: number;
-  readonly direction: Types.Direction;
-}
-
-export interface CursorUpdate {
-  readonly row?: number;
-  readonly column?: number;
-  readonly direction?: Types.Direction;
-}
-
 export interface Game {
   readonly puzzle: Types.Puzzle;
-  readonly cursor: Cursor;
+  readonly cursor: Types.Cursor;
 }
 
-function withCursor(g: Game, update: CursorUpdate): Game {
+function withCursor(g: Game, update: Types.CursorUpdate): Game {
   return {
     ...g,
     cursor: {
@@ -36,7 +24,7 @@ export function swapDirection(g: Game): Game {
   });
 }
 
-function selectedSquare(g: Game): Types.LetterCell {
+export function selectedSquare(g: Game): Types.LetterCell {
   const cell = g.puzzle.squares[g.cursor.row][g.cursor.column];
   if (cell.black) {
     throw new Error("Selected black cell!");
