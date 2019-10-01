@@ -6,6 +6,7 @@ import { PuzzleGrid } from "./puzzle_grid";
 
 import ThePuzzle from "../puzzle";
 
+import * as Crossword from "../crossword";
 import * as Types from "../types";
 
 function getCellAt(
@@ -23,30 +24,25 @@ function getCellAt(
 }
 
 it("renders a grid", () => {
+  const onClickCell = () => null;
+  const onInput = () => null;
+  const game = Crossword.selectSquare(Crossword.newGame(ThePuzzle), {
+    row: 1,
+    column: 2
+  });
+
   const { container, rerender } = render(
-    <PuzzleGrid
-      puzzle={ThePuzzle}
-      cursor={{
-        row: 1,
-        column: 2,
-        direction: Types.Direction.ACROSS
-      }}
-      onClickCell={() => null}
-    />
+    <PuzzleGrid game={game} onClickCell={onClickCell} onInput={onInput} />
   );
   const activeCell = getCellAt(container, 1, 2);
   expect(activeCell.className).toContain("selected");
 
+  const newGame = Crossword.swapDirection(
+    Crossword.selectSquare(game, { row: 9, column: 9 })
+  );
+
   rerender(
-    <PuzzleGrid
-      puzzle={ThePuzzle}
-      cursor={{
-        row: 9,
-        column: 9,
-        direction: Types.Direction.DOWN
-      }}
-      onClickCell={() => null}
-    />
+    <PuzzleGrid game={newGame} onClickCell={onClickCell} onInput={onInput} />
   );
 
   expect(activeCell.className).not.toContain("selected");
