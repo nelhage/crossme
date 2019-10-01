@@ -1,7 +1,7 @@
 import React from "react";
 import classNames from "classnames";
 
-import { Cell } from "../types";
+import * as Types from "../types";
 
 export enum InWord {
   SELECTED,
@@ -10,11 +10,11 @@ export enum InWord {
 }
 
 export interface PuzzleCellProps {
-  square: Cell;
+  square: Types.Cell;
   row: number;
   column: number;
 
-  fill?: string;
+  fill?: Types.FillState;
 
   onClick: (evt: React.MouseEvent<HTMLDivElement>) => any;
 
@@ -63,7 +63,7 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
     const classes = this.computeClasses();
 
     /* eslint-disable jsx-a11y/no-autofocus */
-    const rebus = this.props.fill && this.props.fill.length > 1;
+    const rebus = this.props.fill && this.props.fill.fill.length > 1;
     return (
       <div
         role="button"
@@ -80,12 +80,14 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
             {rebus ? (
               <input
                 className="fill"
-                defaultValue={this.props.fill}
+                defaultValue={this.props.fill && this.props.fill.fill}
                 // onBlur={this.setSquare}
                 autoFocus={true}
               />
             ) : (
-              <div className="fill">{this.props.fill}</div>
+              <div className="fill">
+                {this.props.fill && this.props.fill.fill}
+              </div>
             )}
           </div>
         </div>

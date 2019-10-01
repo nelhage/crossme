@@ -1,8 +1,54 @@
 import * as Types from "./types";
+import { Map, ValueObject } from "immutable";
+import * as Immutable from "immutable";
+
+class FillKey implements ValueObject {
+  readonly row: number;
+  readonly column: number;
+
+  constructor(props: Types.Position) {
+    this.row = props.row;
+    this.column = props.column;
+  }
+
+  equals(other: any): boolean {
+    if (other instanceof FillKey) {
+      return this.row === other.row && this.column === other.column;
+    }
+    return false;
+  }
+
+  hashCode(): number {
+    return ((Immutable.hash(this.row) << 3) ^ Immutable.hash(this.column)) | 0;
+  }
+}
+
+type Fill = Map<FillKey, Types.FillState>;
 
 export interface Game {
   readonly puzzle: Types.Puzzle;
   readonly cursor: Types.Cursor;
+  readonly fill: Fill;
+}
+
+export function newGame(puzzle: Types.Puzzle): Game {
+  return {
+    puzzle,
+    // TODO: detect first blank square
+    cursor: {
+      row: 1,
+      column: 2,
+      direction: Types.Direction.DOWN
+    },
+    fill: Map()
+  };
+}
+
+export function fillAt(
+  game: Game,
+  position: Types.Position
+): Types.FillState | undefined {
+  return game.fill.get(new FillKey(position));
 }
 
 function withCursor(g: Game, update: Types.CursorUpdate): Game {
@@ -12,6 +58,13 @@ function withCursor(g: Game, update: Types.CursorUpdate): Game {
       ...g.cursor,
       ...update
     }
+  };
+}
+
+function withFill(g: Game, update: (fill: Fill) => Fill): Game {
+  return {
+    ...g,
+    fill: update(g.fill)
   };
 }
 
@@ -112,4 +165,12 @@ export function selectClue(
     return withCursor(g, { ...pos, direction });
   }
   return g;
+}
+
+export function fillSquare(g: Game, text: string): Game {
+  return withFill(g, fill =>
+    fill.set(new FillKey({ row: g.cursor.row, column: g.cursor.column }), {
+      fill: text
+    })
+  );
 }

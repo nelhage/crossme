@@ -57,3 +57,7 @@ export interface CursorUpdate {
   readonly column?: number;
   readonly direction?: Direction;
 }
+
+export interface FillState {
+  readonly fill: string;
+}

@@ -1,24 +1,28 @@
 import React from "react";
 
+import * as Crossword from "../crossword";
 import * as Types from "../types";
 
 import { PuzzleCell, PuzzleCellProps, InWord } from "./puzzle_cell";
 
 export interface PuzzleGridProps {
-  puzzle: Types.Puzzle;
-  cursor: Types.Cursor;
+  game: Crossword.Game;
 
   onClickCell: (arg: Types.Position) => void;
+  onInput: (arg: React.FormEvent<HTMLInputElement>) => void;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
+  inputRef: React.RefObject<HTMLInputElement>;
+
   constructor(props: PuzzleGridProps) {
     super(props);
+    this.inputRef = React.createRef();
     this.onClick = this.onClick.bind(this);
   }
 
   computeWidth(): number {
-    return this.props.puzzle.width * 31 + 10;
+    return this.props.game.puzzle.width * 31 + 10;
   }
 
   onClick(evt: React.MouseEvent<HTMLDivElement>) {
@@ -29,14 +33,26 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     this.props.onClickCell({ row: row, column: column });
   }
 
+  componentDidMount() {
+    if (this.inputRef.current) {
+      this.inputRef.current.focus();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.inputRef.current) {
+      this.inputRef.current.focus();
+    }
+  }
+
   render() {
-    const active_cell = this.props.puzzle.squares[this.props.cursor.row][
-      this.props.cursor.column
-    ];
+    const active_cell = this.props.game.puzzle.squares[
+      this.props.game.cursor.row
+    ][this.props.game.cursor.column];
     if (active_cell.black) {
       throw new Error("selected black cell");
     }
-    const rows = this.props.puzzle.squares.map((row, r) => {
+    const rows = this.props.game.puzzle.squares.map((row, r) => {
       const cells = row.map((cell, c) => {
         const props: PuzzleCellProps = {
           square: cell,
@@ -45,19 +61,23 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           column: c
         };
         if (!cell.black) {
-          if (r === this.props.cursor.row && c === this.props.cursor.column) {
+          if (
+            r === this.props.game.cursor.row &&
+            c === this.props.game.cursor.column
+          ) {
             props.inword = InWord.SELECTED;
           } else if (cell.clue_across === active_cell.clue_across) {
             props.inword =
-              this.props.cursor.direction === Types.Direction.ACROSS
+              this.props.game.cursor.direction === Types.Direction.ACROSS
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
           } else if (cell.clue_down === active_cell.clue_down) {
             props.inword =
-              this.props.cursor.direction === Types.Direction.DOWN
+              this.props.game.cursor.direction === Types.Direction.DOWN
                 ? InWord.IN_WORD
                 : InWord.OTHER_WORD;
           }
+          props.fill = Crossword.fillAt(this.props.game, { row: r, column: c });
         }
 
         return <PuzzleCell key={`${r},${c}`} {...props} />;
@@ -88,7 +108,8 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           id="puzzleinput"
           defaultValue=""
           type="password"
-          // onInput={this.props.onInput}
+          onInput={this.props.onInput}
+          ref={this.inputRef}
         />
         {rows}
       </div>

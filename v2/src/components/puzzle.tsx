@@ -20,18 +20,20 @@ export class PuzzleComponent extends React.Component<
 > {
   constructor(props: PuzzleProps) {
     super(props);
-    this.state = {
-      puzzle: props.puzzle,
-      cursor: {
-        row: 1,
-        column: 2,
-        direction: Types.Direction.DOWN
-      }
-    };
+    this.state = Crossword.newGame(props.puzzle);
 
     this.onClickCell = this.onClickCell.bind(this);
     this.onSelectClue = this.onSelectClue.bind(this);
     this.keyDown = this.keyDown.bind(this);
+    this.onInput = this.onInput.bind(this);
+  }
+
+  onInput(e: React.FormEvent<HTMLInputElement>) {
+    const target = e.target as HTMLInputElement;
+    const fill = target.value.toUpperCase();
+    this.setState(game => Crossword.fillSquare(game, fill));
+    target.value = "";
+    e.preventDefault();
   }
 
   keyDown(e: KeyboardEvent) {
@@ -123,15 +125,12 @@ export class PuzzleComponent extends React.Component<
         <Metadata puzzle={this.props.puzzle} solved={false} />
         <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
-          puzzle={this.props.puzzle}
-          cursor={this.state.cursor}
+          game={this.state}
           onClickCell={this.onClickCell}
+          onInput={this.onInput}
           /*
             gameId={this.props.gameId}
-          onInput={this.onInput}
-          squares={this.props.squares}
           puzzle={this.props.puzzle}
-          fills={this.game.state.fills}
           delegate={this.delegate} */
         />
         <ClueBox
