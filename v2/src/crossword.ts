@@ -52,6 +52,16 @@ export function fillAt(
 }
 
 function withCursor(g: Game, update: Types.CursorUpdate): Game {
+  if (update.row && (update.row < 0 || update.row >= g.puzzle.width)) {
+    throw new Error(`bad cursor: row=${update.row}`);
+  }
+  if (
+    update.column &&
+    (update.column < 0 || update.column >= g.puzzle.height)
+  ) {
+    throw new Error(`bad cursor: column=${update.column}`);
+  }
+
   return {
     ...g,
     cursor: {
@@ -66,6 +76,15 @@ function withFill(g: Game, update: (fill: Fill) => Fill): Game {
     ...g,
     fill: update(g.fill)
   };
+}
+
+function directionToDelta(
+  direction: Types.Direction
+): { dr: number; dc: number } {
+  if (direction === Types.Direction.ACROSS) {
+    return { dr: 0, dc: 1 };
+  }
+  return { dr: 1, dc: 0 };
 }
 
 export function swapDirection(g: Game): Game {
@@ -91,7 +110,7 @@ function find(
   column: number,
   dr: number,
   dc: number,
-  predicate: (pos: Types.Position) => boolean
+  predicate: (pos: Types.Position, sq: Types.Cell) => boolean
 ): Types.Position | null {
   const pos: Types.Position = { row, column };
   while (true) {
@@ -103,7 +122,8 @@ function find(
     ) {
       return null;
     }
-    if (predicate(pos)) {
+    const cell = g.puzzle.squares[pos.row][pos.column];
+    if (predicate({ ...pos }, cell)) {
       return pos;
     }
     pos.row += dr;
@@ -170,7 +190,64 @@ export function selectClue(
 export function fillSquare(g: Game, text: string): Game {
   return withFill(g, fill =>
     fill.set(new FillKey({ row: g.cursor.row, column: g.cursor.column }), {
-      fill: text
+      fill: text.replace(/\s/, "")
     })
   );
+}
+
+function firstBlankInWord(
+  g: Game,
+  pos: Types.Position,
+  dr: number,
+  dc: number
+): Types.Position | null {
+  let prev = null;
+  find(g, pos.row, pos.column, -dr, -dc, (pos, sq) => {
+    if (sq.black) {
+      return true;
+    }
+    const fill = g.fill.get(new FillKey(pos));
+    if (!fill || fill.fill === "") {
+      prev = pos;
+    }
+    return false;
+  });
+  return prev;
+}
+
+export function keypress(g: Game, text: string): Game {
+  const out = fillSquare(g, text);
+  const cursor = g.cursor;
+
+  const { dr, dc } = directionToDelta(g.cursor.direction);
+  const next = find(
+    g,
+    cursor.row + dr,
+    cursor.column + dc,
+    dr,
+    dc,
+    (pos, sq) => {
+      if (
+        sq.black /* TODO(pref): || this.state.profile.settingWithinWord !== "skip" */
+      ) {
+        return true;
+      }
+      const fill = g.fill.get(new FillKey(pos));
+      if (!fill || fill.fill === "") {
+        return true;
+      }
+      return false;
+    }
+  );
+  if (next && !g.puzzle.squares[next.row][next.column].black) {
+    return withCursor(out, next);
+  }
+  // At end-of-word, try wrapping to the beginning
+  // TODO(pref): this.state.profile.settingEndWordBack
+  const first = firstBlankInWord(out, cursor, dr, dc);
+  if (first) {
+    return withCursor(out, first);
+  }
+
+  return out;
 }

@@ -31,7 +31,7 @@ export class PuzzleComponent extends React.Component<
   onInput(e: React.FormEvent<HTMLInputElement>) {
     const target = e.target as HTMLInputElement;
     const fill = target.value.toUpperCase();
-    this.setState(game => Crossword.fillSquare(game, fill));
+    this.setState(game => Crossword.keypress(game, fill));
     target.value = "";
     e.preventDefault();
   }
