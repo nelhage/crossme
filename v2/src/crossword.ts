@@ -62,7 +62,7 @@ export function fillAt(
   return game.fill.get(new FillKey(position));
 }
 
-function withCursor(g: Game, update: Types.CursorUpdate): Game {
+export function withCursor(g: Game, update: Types.CursorUpdate): Game {
   if (update.row && (update.row < 0 || update.row >= g.puzzle.width)) {
     throw new Error(`bad cursor: row=${update.row}`);
   }
@@ -80,6 +80,24 @@ function withCursor(g: Game, update: Types.CursorUpdate): Game {
       ...update
     }
   };
+}
+
+export function withFills(g: Game, fill: (string | undefined)[][]): Game {
+  if (fill.length != g.puzzle.height) {
+    throw new Error("bad fill length");
+  }
+  if (fill.find(row => row.length != g.puzzle.width)) {
+    throw new Error("bad fill entry");
+  }
+  const array: [FillKey, Types.FillState][] = [];
+  fill.forEach((row, r) => {
+    row.forEach((ch, c) => {
+      if (ch) {
+        array.push([new FillKey({ row: r, column: c }), { fill: ch }]);
+      }
+    });
+  });
+  return withFill(g, () => Map(array));
 }
 
 function withFill(g: Game, update: (fill: Fill) => Fill): Game {
