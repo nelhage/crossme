@@ -26,13 +26,24 @@ class FillKey implements ValueObject {
 type Fill = Map<FillKey, Types.FillState>;
 
 export interface Game {
-  readonly puzzle: Types.Puzzle;
-  readonly cursor: Types.Cursor;
+  readonly by_clue: Readonly<{ [clue: number]: Types.Position }>;
+  readonly puzzle: Readonly<Types.Puzzle>;
+  readonly cursor: Readonly<Types.Cursor>;
   readonly fill: Fill;
 }
 
 export function newGame(puzzle: Types.Puzzle): Game {
+  const by_clue: { [clue: number]: Types.Position } = {};
+  puzzle.squares.forEach((row, r) => {
+    row.forEach((sq, c) => {
+      if (!sq.black && sq.number) {
+        by_clue[sq.number] = { row: r, column: c };
+      }
+    });
+  });
+
   return {
+    by_clue,
     puzzle,
     // TODO: detect first blank square
     cursor: {
@@ -87,12 +98,15 @@ function directionToDelta(
   return { dr: 1, dc: 0 };
 }
 
+function otherDirection(d: Types.Direction): Types.Direction {
+  return d === Types.Direction.ACROSS
+    ? Types.Direction.DOWN
+    : Types.Direction.ACROSS;
+}
+
 export function swapDirection(g: Game): Game {
   return withCursor(g, {
-    direction:
-      g.cursor.direction === Types.Direction.ACROSS
-        ? Types.Direction.DOWN
-        : Types.Direction.ACROSS
+    direction: otherDirection(g.cursor.direction)
   });
 }
 
@@ -169,18 +183,7 @@ export function selectClue(
   g: Game,
   { number, direction }: Types.SelectClueEvent
 ): Game {
-  const pos = g.puzzle.squares.find((row, r) => {
-    const cell = row.find((cell, c) => {
-      if (cell.black) {
-        return null;
-      }
-      if (cell.number === number) {
-        return { row: r, column: c };
-      }
-      return false;
-    });
-    return cell;
-  });
+  const pos = g.by_clue[number];
   if (pos) {
     return withCursor(g, { ...pos, direction });
   }
@@ -213,6 +216,134 @@ function firstBlankInWord(
     return false;
   });
   return prev;
+}
+
+function nextBlankInWord(
+  g: Game,
+  pos: Types.Position,
+  dr: number,
+  dc: number
+): Types.Position | null {
+  const found = find(g, pos.row, pos.column, dr, dc, (pos, sq) => {
+    if (sq.black) {
+      return true;
+    }
+    const fill = g.fill.get(new FillKey(pos));
+    return !fill || fill.fill === "";
+  });
+  if (found && g.puzzle.squares[found.row][found.column].black) {
+    return null;
+  }
+  return found;
+}
+
+function cluesForDirection(g: Game, direction: Types.Direction): Types.Clue[] {
+  return direction === Types.Direction.DOWN
+    ? g.puzzle.down_clues
+    : g.puzzle.across_clues;
+}
+
+interface clueSearch {
+  direction: Types.Direction;
+  clues: Types.Clue[];
+  fromIndex: number;
+  toIndex: number;
+}
+
+function findClue<T>(
+  s: clueSearch,
+  predicate: (direction: Types.Direction, clue: Types.Clue) => T | undefined
+): T | undefined {
+  let index = s.fromIndex;
+  while (true) {
+    const clue = s.clues[index];
+    if (!clue) {
+      throw new Error("internal consistency error");
+    }
+    const got = predicate(s.direction, clue);
+    if (got) {
+      return got;
+    }
+    if (index === s.toIndex) {
+      return undefined;
+    }
+    if (index < s.toIndex) {
+      index += 1;
+    } else {
+      index -= 1;
+    }
+  }
+}
+
+function nextClue(g: Game, reverse?: boolean): Game {
+  let direction = g.cursor.direction;
+  const firstClue =
+    direction === Types.Direction.DOWN
+      ? selectedSquare(g).clue_down
+      : selectedSquare(g).clue_across;
+  const clues = cluesForDirection(g, direction);
+  const otherClues = cluesForDirection(g, otherDirection(direction));
+  const activeIndex = clues.findIndex(c => c.number === firstClue);
+  if (activeIndex < 0) {
+    throw new Error(`no such clue: ${firstClue}-${direction}`);
+  }
+
+  const search: clueSearch[] = [];
+  if (reverse) {
+    search.push({
+      direction,
+      clues,
+      fromIndex: activeIndex - 1,
+      toIndex: 0
+    });
+    search.push({
+      direction,
+      clues,
+      fromIndex: clues.length - 1,
+      toIndex: activeIndex
+    });
+    search.push({
+      direction: otherDirection(direction),
+      clues: otherClues,
+      fromIndex: otherClues.length - 1,
+      toIndex: 0
+    });
+  } else {
+    search.push({
+      direction,
+      clues,
+      fromIndex: activeIndex + 1,
+      toIndex: clues.length - 1
+    });
+    search.push({
+      direction,
+      clues,
+      fromIndex: 0,
+      toIndex: activeIndex
+    });
+    search.push({
+      direction: otherDirection(direction),
+      clues: otherClues,
+      fromIndex: 0,
+      toIndex: otherClues.length - 1
+    });
+  }
+
+  for (let i = 0; i < search.length; i++) {
+    const sq = findClue(search[i], (direction, clue) => {
+      const start = g.by_clue[clue.number];
+      const { dr, dc } = directionToDelta(direction);
+      const found = nextBlankInWord(g, start, dr, dc);
+      if (found) {
+        return { ...found, direction };
+      }
+    });
+    if (sq) {
+      return withCursor(g, sq);
+    }
+  }
+
+  return g;
 }
 
 export function keypress(g: Game, text: string): Game {
@@ -249,5 +380,7 @@ export function keypress(g: Game, text: string): Game {
     return withCursor(out, first);
   }
 
-  return out;
+  // This word is done; let's find the next one
+  // TODO(pref): this.state.profile.settingEndWordNext
+  return nextClue(out);
 }
