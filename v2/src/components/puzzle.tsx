@@ -37,6 +37,19 @@ export class PuzzleComponent extends React.Component<
   }
 
   keyDown(e: KeyboardEvent) {
+    const target = e.target;
+    if (target instanceof HTMLElement) {
+      if (target.nodeName === "INPUT" && target.classList.contains("fill")) {
+        if (e.key === "Enter") {
+          target.blur();
+          e.preventDefault();
+          // Session.set("rebus", false);
+        }
+
+        return;
+      }
+    }
+
     if (e.altKey || e.ctrlKey || e.metaKey) {
       return;
     }
@@ -53,6 +66,9 @@ export class PuzzleComponent extends React.Component<
         break;
       case "ArrowDown":
         this.arrow(1, 0);
+        break;
+      case "Tab":
+        this.setState(game => Crossword.nextClue(game, e.shiftKey));
         break;
       default:
         return;

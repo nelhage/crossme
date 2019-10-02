@@ -275,7 +275,7 @@ function findClue<T>(
   }
 }
 
-function nextClue(g: Game, reverse?: boolean): Game {
+export function nextClue(g: Game, reverse?: boolean): Game {
   let direction = g.cursor.direction;
   const firstClue =
     direction === Types.Direction.DOWN
