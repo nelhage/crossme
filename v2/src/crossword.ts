@@ -384,3 +384,8 @@ export function keypress(g: Game, text: string): Game {
   // TODO(pref): this.state.profile.settingEndWordNext
   return nextClue(out);
 }
+
+export function deleteKey(g: Game): Game {
+  const { dr, dc } = directionToDelta(g.cursor.direction);
+  return move(fillSquare(g, ""), -dr, -dc, true);
+}

@@ -70,6 +70,12 @@ export class PuzzleComponent extends React.Component<
       case "Tab":
         this.setState(game => Crossword.nextClue(game, e.shiftKey));
         break;
+      case "Enter":
+        this.setState(Crossword.swapDirection);
+        break;
+      case "Delete":
+      case "Backspace":
+        this.setState(Crossword.deleteKey);
       default:
         return;
     }
