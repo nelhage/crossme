@@ -138,13 +138,12 @@ export function selectedSquare(g: Game): Types.LetterCell {
 
 function find(
   g: Game,
-  row: number,
-  column: number,
+  start: Types.Position,
   dr: number,
   dc: number,
   predicate: (pos: Types.Position, sq: Types.Cell) => boolean
 ): Types.Position | null {
-  const pos: Types.Position = { row, column };
+  const pos: Types.Position = { ...start };
   while (true) {
     if (
       pos.row < 0 ||
@@ -170,20 +169,26 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
   const col = g.cursor.column;
 
   const sel = selectedSquare(g);
-  const dst = find(g, row + dr, col + dc, dr, dc, (pos: Types.Position) => {
-    const sq = g.puzzle.squares[pos.row][pos.column];
-    if (sq.black) {
-      return false;
+  const dst = find(
+    g,
+    { row: row + dr, column: col + dc },
+    dr,
+    dc,
+    (pos: Types.Position) => {
+      const sq = g.puzzle.squares[pos.row][pos.column];
+      if (sq.black) {
+        return false;
+      }
+      if (
+        inword &&
+        ((dc && sel.clue_across !== sq.clue_across) ||
+          (dr && sel.clue_down !== sq.clue_down))
+      ) {
+        return false;
+      }
+      return true;
     }
-    if (
-      inword &&
-      ((dc && sel.clue_across !== sq.clue_across) ||
-        (dr && sel.clue_down !== sq.clue_down))
-    ) {
-      return false;
-    }
-    return true;
-  });
+  );
 
   if (!dst) return g;
   return withCursor(g, { ...dst, direction });
@@ -223,7 +228,7 @@ function lastBlankInWord(
   dc: number
 ): Types.Position | null {
   let prev = null;
-  find(g, pos.row, pos.column, dr, dc, (pos, sq) => {
+  find(g, pos, dr, dc, (pos, sq) => {
     if (sq.black) {
       return true;
     }
@@ -242,7 +247,7 @@ function nextBlankInWord(
   dr: number,
   dc: number
 ): Types.Position | null {
-  const found = find(g, pos.row, pos.column, dr, dc, (pos, sq) => {
+  const found = find(g, pos, dr, dc, (pos, sq) => {
     if (sq.black) {
       return true;
     }
@@ -369,14 +374,18 @@ function nextClue(
 }
 
 export function nextBlank(g: Game, reverse?: boolean): Game {
-  return nextClue(g, (direction, clue) => {
-    const start = g.by_clue[clue.number];
-    const { dr, dc } = directionToDelta(direction);
-    const found = nextBlankInWord(g, start, dr, dc);
-    if (found) {
-      return { ...found, direction };
-    }
-  });
+  return nextClue(
+    g,
+    (direction, clue) => {
+      const start = g.by_clue[clue.number];
+      const { dr, dc } = directionToDelta(direction);
+      const found = nextBlankInWord(g, start, dr, dc);
+      if (found) {
+        return { ...found, direction };
+      }
+    },
+    reverse
+  );
 }
 
 export function keypress(g: Game, text: string): Game {
@@ -386,8 +395,7 @@ export function keypress(g: Game, text: string): Game {
   const { dr, dc } = directionToDelta(g.cursor.direction);
   const next = find(
     g,
-    cursor.row + dr,
-    cursor.column + dc,
+    { row: cursor.row + dr, column: cursor.column + dc },
     dr,
     dc,
     (pos, sq) => {
@@ -437,11 +445,12 @@ export function deleteKey(g: Game): Game {
         const start = g.by_clue[clue.number];
         const { dr, dc } = directionToDelta(direction);
         let last = start;
-        find(g, start.row, start.column, dr, dc, (pos, sq) => {
+        find(g, start, dr, dc, (pos, sq) => {
           if (sq.black) {
             return true;
           }
           last = pos;
+          return false;
         });
         return last;
       },
