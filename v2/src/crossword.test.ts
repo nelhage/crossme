@@ -107,7 +107,9 @@ function parseGame(template: string): Crossword.Game {
             row: r,
             column: Math.floor(i / 2),
             direction:
-              ch === ">" ? Types.Direction.ACROSS : Types.Direction.DOWN
+              line[i + 1] === ">"
+                ? Types.Direction.ACROSS
+                : Types.Direction.DOWN
           };
           break;
         default:
@@ -141,6 +143,23 @@ function parseGame(template: string): Crossword.Game {
   );
 }
 
+function formatGame(g: Crossword.Game): string {
+  return g.puzzle.squares
+    .map((row, r) => {
+      row.map((sq, c) => {
+        if (sq.black) {
+          return "# ";
+        }
+        const fill = Crossword.fillAt(g, { row: r, column: c });
+        if (fill && fill.fill) {
+          return fill.fill + " ";
+        }
+        return ". ";
+      });
+    })
+    .join("\n");
+}
+
 it("can construct puzzles from a template", () => {
   const g = parseGame(`
 # Sv. T #
@@ -160,4 +179,60 @@ A V A I L
     "S"
   );
   expect(Crossword.fillAt(g, { row: 0, column: 2 })).toBeUndefined();
+});
+
+describe("crossword operations", () => {
+  const testCases: [
+    string,
+    string,
+    (g: Crossword.Game) => Crossword.Game,
+    string
+  ][] = [
+    [
+      "Delete at cursor",
+      `
+# A B>. #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      Crossword.deleteKey,
+      `
+# A>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "Delete before cursor",
+      `
+# A .>. #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      Crossword.deleteKey,
+      `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ]
+  ];
+  testCases.forEach(([name, before, op, after], i) => {
+    it(`${name} [row: ${i}]`, () => {
+      const g_before = parseGame(before);
+      const g_after = parseGame(after);
+
+      const xformed = op(g_before);
+      expect(xformed.cursor).toEqual(g_after.cursor);
+      expect(formatGame(xformed)).toEqual(formatGame(g_after));
+    });
+  });
 });

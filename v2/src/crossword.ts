@@ -408,6 +408,23 @@ export function keypress(g: Game, text: string): Game {
 }
 
 export function deleteKey(g: Game): Game {
+  let out = g;
+  const selected = fillAt(g, g.cursor);
+  const eraseBefore = selected && selected.fill !== "";
+  if (eraseBefore) {
+    out = fillSquare(out, "");
+  }
   const { dr, dc } = directionToDelta(g.cursor.direction);
-  return move(fillSquare(g, ""), -dr, -dc, true);
+  out = move(out, -dr, -dc, true);
+  if (
+    out.cursor.row === g.cursor.row &&
+    out.cursor.column === g.cursor.column
+  ) {
+    // Start of word, move backwards one clue
+    out = nextClue(out, true);
+  }
+  if (!eraseBefore) {
+    out = fillSquare(out, "");
+  }
+  return out;
 }
