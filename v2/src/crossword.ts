@@ -216,14 +216,14 @@ export function fillSquare(g: Game, text: string): Game {
   );
 }
 
-function firstBlankInWord(
+function lastBlankInWord(
   g: Game,
   pos: Types.Position,
   dr: number,
   dc: number
 ): Types.Position | null {
   let prev = null;
-  find(g, pos.row, pos.column, -dr, -dc, (pos, sq) => {
+  find(g, pos.row, pos.column, dr, dc, (pos, sq) => {
     if (sq.black) {
       return true;
     }
@@ -293,7 +293,14 @@ function findClue<T>(
   }
 }
 
-export function nextClue(g: Game, reverse?: boolean): Game {
+function nextClue(
+  g: Game,
+  pred: (
+    direction: Types.Direction,
+    clue: Types.Clue
+  ) => Types.CursorUpdate | undefined,
+  reverse?: boolean
+): Game {
   let direction = g.cursor.direction;
   const firstClue =
     direction === Types.Direction.DOWN
@@ -352,20 +359,24 @@ export function nextClue(g: Game, reverse?: boolean): Game {
   }
 
   for (let i = 0; i < search.length; i++) {
-    const sq = findClue(search[i], (direction, clue) => {
-      const start = g.by_clue[clue.number];
-      const { dr, dc } = directionToDelta(direction);
-      const found = nextBlankInWord(g, start, dr, dc);
-      if (found) {
-        return { ...found, direction };
-      }
-    });
+    const sq = findClue(search[i], pred);
     if (sq) {
       return withCursor(g, sq);
     }
   }
 
   return g;
+}
+
+export function nextBlank(g: Game, reverse?: boolean): Game {
+  return nextClue(g, (direction, clue) => {
+    const start = g.by_clue[clue.number];
+    const { dr, dc } = directionToDelta(direction);
+    const found = nextBlankInWord(g, start, dr, dc);
+    if (found) {
+      return { ...found, direction };
+    }
+  });
 }
 
 export function keypress(g: Game, text: string): Game {
@@ -397,22 +408,21 @@ export function keypress(g: Game, text: string): Game {
   }
   // At end-of-word, try wrapping to the beginning
   // TODO(pref): this.state.profile.settingEndWordBack
-  const first = firstBlankInWord(out, cursor, dr, dc);
+  const first = lastBlankInWord(out, cursor, -dr, -dc);
   if (first) {
     return withCursor(out, first);
   }
 
   // This word is done; let's find the next one
   // TODO(pref): this.state.profile.settingEndWordNext
-  return nextClue(out);
+  return nextBlank(out);
 }
 
 export function deleteKey(g: Game): Game {
   let out = g;
   const selected = fillAt(g, g.cursor);
-  const eraseBefore = selected && selected.fill !== "";
-  if (eraseBefore) {
-    out = fillSquare(out, "");
+  if (selected && selected.fill !== "") {
+    return fillSquare(out, "");
   }
   const { dr, dc } = directionToDelta(g.cursor.direction);
   out = move(out, -dr, -dc, true);
@@ -421,10 +431,23 @@ export function deleteKey(g: Game): Game {
     out.cursor.column === g.cursor.column
   ) {
     // Start of word, move backwards one clue
-    out = nextClue(out, true);
+    out = nextClue(
+      out,
+      (direction, clue) => {
+        const start = g.by_clue[clue.number];
+        const { dr, dc } = directionToDelta(direction);
+        let last = start;
+        find(g, start.row, start.column, dr, dc, (pos, sq) => {
+          if (sq.black) {
+            return true;
+          }
+          last = pos;
+        });
+        return last;
+      },
+      true
+    );
   }
-  if (!eraseBefore) {
-    out = fillSquare(out, "");
-  }
+  out = fillSquare(out, "");
   return out;
 }

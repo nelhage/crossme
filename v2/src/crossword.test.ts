@@ -199,7 +199,7 @@ describe("crossword operations", () => {
 `,
       Crossword.deleteKey,
       `
-# A>. . #
+# A .>. #
 . . . . .
 . . # . .
 . . . . .
@@ -223,10 +223,28 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `
+    ],
+    [
+      "Delete at start of word",
+      `
+# A B C #
+.>. . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      Crossword.deleteKey,
+      `
+# A B .>#
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
     ]
   ];
   testCases.forEach(([name, before, op, after], i) => {
-    it(`${name} [row: ${i}]`, () => {
+    it(`${name} [index: ${i}]`, () => {
       const g_before = parseGame(before);
       const g_after = parseGame(after);
 
