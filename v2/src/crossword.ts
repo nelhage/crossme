@@ -276,7 +276,7 @@ function findClue<T>(
   while (true) {
     const clue = s.clues[index];
     if (!clue) {
-      throw new Error("internal consistency error");
+      throw new Error(`internal consistency error: no clue @ ${index}`);
     }
     const got = predicate(s.direction, clue);
     if (got) {
@@ -308,12 +308,14 @@ export function nextClue(g: Game, reverse?: boolean): Game {
 
   const search: clueSearch[] = [];
   if (reverse) {
-    search.push({
-      direction,
-      clues,
-      fromIndex: activeIndex - 1,
-      toIndex: 0
-    });
+    if (activeIndex > 0) {
+      search.push({
+        direction,
+        clues,
+        fromIndex: activeIndex - 1,
+        toIndex: 0
+      });
+    }
     search.push({
       direction,
       clues,
@@ -327,12 +329,14 @@ export function nextClue(g: Game, reverse?: boolean): Game {
       toIndex: 0
     });
   } else {
-    search.push({
-      direction,
-      clues,
-      fromIndex: activeIndex + 1,
-      toIndex: clues.length - 1
-    });
+    if (activeIndex < clues.length - 1) {
+      search.push({
+        direction,
+        clues,
+        fromIndex: activeIndex + 1,
+        toIndex: clues.length - 1
+      });
+    }
     search.push({
       direction,
       clues,
