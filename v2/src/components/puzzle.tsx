@@ -76,6 +76,7 @@ export class PuzzleComponent extends React.Component<
       case "Delete":
       case "Backspace":
         this.setState(Crossword.deleteKey);
+        break;
       default:
         return;
     }

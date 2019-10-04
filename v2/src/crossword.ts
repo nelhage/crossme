@@ -83,10 +83,10 @@ export function withCursor(g: Game, update: Types.CursorUpdate): Game {
 }
 
 export function withFills(g: Game, fill: (string | undefined)[][]): Game {
-  if (fill.length != g.puzzle.height) {
+  if (fill.length !== g.puzzle.height) {
     throw new Error("bad fill length");
   }
-  if (fill.find(row => row.length != g.puzzle.width)) {
+  if (fill.find(row => row.length !== g.puzzle.width)) {
     throw new Error("bad fill entry");
   }
   const array: [FillKey, Types.FillState][] = [];
