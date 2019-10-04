@@ -329,16 +329,16 @@ function nextClue(
       });
     }
     search.push({
-      direction,
-      clues,
-      fromIndex: clues.length - 1,
-      toIndex: activeIndex
-    });
-    search.push({
       direction: otherDirection(direction),
       clues: otherClues,
       fromIndex: otherClues.length - 1,
       toIndex: 0
+    });
+    search.push({
+      direction,
+      clues,
+      fromIndex: clues.length - 1,
+      toIndex: activeIndex
     });
   } else {
     if (activeIndex < clues.length - 1) {
@@ -350,23 +350,23 @@ function nextClue(
       });
     }
     search.push({
-      direction,
-      clues,
-      fromIndex: 0,
-      toIndex: activeIndex
-    });
-    search.push({
       direction: otherDirection(direction),
       clues: otherClues,
       fromIndex: 0,
       toIndex: otherClues.length - 1
+    });
+    search.push({
+      direction,
+      clues,
+      fromIndex: 0,
+      toIndex: activeIndex
     });
   }
 
   for (let i = 0; i < search.length; i++) {
     const sq = findClue(search[i], pred);
     if (sq) {
-      return withCursor(g, sq);
+      return withCursor(g, { direction: search[i].direction, ...sq });
     }
   }
 

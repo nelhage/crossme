@@ -241,6 +241,24 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `
+    ],
+    [
+      "Delete at 1a",
+      `
+# .>B C #
+. . . . D
+. . # . E
+. . . . F
+# . . . #
+`,
+      Crossword.deleteKey,
+      `
+# . B C #
+. . . . D
+. . # . E
+. . . . .
+# . .v. #
+`
     ]
   ];
   testCases.forEach(([name, before, op, after], i) => {
