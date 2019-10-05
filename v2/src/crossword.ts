@@ -389,10 +389,16 @@ export function nextBlank(g: Game, reverse?: boolean): Game {
 }
 
 export function keypress(g: Game, text: string): Game {
+  const oldFill = fillAt(g, g.cursor);
   const out = fillSquare(g, text);
   const cursor = g.cursor;
 
   const { dr, dc } = directionToDelta(g.cursor.direction);
+
+  if (oldFill && oldFill.fill !== "") {
+    return move(out, dr, dc, true);
+  }
+
   const next = find(
     g,
     { row: cursor.row + dr, column: cursor.column + dc },
