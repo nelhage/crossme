@@ -145,18 +145,32 @@ function parseGame(template: string): Crossword.Game {
 
 function formatGame(g: Crossword.Game): string {
   return g.puzzle.squares
-    .map((row, r) => {
-      row.map((sq, c) => {
-        if (sq.black) {
-          return "# ";
-        }
-        const fill = Crossword.fillAt(g, { row: r, column: c });
-        if (fill && fill.fill) {
-          return fill.fill + " ";
-        }
-        return ". ";
-      });
-    })
+    .map((row, r) =>
+      row
+        .map((sq, c) => {
+          let ch = "";
+          if (sq.black) {
+            ch = "#";
+          } else {
+            const fill = Crossword.fillAt(g, { row: r, column: c });
+            if (fill && fill.fill) {
+              ch = fill.fill;
+            } else {
+              ch = ".";
+            }
+          }
+
+          if (r === g.cursor.row && c === g.cursor.column) {
+            if (g.cursor.direction === Types.Direction.ACROSS) {
+              return ch + ">";
+            } else {
+              return ch + "<";
+            }
+          }
+          return ch + " ";
+        })
+        .join("")
+    )
     .join("\n");
 }
 
@@ -188,6 +202,78 @@ describe("crossword operations", () => {
     (g: Crossword.Game) => Crossword.Game,
     string
   ][] = [
+    [
+      "Type into empty word",
+      `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.keypress(g, "A"),
+      `
+# A .>. #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "Skip filled squares",
+      `
+# .>B . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.keypress(g, "A"),
+      `
+# A B .>#
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "Don't skip when overwriting",
+      `
+# C>B . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.keypress(g, "A"),
+      `
+# A B>. #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "overwrite at end of word",
+      `
+# A B C>#
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.keypress(g, "D"),
+      `
+# A B D>#
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
     [
       "Delete at cursor",
       `
@@ -246,17 +332,17 @@ describe("crossword operations", () => {
       "Delete at 1a",
       `
 # .>B C #
-. . . . D
-. . # . E
-. . . . F
-# . . . #
+. . . . .
+. . # . .
+. . D . .
+# . E . #
 `,
       Crossword.deleteKey,
       `
 # . B C #
-. . . . D
-. . # . E
 . . . . .
+. . # . .
+. . D . .
 # . .v. #
 `
     ]
@@ -267,7 +353,6 @@ describe("crossword operations", () => {
       const g_after = parseGame(after);
 
       const xformed = op(g_before);
-      expect(xformed.cursor).toEqual(g_after.cursor);
       expect(formatGame(xformed)).toEqual(formatGame(g_after));
     });
   });
