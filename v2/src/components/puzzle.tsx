@@ -9,6 +9,7 @@ import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
 import { CurrentClue } from "./current_clue";
 import { ClueBox } from "./clue_box";
+import { Sidebar } from "./sidebar";
 
 export interface PuzzleProps {
   puzzle: Types.Puzzle;
@@ -151,10 +152,6 @@ export class PuzzleComponent extends React.Component<
           game={this.state}
           onClickCell={this.onClickCell}
           onInput={this.onInput}
-          /*
-            gameId={this.props.gameId}
-          puzzle={this.props.puzzle}
-          delegate={this.delegate} */
         />
         <ClueBox
           puzzle={this.props.puzzle}
@@ -163,19 +160,15 @@ export class PuzzleComponent extends React.Component<
           direction={this.direction()}
           onSelect={this.onSelectClue}
         />
+        <Sidebar
+        /*
+      doReveal={this.reveal}
+      doCheck={this.check}
+      gameId={this.props.gameId}
+      currentUser={this.props.currentUser}
+      */
+        />
       </div>
-      /*
-       */
-      /*
-        {this.props.gameId && (
-          <Sidebar
-            doReveal={this.reveal}
-            doCheck={this.check}
-            gameId={this.props.gameId}
-            currentUser={this.props.currentUser}
-          />
-        )}
-*/
     );
   }
 }

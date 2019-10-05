@@ -228,12 +228,8 @@
     width: 100%;
 }
 
-#controls div.dropdown button {
-    width: 50%;
-}
-
-#controls .nav>li {
-    padding: 5px 0px;
+#controls div.nav-item {
+    padding: 3px;
 }
 
 #player-list input {
