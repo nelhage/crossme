@@ -54,7 +54,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   onInput(fill: string) {
-    this.updateGame(game => Crossword.keypress(game, fill.toUpperCase()));
+    this.setState(state => ({
+      game: Crossword.keypress(state.game, fill.toUpperCase(), state.pencil)
+    }));
   }
 
   keyDown(e: KeyboardEvent) {

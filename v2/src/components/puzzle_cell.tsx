@@ -47,17 +47,16 @@ export class PuzzleCell extends React.PureComponent<
     if (this.props.square.black) {
       throw new Error("can't compute classes for black cell");
     }
-    const classes = Object.create({
-      circled: this.props.square.circled
+    const classes: { [cls: string]: boolean | undefined } = {
+      circled: this.props.square.circled,
+      pencil: this.props.fill && this.props.fill.pencil
       /*
       reveal: this.props.fill.reveal,
       wrong: (this.props.fill.checked === 'checking'),
       checked: (this.props.fill.checked === 'checked'),
       correct: (this.props.fill.correct && this.props.letter === this.props.fill.letter),
-      pencil: this.props.fill.pencil,
-      rebus: this.props.fill.letter && this.props.fill.letter.length > 1,
       */
-    });
+    };
     switch (this.props.inword) {
       case InWord.SELECTED:
         classes.selected = true;
@@ -75,7 +74,6 @@ export class PuzzleCell extends React.PureComponent<
     ) {
       classes.rebus = true;
     }
-
     return classes;
   }
 

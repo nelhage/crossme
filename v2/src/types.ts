@@ -60,4 +60,5 @@ export interface CursorUpdate {
 
 export interface FillState {
   readonly fill: string;
+  readonly pencil: boolean;
 }

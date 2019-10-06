@@ -93,7 +93,10 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   fill.forEach((row, r) => {
     row.forEach((ch, c) => {
       if (ch) {
-        array.push([new FillKey({ row: r, column: c }), { fill: ch }]);
+        array.push([
+          new FillKey({ row: r, column: c }),
+          { fill: ch, pencil: false }
+        ]);
       }
     });
   });
@@ -213,10 +216,11 @@ export function selectClue(
   return g;
 }
 
-export function fillSquare(g: Game, text: string): Game {
+export function fillSquare(g: Game, text: string, pencil?: boolean): Game {
   return withFill(g, fill =>
     fill.set(new FillKey({ row: g.cursor.row, column: g.cursor.column }), {
-      fill: text.replace(/\s/, "")
+      fill: text.replace(/\s/, ""),
+      pencil: !!pencil
     })
   );
 }
@@ -388,9 +392,9 @@ export function nextBlank(g: Game, reverse?: boolean): Game {
   );
 }
 
-export function keypress(g: Game, text: string): Game {
+export function keypress(g: Game, text: string, pencil?: boolean): Game {
   const oldFill = fillAt(g, g.cursor);
-  const out = fillSquare(g, text);
+  const out = fillSquare(g, text, pencil);
   const cursor = g.cursor;
 
   const { dr, dc } = directionToDelta(g.cursor.direction);
