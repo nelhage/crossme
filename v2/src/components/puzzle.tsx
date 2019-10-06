@@ -30,10 +30,10 @@ export class PuzzleComponent extends React.Component<
     this.onSelectClue = this.onSelectClue.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.onInput = this.onInput.bind(this);
-    this.onRebus = this.onRebus.bind(this);
+    this.openRebus = this.openRebus.bind(this);
   }
 
-  onRebus() {
+  openRebus() {
     if (this.grid.current && this.grid.current.activeCell.current) {
       this.grid.current.activeCell.current.setState({ rebus: true });
     }
@@ -50,7 +50,6 @@ export class PuzzleComponent extends React.Component<
         if (e.key === "Enter") {
           target.blur();
           e.preventDefault();
-          // Session.set("rebus", false);
         }
 
         return;
@@ -78,7 +77,12 @@ export class PuzzleComponent extends React.Component<
         this.setState(game => Crossword.nextBlank(game, e.shiftKey));
         break;
       case "Enter":
-        this.setState(Crossword.swapDirection);
+        const fill = Crossword.fillAt(this.state, this.state.cursor);
+        if (fill && fill.fill && fill.fill.length > 1) {
+          this.openRebus();
+        } else {
+          this.setState(Crossword.swapDirection);
+        }
         break;
       case "Delete":
       case "Backspace":
@@ -106,7 +110,12 @@ export class PuzzleComponent extends React.Component<
       return;
     }
     if (row === this.state.cursor.row && column === this.state.cursor.column) {
-      this.setState(Crossword.swapDirection);
+      const fill = Crossword.fillAt(this.state, this.state.cursor);
+      if (fill && fill.fill && fill.fill.length > 1) {
+        this.openRebus();
+      } else {
+        this.setState(Crossword.swapDirection);
+      }
     } else {
       this.setState(game => Crossword.selectSquare(game, { row, column }));
     }
@@ -168,7 +177,7 @@ export class PuzzleComponent extends React.Component<
           onSelect={this.onSelectClue}
         />
         <Sidebar
-          openRebus={this.onRebus}
+          openRebus={this.openRebus}
           /*
       doReveal={this.reveal}
       doCheck={this.check}
