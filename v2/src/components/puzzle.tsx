@@ -15,15 +15,20 @@ export interface PuzzleProps {
   puzzle: Types.Puzzle;
 }
 
-export class PuzzleComponent extends React.Component<
-  PuzzleProps,
-  Crossword.Game
-> {
+export interface PuzzleState {
+  pencil: boolean;
+  game: Crossword.Game;
+}
+
+export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   grid: React.RefObject<PuzzleGrid>;
 
   constructor(props: PuzzleProps) {
     super(props);
-    this.state = Crossword.newGame(props.puzzle);
+    this.state = {
+      game: Crossword.newGame(props.puzzle),
+      pencil: false
+    };
     this.grid = React.createRef();
 
     this.onClickCell = this.onClickCell.bind(this);
@@ -31,6 +36,11 @@ export class PuzzleComponent extends React.Component<
     this.keyDown = this.keyDown.bind(this);
     this.onInput = this.onInput.bind(this);
     this.openRebus = this.openRebus.bind(this);
+    this.setPencil = this.setPencil.bind(this);
+  }
+
+  updateGame(op: (g: Crossword.Game) => Crossword.Game) {
+    this.setState(state => ({ ...state, game: op(state.game) }));
   }
 
   openRebus() {
@@ -39,8 +49,12 @@ export class PuzzleComponent extends React.Component<
     }
   }
 
+  setPencil(pencil: boolean) {
+    this.setState({ pencil: pencil });
+  }
+
   onInput(fill: string) {
-    this.setState(game => Crossword.keypress(game, fill.toUpperCase()));
+    this.updateGame(game => Crossword.keypress(game, fill.toUpperCase()));
   }
 
   keyDown(e: KeyboardEvent) {
@@ -74,19 +88,19 @@ export class PuzzleComponent extends React.Component<
         this.arrow(1, 0);
         break;
       case "Tab":
-        this.setState(game => Crossword.nextBlank(game, e.shiftKey));
+        this.updateGame(game => Crossword.nextBlank(game, e.shiftKey));
         break;
       case "Enter":
-        const fill = Crossword.fillAt(this.state, this.state.cursor);
+        const fill = Crossword.fillAt(this.state.game, this.state.game.cursor);
         if (fill && fill.fill && fill.fill.length > 1) {
           this.openRebus();
         } else {
-          this.setState(Crossword.swapDirection);
+          this.updateGame(Crossword.swapDirection);
         }
         break;
       case "Delete":
       case "Backspace":
-        this.setState(Crossword.deleteKey);
+        this.updateGame(Crossword.deleteKey);
         break;
       default:
         return;
@@ -97,11 +111,11 @@ export class PuzzleComponent extends React.Component<
   arrow(dr: number, dc: number) {
     const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
     // TODO: settingArrows
-    if (direction !== this.state.cursor.direction) {
-      this.setState(state => Crossword.swapDirection(state));
+    if (direction !== this.state.game.cursor.direction) {
+      this.updateGame(state => Crossword.swapDirection(state));
       return;
     }
-    this.setState(state => Crossword.move(state, dr, dc));
+    this.updateGame(state => Crossword.move(state, dr, dc));
   }
 
   onClickCell({ row, column }: Types.Position) {
@@ -109,31 +123,34 @@ export class PuzzleComponent extends React.Component<
     if (!cell || cell.black) {
       return;
     }
-    if (row === this.state.cursor.row && column === this.state.cursor.column) {
-      const fill = Crossword.fillAt(this.state, this.state.cursor);
+    if (
+      row === this.state.game.cursor.row &&
+      column === this.state.game.cursor.column
+    ) {
+      const fill = Crossword.fillAt(this.state.game, this.state.game.cursor);
       if (fill && fill.fill && fill.fill.length > 1) {
         this.openRebus();
       } else {
-        this.setState(Crossword.swapDirection);
+        this.updateGame(Crossword.swapDirection);
       }
     } else {
-      this.setState(game => Crossword.selectSquare(game, { row, column }));
+      this.updateGame(game => Crossword.selectSquare(game, { row, column }));
     }
   }
 
   onSelectClue(evt: Types.SelectClueEvent) {
-    this.setState(game => Crossword.selectClue(game, evt));
+    this.updateGame(game => Crossword.selectClue(game, evt));
   }
 
   selectedClueNumber(): number {
-    const square = Crossword.selectedSquare(this.state);
-    return this.state.cursor.direction === Types.Direction.DOWN
+    const square = Crossword.selectedSquare(this.state.game);
+    return this.state.game.cursor.direction === Types.Direction.DOWN
       ? square.clue_down
       : square.clue_across;
   }
 
   direction(): Types.Direction {
-    return this.state.cursor.direction;
+    return this.state.game.cursor.direction;
   }
 
   selectedClue(): Types.Clue {
@@ -158,14 +175,14 @@ export class PuzzleComponent extends React.Component<
   }
 
   render() {
-    const sel = Crossword.selectedSquare(this.state);
+    const sel = Crossword.selectedSquare(this.state.game);
     return (
       <div id="puzzle">
         <Metadata puzzle={this.props.puzzle} solved={false} />
         <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
           ref={this.grid}
-          game={this.state}
+          game={this.state.game}
           onClickCell={this.onClickCell}
           onInput={this.onInput}
         />
@@ -178,6 +195,8 @@ export class PuzzleComponent extends React.Component<
         />
         <Sidebar
           openRebus={this.openRebus}
+          pencil={this.state.pencil}
+          setPencil={this.setPencil}
           /*
       doReveal={this.reveal}
       doCheck={this.check}

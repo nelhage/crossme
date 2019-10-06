@@ -8,8 +8,12 @@ import { Pencil } from "./controls/pencil";
 import { Rebus } from "./controls/rebus";
 
 interface SidebarProps {
+  pencil: boolean;
+
   doReveal?: any;
   doCheck?: any;
+
+  setPencil: (arg: boolean) => void;
   openRebus: () => void;
 }
 
@@ -24,7 +28,7 @@ export const Sidebar: React.FC<SidebarProps> = props => {
           <Check doCheck={props.doCheck} />
         </Nav.Item>
         <Nav.Item>
-          <Pencil isPencil={false} />
+          <Pencil isPencil={props.pencil} setPencil={props.setPencil} />
         </Nav.Item>
         <Nav.Item>
           <Rebus onClick={props.openRebus} />

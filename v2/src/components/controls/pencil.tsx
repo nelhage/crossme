@@ -6,18 +6,18 @@ import ToggleButtonGroup from "react-bootstrap/ToggleButtonGroup";
 
 export interface PencilProps {
   isPencil: boolean;
+
+  setPencil: (pencil: boolean) => void;
 }
 
 export const Pencil: React.FC<PencilProps> = props => {
-  const onChange = () => null;
-
   return (
     <ButtonToolbar>
       <ToggleButtonGroup
         type="radio"
         name="options"
         value={props.isPencil}
-        onChange={onChange}
+        onChange={props.setPencil}
       >
         <ToggleButton value={false}>Pen</ToggleButton>
         <ToggleButton value={true}>Pencil</ToggleButton>
