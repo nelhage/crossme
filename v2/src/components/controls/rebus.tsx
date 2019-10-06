@@ -4,17 +4,13 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 export interface RebusProps {
-  active: boolean;
+  onClick: () => void;
 }
 
 export const Rebus: React.FC<RebusProps> = props => {
   return (
     <ButtonGroup>
-      <Button
-      /* onClick={this.click.bind(this)} */
-      >
-        Rebus
-      </Button>
+      <Button onClick={props.onClick}>Rebus</Button>
     </ButtonGroup>
   );
 };

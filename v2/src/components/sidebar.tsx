@@ -10,6 +10,7 @@ import { Rebus } from "./controls/rebus";
 interface SidebarProps {
   doReveal?: any;
   doCheck?: any;
+  openRebus: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = props => {
@@ -26,7 +27,7 @@ export const Sidebar: React.FC<SidebarProps> = props => {
           <Pencil isPencil={false} />
         </Nav.Item>
         <Nav.Item>
-          <Rebus active={false} />
+          <Rebus onClick={props.openRebus} />
         </Nav.Item>
       </Nav>
     </div>

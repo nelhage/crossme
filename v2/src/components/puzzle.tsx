@@ -19,22 +19,28 @@ export class PuzzleComponent extends React.Component<
   PuzzleProps,
   Crossword.Game
 > {
+  grid: React.RefObject<PuzzleGrid>;
+
   constructor(props: PuzzleProps) {
     super(props);
     this.state = Crossword.newGame(props.puzzle);
+    this.grid = React.createRef();
 
     this.onClickCell = this.onClickCell.bind(this);
     this.onSelectClue = this.onSelectClue.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.onInput = this.onInput.bind(this);
+    this.onRebus = this.onRebus.bind(this);
   }
 
-  onInput(e: React.FormEvent<HTMLInputElement>) {
-    const target = e.target as HTMLInputElement;
-    const fill = target.value.toUpperCase();
-    this.setState(game => Crossword.keypress(game, fill));
-    target.value = "";
-    e.preventDefault();
+  onRebus() {
+    if (this.grid.current && this.grid.current.activeCell.current) {
+      this.grid.current.activeCell.current.setState({ rebus: true });
+    }
+  }
+
+  onInput(fill: string) {
+    this.setState(game => Crossword.keypress(game, fill.toUpperCase()));
   }
 
   keyDown(e: KeyboardEvent) {
@@ -149,6 +155,7 @@ export class PuzzleComponent extends React.Component<
         <Metadata puzzle={this.props.puzzle} solved={false} />
         <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
         <PuzzleGrid
+          ref={this.grid}
           game={this.state}
           onClickCell={this.onClickCell}
           onInput={this.onInput}
@@ -161,7 +168,8 @@ export class PuzzleComponent extends React.Component<
           onSelect={this.onSelectClue}
         />
         <Sidebar
-        /*
+          openRebus={this.onRebus}
+          /*
       doReveal={this.reveal}
       doCheck={this.check}
       gameId={this.props.gameId}

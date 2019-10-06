@@ -9,16 +9,20 @@ export interface PuzzleGridProps {
   game: Crossword.Game;
 
   onClickCell: (arg: Types.Position) => void;
-  onInput: (arg: React.FormEvent<HTMLInputElement>) => void;
+  onInput: (arg: string) => void;
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   inputRef: React.RefObject<HTMLInputElement>;
+  activeCell: React.RefObject<PuzzleCell>;
 
   constructor(props: PuzzleGridProps) {
     super(props);
     this.inputRef = React.createRef();
+    this.activeCell = React.createRef();
+
     this.onClick = this.onClick.bind(this);
+    this.onInput = this.onInput.bind(this);
   }
 
   computeWidth(): number {
@@ -31,6 +35,14 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     const row = parseInt(target.dataset.row as string, 10);
     const column = parseInt(target.dataset.column as string, 10);
     this.props.onClickCell({ row: row, column: column });
+  }
+
+  onInput(e: React.FormEvent<HTMLInputElement>) {
+    const target = e.target as HTMLInputElement;
+    const fill = target.value.toUpperCase();
+    this.props.onInput(fill);
+    target.value = "";
+    e.preventDefault();
   }
 
   componentDidMount() {
@@ -54,7 +66,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     }
     const rows = this.props.game.puzzle.squares.map((row, r) => {
       const cells = row.map((cell, c) => {
-        const props: PuzzleCellProps = {
+        const props: PuzzleCellProps & { ref?: React.RefObject<PuzzleCell> } = {
           square: cell,
           onClick: this.onClick,
           row: r,
@@ -66,6 +78,8 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
             c === this.props.game.cursor.column
           ) {
             props.inword = InWord.SELECTED;
+            props.ref = this.activeCell;
+            props.onInput = this.props.onInput;
           } else if (cell.clue_across === active_cell.clue_across) {
             props.inword =
               this.props.game.cursor.direction === Types.Direction.ACROSS
@@ -108,7 +122,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           id="puzzleinput"
           defaultValue=""
           type="password"
-          onInput={this.props.onInput}
+          onInput={this.onInput}
           ref={this.inputRef}
         />
         {rows}

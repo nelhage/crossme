@@ -16,12 +16,33 @@ export interface PuzzleCellProps {
 
   fill?: Types.FillState;
 
-  onClick: (evt: React.MouseEvent<HTMLDivElement>) => any;
+  onClick: (evt: React.MouseEvent<HTMLDivElement>) => void;
+  onInput?: (text: string) => void;
 
   inword?: InWord;
 }
 
-export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
+interface PuzzleCellState {
+  rebus?: boolean;
+}
+
+export class PuzzleCell extends React.PureComponent<
+  PuzzleCellProps,
+  PuzzleCellState
+> {
+  constructor(props: PuzzleCellProps) {
+    super(props);
+    this.state = { rebus: false };
+    this.closeRebus = this.closeRebus.bind(this);
+  }
+
+  static getDerivedStateFromProps(props: PuzzleCellProps): PuzzleCellState {
+    if (props.inword !== InWord.SELECTED) {
+      return { rebus: false };
+    }
+    return {};
+  }
+
   computeClasses() {
     if (this.props.square.black) {
       throw new Error("can't compute classes for black cell");
@@ -47,8 +68,22 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
       case InWord.OTHER_WORD:
         classes.otherword = true;
     }
+    if (
+      this.props.fill &&
+      this.props.fill.fill &&
+      this.props.fill.fill.length > 1
+    ) {
+      classes.rebus = true;
+    }
 
     return classes;
+  }
+
+  closeRebus(evt: React.FocusEvent<HTMLInputElement>) {
+    this.setState({ rebus: false });
+    if (this.props.onInput) {
+      this.props.onInput(evt.target.value.toUpperCase());
+    }
   }
 
   render() {
@@ -63,13 +98,12 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
     const classes = this.computeClasses();
 
     /* eslint-disable jsx-a11y/no-autofocus */
-    const rebus = this.props.fill && this.props.fill.fill.length > 1;
     return (
       <div
         role="button"
         data-row={this.props.row}
         data-column={this.props.column}
-        onClick={rebus ? undefined : this.props.onClick}
+        onClick={this.state.rebus ? undefined : this.props.onClick}
         className={classNames("cell", classes)}
       >
         <div className="circle">
@@ -77,11 +111,11 @@ export class PuzzleCell extends React.PureComponent<PuzzleCellProps> {
             <div className="numberlabel">{this.props.square.number}</div>
           )}
           <div className="cellbody">
-            {rebus ? (
+            {this.state.rebus ? (
               <input
                 className="fill"
                 defaultValue={this.props.fill && this.props.fill.fill}
-                // onBlur={this.setSquare}
+                onBlur={this.closeRebus}
                 autoFocus={true}
               />
             ) : (
