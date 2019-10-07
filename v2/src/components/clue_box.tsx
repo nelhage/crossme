@@ -13,7 +13,7 @@ export interface ClueBoxProps {
 }
 
 export const ClueBox: React.FC<ClueBoxProps> = props => (
-  <div id="clues" className="visible-md-inline-block visible-lg-inline-block">
+  <div id="clues" className="d-none d-md-inline-block">
     <div className="section across">
       <div className="title"> Across </div>
       <ClueGroup
