@@ -32,14 +32,23 @@ export interface Game {
   readonly fill: Fill;
 }
 
+function unpackIndex(p: Types.Puzzle, idx: number): Types.Position {
+  const row = Math.floor(idx / p.width);
+  const column = idx % p.width;
+  return { row, column };
+}
+
+export function cellAt(p: Types.Puzzle, pos: Types.Position): Types.Cell {
+  return p.squares[pos.row * p.width + pos.column];
+}
+
 export function newGame(puzzle: Types.Puzzle): Game {
   const by_clue: { [clue: number]: Types.Position } = {};
-  puzzle.squares.forEach((row, r) => {
-    row.forEach((sq, c) => {
-      if (!sq.black && sq.number) {
-        by_clue[sq.number] = { row: r, column: c };
-      }
-    });
+  puzzle.squares.forEach((sq, idx) => {
+    if (!sq.black && sq.number) {
+      const pos = unpackIndex(puzzle, idx);
+      by_clue[sq.number] = pos;
+    }
   });
 
   return {
@@ -137,7 +146,7 @@ export function withPencil(g: Game, pencil: boolean): Game {
 }
 
 export function selectedSquare(g: Game): Types.LetterCell {
-  const cell = g.puzzle.squares[g.cursor.row][g.cursor.column];
+  const cell = cellAt(g.puzzle, g.cursor);
   if (cell.black) {
     throw new Error("Selected black cell!");
   }
@@ -161,7 +170,7 @@ function find(
     ) {
       return null;
     }
-    const cell = g.puzzle.squares[pos.row][pos.column];
+    const cell = cellAt(g.puzzle, pos);
     if (predicate({ ...pos }, cell)) {
       return pos;
     }
@@ -183,7 +192,7 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
     dr,
     dc,
     (pos: Types.Position) => {
-      const sq = g.puzzle.squares[pos.row][pos.column];
+      const sq = cellAt(g.puzzle, pos);
       if (sq.black) {
         return false;
       }
@@ -202,12 +211,12 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
   return withCursor(g, { ...dst, direction });
 }
 
-export function selectSquare(g: Game, { row, column }: Types.Position): Game {
-  const cell = g.puzzle.squares[row][column];
+export function selectSquare(g: Game, pos: Types.Position): Game {
+  const cell = cellAt(g.puzzle, pos);
   if (!cell || cell.black) {
     return g;
   }
-  return withCursor(g, { row, column });
+  return withCursor(g, pos);
 }
 
 export function selectClue(
@@ -263,7 +272,7 @@ function nextBlankInWord(
     const fill = g.fill.get(new FillKey(pos));
     return !fill || fill.fill === "";
   });
-  if (found && g.puzzle.squares[found.row][found.column].black) {
+  if (found && cellAt(g.puzzle, found).black) {
     return null;
   }
   return found;
@@ -426,7 +435,7 @@ export function keypress(g: Game, text: string): Game {
       return false;
     }
   );
-  if (next && !g.puzzle.squares[next.row][next.column].black) {
+  if (next && !cellAt(g.puzzle, next).black) {
     return withCursor(out, next);
   }
   // At end-of-word, try wrapping to the beginning

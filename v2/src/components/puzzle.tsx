@@ -116,14 +116,14 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.updateGame(state => Crossword.move(state, dr, dc));
   }
 
-  onClickCell({ row, column }: Types.Position) {
-    const cell = this.props.puzzle.squares[row][column];
+  onClickCell(pos: Types.Position) {
+    const cell = Crossword.cellAt(this.props.puzzle, pos);
     if (!cell || cell.black) {
       return;
     }
     if (
-      row === this.state.game.cursor.row &&
-      column === this.state.game.cursor.column
+      pos.row === this.state.game.cursor.row &&
+      pos.column === this.state.game.cursor.column
     ) {
       const fill = Crossword.fillAt(this.state.game, this.state.game.cursor);
       if (fill && fill.fill && fill.fill.length > 1) {
@@ -132,7 +132,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         this.updateGame(Crossword.swapDirection);
       }
     } else {
-      this.updateGame(game => Crossword.selectSquare(game, { row, column }));
+      this.updateGame(game => Crossword.selectSquare(game, pos));
     }
   }
 

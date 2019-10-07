@@ -58,14 +58,15 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   }
 
   render() {
-    const active_cell = this.props.game.puzzle.squares[
-      this.props.game.cursor.row
-    ][this.props.game.cursor.column];
-    if (active_cell.black) {
-      throw new Error("selected black cell");
-    }
-    const rows = this.props.game.puzzle.squares.map((row, r) => {
-      const cells = row.map((cell, c) => {
+    const active_cell = Crossword.selectedSquare(this.props.game);
+    const rows: JSX.Element[] = [];
+    for (let r = 0; r < this.props.game.puzzle.height; r++) {
+      const cells: JSX.Element[] = [];
+      for (let c = 0; c < this.props.game.puzzle.width; c++) {
+        const cell = Crossword.cellAt(this.props.game.puzzle, {
+          row: r,
+          column: c
+        });
         const props: PuzzleCellProps & { ref?: React.RefObject<PuzzleCell> } = {
           square: cell,
           onClick: this.onClick,
@@ -94,14 +95,14 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           props.fill = Crossword.fillAt(this.props.game, { row: r, column: c });
         }
 
-        return <PuzzleCell key={`${r},${c}`} {...props} />;
-      });
-      return (
+        cells.push(<PuzzleCell key={`${r},${c}`} {...props} />);
+      }
+      rows.push(
         <div className="row" key={r}>
           {cells}
         </div>
       );
-    });
+    }
 
     // In order to support mobile devices, we create an
     // off-screen <input> field, which we ensure is always focused
