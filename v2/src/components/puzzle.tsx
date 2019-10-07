@@ -195,12 +195,6 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           openRebus={this.openRebus}
           pencil={this.state.game.cursor.pencil}
           setPencil={this.setPencil}
-          /*
-      doReveal={this.reveal}
-      doCheck={this.check}
-      gameId={this.props.gameId}
-      currentUser={this.props.currentUser}
-      */
         />
       </div>
     );
