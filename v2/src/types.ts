@@ -50,12 +50,14 @@ export interface Cursor {
   readonly row: number;
   readonly column: number;
   readonly direction: Direction;
+  readonly pencil: boolean;
 }
 
 export interface CursorUpdate {
   readonly row?: number;
   readonly column?: number;
   readonly direction?: Direction;
+  readonly pencil?: boolean;
 }
 
 export interface FillState {

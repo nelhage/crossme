@@ -16,7 +16,6 @@ export interface PuzzleProps {
 }
 
 export interface PuzzleState {
-  pencil: boolean;
   game: Crossword.Game;
 }
 
@@ -26,8 +25,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   constructor(props: PuzzleProps) {
     super(props);
     this.state = {
-      game: Crossword.newGame(props.puzzle),
-      pencil: false
+      game: Crossword.newGame(props.puzzle)
     };
     this.grid = React.createRef();
 
@@ -50,13 +48,11 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   setPencil(pencil: boolean) {
-    this.setState({ pencil: pencil });
+    this.updateGame(g => Crossword.withPencil(g, pencil));
   }
 
   onInput(fill: string) {
-    this.setState(state => ({
-      game: Crossword.keypress(state.game, fill.toUpperCase(), state.pencil)
-    }));
+    this.updateGame(game => Crossword.keypress(game, fill.toUpperCase()));
   }
 
   keyDown(e: KeyboardEvent) {
@@ -197,7 +193,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         />
         <Sidebar
           openRebus={this.openRebus}
-          pencil={this.state.pencil}
+          pencil={this.state.game.cursor.pencil}
           setPencil={this.setPencil}
           /*
       doReveal={this.reveal}

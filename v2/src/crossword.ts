@@ -49,7 +49,8 @@ export function newGame(puzzle: Types.Puzzle): Game {
     cursor: {
       row: 1,
       column: 2,
-      direction: Types.Direction.DOWN
+      direction: Types.Direction.DOWN,
+      pencil: false
     },
     fill: Map()
   };
@@ -95,7 +96,7 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
       if (ch) {
         array.push([
           new FillKey({ row: r, column: c }),
-          { fill: ch, pencil: false }
+          { fill: ch, pencil: g.cursor.pencil }
         ]);
       }
     });
@@ -129,6 +130,10 @@ export function swapDirection(g: Game): Game {
   return withCursor(g, {
     direction: otherDirection(g.cursor.direction)
   });
+}
+
+export function withPencil(g: Game, pencil: boolean): Game {
+  return withCursor(g, { pencil: pencil });
 }
 
 export function selectedSquare(g: Game): Types.LetterCell {
@@ -216,11 +221,11 @@ export function selectClue(
   return g;
 }
 
-export function fillSquare(g: Game, text: string, pencil?: boolean): Game {
+export function fillSquare(g: Game, text: string): Game {
   return withFill(g, fill =>
     fill.set(new FillKey({ row: g.cursor.row, column: g.cursor.column }), {
       fill: text.replace(/\s/, ""),
-      pencil: !!pencil
+      pencil: g.cursor.pencil
     })
   );
 }
@@ -392,9 +397,9 @@ export function nextBlank(g: Game, reverse?: boolean): Game {
   );
 }
 
-export function keypress(g: Game, text: string, pencil?: boolean): Game {
+export function keypress(g: Game, text: string): Game {
   const oldFill = fillAt(g, g.cursor);
-  const out = fillSquare(g, text, pencil);
+  const out = fillSquare(g, text);
   const cursor = g.cursor;
 
   const { dr, dc } = directionToDelta(g.cursor.direction);
