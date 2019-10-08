@@ -35,6 +35,8 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.onInput = this.onInput.bind(this);
     this.openRebus = this.openRebus.bind(this);
     this.setPencil = this.setPencil.bind(this);
+    this.doReveal = this.doReveal.bind(this);
+    this.doCheck = this.doCheck.bind(this);
   }
 
   updateGame(op: (g: Crossword.Game) => Crossword.Game) {
@@ -140,6 +142,14 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.updateGame(game => Crossword.selectClue(game, evt));
   }
 
+  doReveal(target: Crossword.Target) {
+    this.updateGame(game => Crossword.revealAnswers(game, target));
+  }
+
+  doCheck(target: Crossword.Target) {
+    this.updateGame(game => Crossword.checkAnswers(game, target));
+  }
+
   selectedClueNumber(): number {
     const square = Crossword.selectedSquare(this.state.game);
     return this.state.game.cursor.direction === Types.Direction.DOWN
@@ -195,6 +205,8 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           openRebus={this.openRebus}
           pencil={this.state.game.cursor.pencil}
           setPencil={this.setPencil}
+          doReveal={this.doReveal}
+          doCheck={this.doCheck}
         />
       </div>
     );

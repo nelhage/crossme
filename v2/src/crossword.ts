@@ -232,10 +232,14 @@ export function selectClue(
 
 export function fillSquare(g: Game, text: string): Game {
   return withFill(g, fill =>
-    fill.set(new FillKey({ row: g.cursor.row, column: g.cursor.column }), {
-      fill: text.replace(/\s/, ""),
-      pencil: g.cursor.pencil
-    })
+    fill.update(
+      new FillKey({ row: g.cursor.row, column: g.cursor.column }),
+      state => ({
+        ...(state || {}),
+        fill: text.replace(/\s/, ""),
+        pencil: g.cursor.pencil
+      })
+    )
   );
 }
 
@@ -483,4 +487,67 @@ export function deleteKey(g: Game): Game {
   }
   out = fillSquare(out, "");
   return out;
+}
+
+export enum Target {
+  SQUARE = "square",
+  WORD = "word",
+  PUZZLE = "puzzle"
+}
+
+function eachTarget(
+  g: Game,
+  target: Target,
+  each: (
+    sq: Readonly<Types.LetterCell>,
+    fill: Readonly<Types.FillState>
+  ) => Types.FillState
+): Game {
+  if (target === Target.SQUARE) {
+    return withFill(g, fills =>
+      fills.update(
+        new FillKey(g.cursor),
+        (state = { fill: "", pencil: false }) => each(selectedSquare(g), state)
+      )
+    );
+  }
+  const active = selectedSquare(g);
+  const want: (sq: Types.LetterCell) => boolean =
+    target === Target.PUZZLE
+      ? () => true
+      : sq => {
+          if (g.cursor.direction === Types.Direction.ACROSS) {
+            return sq.clue_across === active.clue_across;
+          } else {
+            return sq.clue_down === active.clue_down;
+          }
+        };
+  return withFill(g, fills => {
+    const mut = fills.asMutable();
+    g.puzzle.squares.forEach((sq, i) => {
+      if (sq.black || !want(sq)) {
+        return;
+      }
+      const pos = unpackIndex(g.puzzle, i);
+      mut.update(new FillKey(pos), (state = { fill: "", pencil: false }) =>
+        each(sq, state)
+      );
+    });
+    return mut.asImmutable();
+  });
+}
+
+export function checkAnswers(g: Game, target: Target): Game {
+  return eachTarget(g, target, (sq, fill) => {
+    if (fill && fill.fill !== "") {
+      return { ...fill, checked: true, correct: fill.fill === sq.fill };
+    }
+    return fill;
+  });
+}
+
+export function revealAnswers(g: Game, target: Target): Game {
+  return eachTarget(g, target, (sq, fill) => {
+    return { ...fill, revealed: true, correct: true, fill: sq.fill };
+  });
 }

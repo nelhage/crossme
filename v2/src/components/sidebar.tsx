@@ -2,6 +2,8 @@ import React from "react";
 
 import Nav from "react-bootstrap/Nav";
 
+import * as Crossword from "../crossword";
+
 import { Reveal } from "./controls/reveal";
 import { Check } from "./controls/check";
 import { Pencil } from "./controls/pencil";
@@ -10,8 +12,8 @@ import { Rebus } from "./controls/rebus";
 interface SidebarProps {
   pencil: boolean;
 
-  doReveal?: any;
-  doCheck?: any;
+  doReveal: (target: Crossword.Target) => void;
+  doCheck: (target: Crossword.Target) => void;
 
   setPencil: (arg: boolean) => void;
   openRebus: () => void;

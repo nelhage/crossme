@@ -49,13 +49,12 @@ export class PuzzleCell extends React.PureComponent<
     }
     const classes: { [cls: string]: boolean | undefined } = {
       circled: this.props.square.circled,
-      pencil: this.props.fill && this.props.fill.pencil
-      /*
-      reveal: this.props.fill.reveal,
-      wrong: (this.props.fill.checked === 'checking'),
-      checked: (this.props.fill.checked === 'checked'),
-      correct: (this.props.fill.correct && this.props.letter === this.props.fill.letter),
-      */
+      pencil: this.props.fill && this.props.fill.pencil,
+      reveal: this.props.fill && this.props.fill.revealed,
+      wrong:
+        this.props.fill && this.props.fill.checked && !this.props.fill.correct,
+      checked: this.props.fill && this.props.fill.checked,
+      correct: this.props.fill && this.props.fill.correct
     };
     switch (this.props.inword) {
       case InWord.SELECTED:
