@@ -186,26 +186,19 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
   const col = g.cursor.column;
 
   const sel = selectedSquare(g);
-  const dst = find(
-    g,
-    { row: row + dr, column: col + dc },
-    dr,
-    dc,
-    (pos: Types.Position) => {
-      const sq = cellAt(g.puzzle, pos);
-      if (sq.black) {
-        return false;
-      }
-      if (
-        inword &&
-        ((dc && sel.clue_across !== sq.clue_across) ||
-          (dr && sel.clue_down !== sq.clue_down))
-      ) {
-        return false;
-      }
-      return true;
+  const dst = find(g, { row: row + dr, column: col + dc }, dr, dc, (_, sq) => {
+    if (sq.black) {
+      return false;
     }
-  );
+    if (
+      inword &&
+      ((dc && sel.clue_across !== sq.clue_across) ||
+        (dr && sel.clue_down !== sq.clue_down))
+    ) {
+      return false;
+    }
+    return true;
+  });
 
   if (!dst) return g;
   return withCursor(g, { ...dst, direction });
