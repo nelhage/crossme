@@ -164,7 +164,7 @@ function formatGame(g: Crossword.Game): string {
             if (g.cursor.direction === Types.Direction.ACROSS) {
               return ch + ">";
             } else {
-              return ch + "<";
+              return ch + "v";
             }
           }
           return ch + " ";
