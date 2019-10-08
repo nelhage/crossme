@@ -1,21 +1,23 @@
 import * as Crossword from "./crossword";
 import * as Types from "./types";
 
-function computeNumbering(grid: Types.Cell[][]): [Types.Clue[], Types.Clue[]] {
-  const height = grid.length;
-  const width = grid[0].length;
-
+function computeNumbering(
+  { width, height }: { width: number; height: number },
+  grid: Types.Cell[]
+): [Types.Clue[], Types.Clue[]] {
+  const at: (r: number, c: number) => Types.Cell = (r, c) =>
+    grid[r * width + c];
   const needsAcross: (row: number, column: number) => boolean = (r, c) => {
-    if (c > 0 && !grid[r][c - 1].black) {
+    if (c > 0 && !at(r, c - 1).black) {
       return false;
     }
-    return c + 1 !== width && !grid[r][c + 1].black;
+    return c + 1 !== width && !at(r, c + 1).black;
   };
   const needsDown: (row: number, column: number) => boolean = (r, c) => {
-    if (r > 0 && !grid[r - 1][c].black) {
+    if (r > 0 && !at(r - 1, c).black) {
       return false;
     }
-    return r + 1 !== height && !grid[r + 1][c].black;
+    return r + 1 !== height && !at(r + 1, c).black;
   };
 
   const across: Types.Clue[] = [];
@@ -24,7 +26,7 @@ function computeNumbering(grid: Types.Cell[][]): [Types.Clue[], Types.Clue[]] {
   let n = 1;
   for (let r = 0; r < height; r++) {
     for (let c = 0; c < height; c++) {
-      const cell = grid[r][c];
+      const cell = at(r, c);
       if (cell.black) {
         continue;
       }
@@ -35,7 +37,7 @@ function computeNumbering(grid: Types.Cell[][]): [Types.Clue[], Types.Clue[]] {
       if (needsDown(r, c)) {
         down.push({ number: n, text: `Down clue ${n}` });
         for (let rr = r; rr < height; rr++) {
-          const sq = grid[rr][c];
+          const sq = at(rr, c);
           if (sq.black) {
             break;
           }
@@ -45,7 +47,7 @@ function computeNumbering(grid: Types.Cell[][]): [Types.Clue[], Types.Clue[]] {
       if (needsAcross(r, c)) {
         across.push({ number: n, text: `Across clue ${n}` });
         for (let cc = c; cc < width; cc++) {
-          const sq = grid[r][cc];
+          const sq = at(r, cc);
           if (sq.black) {
             break;
           }
@@ -68,23 +70,24 @@ function parseGame(template: string): Crossword.Game {
   if (wrongLen) {
     throw new Error(`bad line length: '${wrongLen}'`);
   }
+  const height = lines.length;
+  const width = Math.ceil(lines[0].length / 2);
 
-  const grid: Types.Cell[][] = [];
+  const grid: Types.Cell[] = [];
   const fill: (string | undefined)[][] = [];
   let cursor: undefined | Types.Cursor;
 
   lines.forEach((line, r) => {
-    const cells: Types.Cell[] = [];
     const fills: (string | undefined)[] = [];
     for (let i = 0; i < line.length; i += 2) {
       const ch = line[i];
       let fill: string | undefined;
       if (ch === "#") {
-        cells.push({ black: true });
+        grid.push({ black: true });
       } else if (ch === ".") {
-        cells.push({ black: false, fill: "X", clue_across: 0, clue_down: 0 });
+        grid.push({ black: false, fill: "X", clue_across: 0, clue_down: 0 });
       } else if (ch.match(/[A-Z]/)) {
-        cells.push({ black: false, fill: ch, clue_across: 0, clue_down: 0 });
+        grid.push({ black: false, fill: ch, clue_across: 0, clue_down: 0 });
         fill = ch;
       } else {
         throw new Error(`bad fill char: '${ch}'`);
@@ -100,7 +103,7 @@ function parseGame(template: string): Crossword.Game {
           if (cursor) {
             throw new Error("multiple cursors!");
           }
-          if (cells[cells.length - 1].black) {
+          if (grid[grid.length - 1].black) {
             throw new Error("selected black cell");
           }
           cursor = {
@@ -109,7 +112,8 @@ function parseGame(template: string): Crossword.Game {
             direction:
               line[i + 1] === ">"
                 ? Types.Direction.ACROSS
-                : Types.Direction.DOWN
+                : Types.Direction.DOWN,
+            pencil: false
           };
           break;
         default:
@@ -117,21 +121,20 @@ function parseGame(template: string): Crossword.Game {
       }
     }
     fill.push(fills);
-    grid.push(cells);
   });
 
   if (!cursor) {
     throw new Error("no cursor found");
   }
 
-  const [across_clues, down_clues] = computeNumbering(grid);
+  const [across_clues, down_clues] = computeNumbering({ width, height }, grid);
 
   const puzzle: Types.Puzzle = {
     title: "Test Puzzle",
     author: "Test Author",
     copyright: "Test Copyright",
-    width: grid[0].length,
-    height: grid.length,
+    width,
+    height,
     squares: grid,
     across_clues: across_clues,
     down_clues: down_clues
@@ -144,34 +147,35 @@ function parseGame(template: string): Crossword.Game {
 }
 
 function formatGame(g: Crossword.Game): string {
-  return g.puzzle.squares
-    .map((row, r) =>
-      row
-        .map((sq, c) => {
-          let ch = "";
-          if (sq.black) {
-            ch = "#";
-          } else {
-            const fill = Crossword.fillAt(g, { row: r, column: c });
-            if (fill && fill.fill) {
-              ch = fill.fill;
-            } else {
-              ch = ".";
-            }
-          }
+  const rows: string[] = [];
+  for (let r = 0; r < g.puzzle.height; r++) {
+    const row: string[] = [];
+    for (let c = 0; c < g.puzzle.width; c++) {
+      const sq = Crossword.cellAt(g.puzzle, { row: r, column: c });
+      let ch = "";
+      if (sq.black) {
+        ch = "#";
+      } else {
+        const fill = Crossword.fillAt(g, { row: r, column: c });
+        if (fill && fill.fill) {
+          ch = fill.fill;
+        } else {
+          ch = ".";
+        }
+      }
 
-          if (r === g.cursor.row && c === g.cursor.column) {
-            if (g.cursor.direction === Types.Direction.ACROSS) {
-              return ch + ">";
-            } else {
-              return ch + "v";
-            }
-          }
-          return ch + " ";
-        })
-        .join("")
-    )
-    .join("\n");
+      if (r === g.cursor.row && c === g.cursor.column) {
+        if (g.cursor.direction === Types.Direction.ACROSS) {
+          return ch + ">";
+        } else {
+          return ch + "v";
+        }
+      }
+      row.push(ch);
+    }
+    rows.push(row.join(""));
+  }
+  return rows.join("\n");
 }
 
 it("can construct puzzles from a template", () => {
