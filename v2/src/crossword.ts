@@ -224,15 +224,18 @@ export function selectClue(
 }
 
 export function fillSquare(g: Game, text: string): Game {
+  const key = new FillKey({ row: g.cursor.row, column: g.cursor.column });
+  const fill = g.fill.get(key);
+  if (fill && fill.checked === Types.Checked.RIGHT) {
+    return g;
+  }
   return withFill(g, fill =>
-    fill.update(
-      new FillKey({ row: g.cursor.row, column: g.cursor.column }),
-      state => ({
-        ...(state || {}),
-        fill: text.replace(/\s/, ""),
-        pencil: g.cursor.pencil
-      })
-    )
+    fill.update(key, state => ({
+      ...(state || {}),
+      fill: text.replace(/\s/, ""),
+      pencil: g.cursor.pencil,
+      checked: undefined
+    }))
   );
 }
 
@@ -533,7 +536,12 @@ function eachTarget(
 export function checkAnswers(g: Game, target: Target): Game {
   return eachTarget(g, target, (sq, fill) => {
     if (fill && fill.fill !== "") {
-      return { ...fill, checked: true, correct: fill.fill === sq.fill };
+      return {
+        ...fill,
+        didCheck: true,
+        checked:
+          fill.fill === sq.fill ? Types.Checked.RIGHT : Types.Checked.WRONG
+      };
     }
     return fill;
   });
@@ -541,6 +549,16 @@ export function checkAnswers(g: Game, target: Target): Game {
 
 export function revealAnswers(g: Game, target: Target): Game {
   return eachTarget(g, target, (sq, fill) => {
-    return { ...fill, revealed: true, correct: true, fill: sq.fill };
+    const out = {
+      ...fill,
+      checked: Types.Checked.RIGHT,
+      fill: sq.fill
+    };
+    if (fill && fill.fill === sq.fill) {
+      out.didCheck = true;
+    } else {
+      out.didReveal = true;
+    }
+    return out;
   });
 }

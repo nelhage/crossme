@@ -60,10 +60,15 @@ export interface CursorUpdate {
   readonly pencil?: boolean;
 }
 
+export enum Checked {
+  RIGHT,
+  WRONG
+}
+
 export interface FillState {
   readonly fill: string;
   readonly pencil: boolean;
-  readonly correct?: boolean;
-  readonly checked?: boolean;
-  readonly revealed?: boolean;
+  readonly checked?: Checked;
+  readonly didCheck?: boolean;
+  readonly didReveal?: boolean;
 }
