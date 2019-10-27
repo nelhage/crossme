@@ -75,16 +75,6 @@
     margin: 0px;
 }
 
-#puzzlegrid .cell .fill {
-    font-family: sans-serif;
-    font-size: 20px;
-    text-align: center;
-    vertical-align: baseline;
-    position: absolute;
-    left: 4px;
-    top: 2px;
-}
-
 #puzzleinput {
     width: 0;
     height: 0;
@@ -108,15 +98,21 @@
 
 #puzzlegrid .cell .cellbody {
     position: relative;
-    left: -1px;
-    top: -1px;
     width: 31px;
     height: 31px;
-    margin: 2px;
+    text-align: center;
+}
+
+#puzzlegrid .cell .fill {
+    font-family: sans-serif;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: baseline;
+    display: inline-block;
 }
 
 #puzzlegrid .cell .numberlabel {
-    float: left;
+    position: absolute;
     width: 15px;
     height: 15px;
     font-size: 10px;
@@ -124,7 +120,7 @@
 }
 
 #puzzlegrid .cell.correct {
-    background-color: #9f9;
+    color: #33a;
 }
 
 #puzzlegrid .cell.filled {
@@ -142,22 +138,12 @@
 #puzzlegrid .cell.otherword {
 }
 
-#puzzlegrid .cell.wrong {
-    color: red;
-}
-
 #puzzlegrid .cell.pencil {
     color: #777;
 }
 
 #puzzlegrid .cell.wrong .cellbody {
-    border: 2px solid #f33;
-    margin: 0px;
-}
-
-#puzzlegrid .cell.checked .cellbody {
-    border: 2px solid #c66;
-    margin: 0px;
+    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M0 100 L100 0' stroke='red' stroke-width='4'/></svg>");
 }
 
 #puzzlegrid .cell.reveal .cellbody {
