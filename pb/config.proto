@@ -1,0 +1,8 @@
+syntax = "proto3";
+package crossme;
+
+option go_package = "crossme.app/src/pb";
+
+message Config {
+    int32 schema_version = 1;
+}

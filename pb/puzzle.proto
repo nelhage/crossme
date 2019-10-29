@@ -37,7 +37,8 @@ message Puzzle {
     message Meta {
         google.protobuf.Timestamp created = 1;
 
-        // sha256 of the .puz file that imported to this puzzle
-        bytes sha256 = 2;
+        // sha256 of the .puz file that imported to this puzzle, in
+        // hex
+        string sha256 = 2;
     }
 }
