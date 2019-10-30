@@ -12,4 +12,9 @@ CREATE TABLE IF NOT EXISTS puzzles (
 );
 
 CREATE INDEX IF NOT EXISTS puzzles__created ON puzzles (meta__created);
+
+CREATE TABLE IF NOT EXISTS puz_files (
+  sha256 text unique primary key,
+  file blob,
+);
 `
