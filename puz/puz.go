@@ -156,7 +156,11 @@ func FromBytes(data []byte) (*PuzFile, error) {
 }
 
 const (
-	ExtraSectionHeaderLen = 8
+	ExtraSectionHeaderLen   = 8
+	gextPreviouslyIncorrect = 0x10
+	gextIncorrect           = 0x20
+	gextProvided            = 0x40
+	gextCircled             = 0x80
 )
 
 func readExtraSections(puz *PuzFile, data []byte) error {
@@ -203,6 +207,14 @@ func readExtraSections(puz *PuzFile, data []byte) error {
 				rebusAnswers[int(n)] = bits[1]
 			}
 		case "GEXT":
+			if len(section) != puz.Width*puz.Height {
+				return fmt.Errorf("GEXT: bad data length")
+			}
+			for i, flags := range section {
+				if flags&gextCircled != 0 {
+					puz.Cells[i].Circled = true
+				}
+			}
 		default:
 		}
 	}
