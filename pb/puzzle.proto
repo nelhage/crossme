@@ -12,7 +12,6 @@ message Puzzle {
     string note = 4;
     int32 width = 5;
     int32 height = 6;
-    string date = 7;
 
     repeated Cell squares = 8;
     repeated Clue across_clues = 9;
@@ -40,5 +39,8 @@ message Puzzle {
         // sha256 of the .puz file that imported to this puzzle, in
         // hex
         string sha256 = 2;
+
+        // YYYY-MM-DD parsed date that the puzzle was published, or ""
+        string date = 3;
     }
 }
