@@ -7,9 +7,10 @@ CREATE TABLE IF NOT EXISTS config (
 
 CREATE TABLE IF NOT EXISTS puzzles (
   proto blob,
+  title text,
   meta__sha256 text unique primary key,
-  meta__created text,
-  meta__date text
+  meta__date text,
+  meta__created text
 );
 
 CREATE INDEX IF NOT EXISTS puzzles__date ON puzzles (meta__date);
@@ -30,11 +31,25 @@ type insert_puz_file_args struct {
 }
 
 const sql_insert_puzzle = `
-REPLACE INTO puzzles (proto, meta__sha256, meta__date (:sha256, :proto, :date)
+REPLACE INTO puzzles (proto, meta__sha256, title, meta__date)
+VALUES (:proto, :sha256, :title, :date)
 `
 
 type insert_puzzle_args struct {
 	Proto  []byte `db:"proto"`
 	Sha256 string `db:"sha256"`
+	Title  string `db:"title"`
 	Date   string `db:"date"`
 }
+
+const sql_query_puzzle_index = `
+SELECT meta__sha256 as sha256, title, meta__date as date
+FROM puzzles
+ORDER BY date DESC
+`
+
+const sql_query_puzzle_by_hash = `
+SELECT proto
+FROM puzzles
+WHERE meta__sha256 LIKE ?
+`
