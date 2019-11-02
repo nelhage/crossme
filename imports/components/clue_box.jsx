@@ -12,8 +12,9 @@ class ClueBox extends React.Component {
 
   onSelect(e) {
     const target = e.target;
-    this.props.onSelect(parseInt(target.dataset.number, 10),
-                        target.dataset.direction);
+    this.props.onSelect(
+      parseInt(target.dataset.number, 10),
+      target.dataset.direction);
   }
 
   isSelected(clue, direction) {
@@ -37,7 +38,7 @@ class ClueBox extends React.Component {
           selected={this.isSelected(c, c.direction)}
           onClick={this.onSelect}
         />
-        ))
+      ))
     );
   }
 
