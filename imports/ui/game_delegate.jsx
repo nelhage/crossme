@@ -30,10 +30,10 @@ export default class GameDelegate {
 
   setFill(square, fill) {
     Meteor.call('setLetter',
-                this.component.props.gameId,
-                square._id,
-                fill.toUpperCase(),
-                this.isPencil());
+      this.component.props.gameId,
+      square._id,
+      fill.toUpperCase(),
+      this.isPencil());
   }
 
   reveal(square, direction, target) {

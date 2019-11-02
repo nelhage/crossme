@@ -73,15 +73,15 @@ const RecentGamesContainer = withTracker(({ currentUser }) => {
         sort: { created: -1 },
         limit: 10,
       }).map((game) => {
-        const title = Puzzles.findOne({ _id: game.puzzle }).title;
-        const me = _.find(game.players, function(p) { return p.userId === currentUser._id; });
-        const lastSeen = me.lastSeen.toDateString();
-        return {
-          _id: game._id,
-          title,
-          lastSeen,
-        };
-      }),
+      const title = Puzzles.findOne({ _id: game.puzzle }).title;
+      const me = _.find(game.players, function(p) { return p.userId === currentUser._id; });
+      const lastSeen = me.lastSeen.toDateString();
+      return {
+        _id: game._id,
+        title,
+        lastSeen,
+      };
+    }),
   };
 })(RecentGames);
 

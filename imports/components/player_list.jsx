@@ -66,7 +66,6 @@ class PlayerListEntry extends React.Component {
       </li>
     );
   }
-
 }
 
 export default withTracker(({ gameId }) => {
