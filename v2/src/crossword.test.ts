@@ -1,4 +1,5 @@
 import * as Crossword from "./crossword";
+import * as Types from "./types";
 
 function computeNumbering(
   { width, height }: { width: number; height: number },
