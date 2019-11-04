@@ -1,5 +1,4 @@
 import * as Crossword from "./crossword";
-import * as Types from "./types";
 
 function computeNumbering(
   { width, height }: { width: number; height: number },
@@ -65,7 +64,7 @@ function parseGame(template: string): Crossword.Game {
   template = template.trim();
   const lines = template.split("\n");
   const wrongLen = lines.find(
-    l => l.length != lines.length * 2 && l.length != lines.length * 2 - 1
+    l => l.length !== lines.length * 2 && l.length !== lines.length * 2 - 1
   );
   if (wrongLen) {
     throw new Error(`bad line length: '${wrongLen}'`);
