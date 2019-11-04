@@ -1,16 +1,10 @@
 version: 2
 jobs:
   build:
-    environment:
-      METEOR_ALLOW_SUPERUSER: '1'
     docker:
       - image: node:10.14.2-stretch
     steps:
       - checkout
-      - run: curl https://install.meteor.com | /bin/sh
-      - run: npm install
-      - run: npm run test
-
       - restore_cache:
           keys:
             - v2-npm-{{ checksum "v2/package-lock.json" }}
