@@ -1,0 +1,18 @@
+syntax = "proto3";
+package crossme;
+
+import "puzzle.proto";
+
+option go_package = "crossme.app/src/pb";
+
+message GetPuzzleByIdArgs {
+    string id = 1;
+}
+
+message GetPuzzleResponse {
+    crossme.Puzzle puzzle = 1;
+}
+
+service CrossMe {
+    rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
+}

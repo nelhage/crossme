@@ -1,6 +1,8 @@
 /**
  * @fileoverview
  * @enhanceable
+ * @suppress {messageConventions} JS Compiler reports an error if a variable or
+ *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
@@ -64,15 +66,16 @@ proto.crossme.Puzzle.prototype.toObject = function(opt_includeInstance) {
  *     http://goto/soy-param-migration
  * @param {!proto.crossme.Puzzle} msg The msg instance to transform.
  * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
 proto.crossme.Puzzle.toObject = function(includeInstance, msg) {
   var f, obj = {
-    title: msg.getTitle(),
-    author: msg.getAuthor(),
-    copyright: msg.getCopyright(),
-    note: msg.getNote(),
-    width: msg.getWidth(),
-    height: msg.getHeight(),
+    title: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    author: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    copyright: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    note: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    width: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    height: jspb.Message.getFieldWithDefault(msg, 6, 0),
     squaresList: jspb.Message.toObjectList(msg.getSquaresList(),
     proto.crossme.Puzzle.Cell.toObject, includeInstance),
     acrossCluesList: jspb.Message.toObjectList(msg.getAcrossCluesList(),
@@ -91,200 +94,178 @@ proto.crossme.Puzzle.toObject = function(includeInstance, msg) {
 
 
 /**
- * Creates a deep clone of this proto. No data is shared with the original.
- * @return {!proto.crossme.Puzzle} The clone.
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.Puzzle}
  */
-proto.crossme.Puzzle.prototype.cloneMessage = function() {
-  return /** @type {!proto.crossme.Puzzle} */ (jspb.Message.cloneMessage(this));
+proto.crossme.Puzzle.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.Puzzle;
+  return proto.crossme.Puzzle.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
- * optional string title = 1;
- * @return {string}
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.Puzzle} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.Puzzle}
  */
-proto.crossme.Puzzle.prototype.getTitle = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 1, ""));
-};
-
-
-/** @param {string} value  */
-proto.crossme.Puzzle.prototype.setTitle = function(value) {
-  jspb.Message.setField(this, 1, value);
+proto.crossme.Puzzle.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setTitle(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setAuthor(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setCopyright(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNote(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setWidth(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setHeight(value);
+      break;
+    case 8:
+      var value = new proto.crossme.Puzzle.Cell;
+      reader.readMessage(value,proto.crossme.Puzzle.Cell.deserializeBinaryFromReader);
+      msg.addSquares(value);
+      break;
+    case 9:
+      var value = new proto.crossme.Puzzle.Clue;
+      reader.readMessage(value,proto.crossme.Puzzle.Clue.deserializeBinaryFromReader);
+      msg.addAcrossClues(value);
+      break;
+    case 10:
+      var value = new proto.crossme.Puzzle.Clue;
+      reader.readMessage(value,proto.crossme.Puzzle.Clue.deserializeBinaryFromReader);
+      msg.addDownClues(value);
+      break;
+    case 11:
+      var value = new proto.crossme.Puzzle.Meta;
+      reader.readMessage(value,proto.crossme.Puzzle.Meta.deserializeBinaryFromReader);
+      msg.setMetadata(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
 };
 
 
 /**
- * optional string author = 2;
- * @return {string}
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
  */
-proto.crossme.Puzzle.prototype.getAuthor = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 2, ""));
-};
-
-
-/** @param {string} value  */
-proto.crossme.Puzzle.prototype.setAuthor = function(value) {
-  jspb.Message.setField(this, 2, value);
+proto.crossme.Puzzle.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.Puzzle.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
 };
 
 
 /**
- * optional string copyright = 3;
- * @return {string}
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.Puzzle} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.Puzzle.prototype.getCopyright = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 3, ""));
-};
-
-
-/** @param {string} value  */
-proto.crossme.Puzzle.prototype.setCopyright = function(value) {
-  jspb.Message.setField(this, 3, value);
-};
-
-
-/**
- * optional string note = 4;
- * @return {string}
- */
-proto.crossme.Puzzle.prototype.getNote = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 4, ""));
-};
-
-
-/** @param {string} value  */
-proto.crossme.Puzzle.prototype.setNote = function(value) {
-  jspb.Message.setField(this, 4, value);
-};
-
-
-/**
- * optional int32 width = 5;
- * @return {number}
- */
-proto.crossme.Puzzle.prototype.getWidth = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 5, 0));
-};
-
-
-/** @param {number} value  */
-proto.crossme.Puzzle.prototype.setWidth = function(value) {
-  jspb.Message.setField(this, 5, value);
-};
-
-
-/**
- * optional int32 height = 6;
- * @return {number}
- */
-proto.crossme.Puzzle.prototype.getHeight = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 6, 0));
-};
-
-
-/** @param {number} value  */
-proto.crossme.Puzzle.prototype.setHeight = function(value) {
-  jspb.Message.setField(this, 6, value);
-};
-
-
-/**
- * repeated Cell squares = 8;
- * If you change this array by adding, removing or replacing elements, or if you
- * replace the array itself, then you must call the setter to update it.
- * @return {!Array.<!proto.crossme.Puzzle.Cell>}
- */
-proto.crossme.Puzzle.prototype.getSquaresList = function() {
-  return /** @type{!Array.<!proto.crossme.Puzzle.Cell>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Cell, 8));
-};
-
-
-/** @param {Array.<!proto.crossme.Puzzle.Cell>} value  */
-proto.crossme.Puzzle.prototype.setSquaresList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 8, value);
-};
-
-
-proto.crossme.Puzzle.prototype.clearSquaresList = function() {
-  this.setSquaresList([]);
-};
-
-
-/**
- * repeated Clue across_clues = 9;
- * If you change this array by adding, removing or replacing elements, or if you
- * replace the array itself, then you must call the setter to update it.
- * @return {!Array.<!proto.crossme.Puzzle.Clue>}
- */
-proto.crossme.Puzzle.prototype.getAcrossCluesList = function() {
-  return /** @type{!Array.<!proto.crossme.Puzzle.Clue>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Clue, 9));
-};
-
-
-/** @param {Array.<!proto.crossme.Puzzle.Clue>} value  */
-proto.crossme.Puzzle.prototype.setAcrossCluesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 9, value);
-};
-
-
-proto.crossme.Puzzle.prototype.clearAcrossCluesList = function() {
-  this.setAcrossCluesList([]);
-};
-
-
-/**
- * repeated Clue down_clues = 10;
- * If you change this array by adding, removing or replacing elements, or if you
- * replace the array itself, then you must call the setter to update it.
- * @return {!Array.<!proto.crossme.Puzzle.Clue>}
- */
-proto.crossme.Puzzle.prototype.getDownCluesList = function() {
-  return /** @type{!Array.<!proto.crossme.Puzzle.Clue>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Clue, 10));
-};
-
-
-/** @param {Array.<!proto.crossme.Puzzle.Clue>} value  */
-proto.crossme.Puzzle.prototype.setDownCluesList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 10, value);
-};
-
-
-proto.crossme.Puzzle.prototype.clearDownCluesList = function() {
-  this.setDownCluesList([]);
-};
-
-
-/**
- * optional Meta metadata = 11;
- * @return {proto.crossme.Puzzle.Meta}
- */
-proto.crossme.Puzzle.prototype.getMetadata = function() {
-  return /** @type{proto.crossme.Puzzle.Meta} */ (
-    jspb.Message.getWrapperField(this, proto.crossme.Puzzle.Meta, 11));
-};
-
-
-/** @param {proto.crossme.Puzzle.Meta|undefined} value  */
-proto.crossme.Puzzle.prototype.setMetadata = function(value) {
-  jspb.Message.setWrapperField(this, 11, value);
-};
-
-
-proto.crossme.Puzzle.prototype.clearMetadata = function() {
-  this.setMetadata(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return{!boolean}
- */
-proto.crossme.Puzzle.prototype.hasMetadata = function() {
-  return jspb.Message.getField(this, 11) != null;
+proto.crossme.Puzzle.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getTitle();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getAuthor();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getCopyright();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
+  f = message.getNote();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getWidth();
+  if (f !== 0) {
+    writer.writeInt32(
+      5,
+      f
+    );
+  }
+  f = message.getHeight();
+  if (f !== 0) {
+    writer.writeInt32(
+      6,
+      f
+    );
+  }
+  f = message.getSquaresList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      8,
+      f,
+      proto.crossme.Puzzle.Cell.serializeBinaryToWriter
+    );
+  }
+  f = message.getAcrossCluesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      9,
+      f,
+      proto.crossme.Puzzle.Clue.serializeBinaryToWriter
+    );
+  }
+  f = message.getDownCluesList();
+  if (f.length > 0) {
+    writer.writeRepeatedMessage(
+      10,
+      f,
+      proto.crossme.Puzzle.Clue.serializeBinaryToWriter
+    );
+  }
+  f = message.getMetadata();
+  if (f != null) {
+    writer.writeMessage(
+      11,
+      f,
+      proto.crossme.Puzzle.Meta.serializeBinaryToWriter
+    );
+  }
 };
 
 
@@ -331,15 +312,16 @@ proto.crossme.Puzzle.Cell.prototype.toObject = function(opt_includeInstance) {
  *     http://goto/soy-param-migration
  * @param {!proto.crossme.Puzzle.Cell} msg The msg instance to transform.
  * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
 proto.crossme.Puzzle.Cell.toObject = function(includeInstance, msg) {
   var f, obj = {
-    number: msg.getNumber(),
-    black: msg.getBlack(),
-    circled: msg.getCircled(),
-    fill: msg.getFill(),
-    clueAcross: msg.getClueAcross(),
-    clueDown: msg.getClueDown()
+    number: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    black: jspb.Message.getFieldWithDefault(msg, 2, false),
+    circled: jspb.Message.getFieldWithDefault(msg, 3, false),
+    fill: jspb.Message.getFieldWithDefault(msg, 4, ""),
+    clueAcross: jspb.Message.getFieldWithDefault(msg, 5, 0),
+    clueDown: jspb.Message.getFieldWithDefault(msg, 6, 0)
   };
 
   if (includeInstance) {
@@ -351,11 +333,126 @@ proto.crossme.Puzzle.Cell.toObject = function(includeInstance, msg) {
 
 
 /**
- * Creates a deep clone of this proto. No data is shared with the original.
- * @return {!proto.crossme.Puzzle.Cell} The clone.
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.Puzzle.Cell}
  */
-proto.crossme.Puzzle.Cell.prototype.cloneMessage = function() {
-  return /** @type {!proto.crossme.Puzzle.Cell} */ (jspb.Message.cloneMessage(this));
+proto.crossme.Puzzle.Cell.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.Puzzle.Cell;
+  return proto.crossme.Puzzle.Cell.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.Puzzle.Cell} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.Puzzle.Cell}
+ */
+proto.crossme.Puzzle.Cell.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setNumber(value);
+      break;
+    case 2:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setBlack(value);
+      break;
+    case 3:
+      var value = /** @type {boolean} */ (reader.readBool());
+      msg.setCircled(value);
+      break;
+    case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setFill(value);
+      break;
+    case 5:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setClueAcross(value);
+      break;
+    case 6:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setClueDown(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.crossme.Puzzle.Cell.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.Puzzle.Cell.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.Puzzle.Cell} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.Puzzle.Cell.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getNumber();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = message.getBlack();
+  if (f) {
+    writer.writeBool(
+      2,
+      f
+    );
+  }
+  f = message.getCircled();
+  if (f) {
+    writer.writeBool(
+      3,
+      f
+    );
+  }
+  f = message.getFill();
+  if (f.length > 0) {
+    writer.writeString(
+      4,
+      f
+    );
+  }
+  f = message.getClueAcross();
+  if (f !== 0) {
+    writer.writeInt32(
+      5,
+      f
+    );
+  }
+  f = message.getClueDown();
+  if (f !== 0) {
+    writer.writeInt32(
+      6,
+      f
+    );
+  }
 };
 
 
@@ -364,13 +461,13 @@ proto.crossme.Puzzle.Cell.prototype.cloneMessage = function() {
  * @return {number}
  */
 proto.crossme.Puzzle.Cell.prototype.getNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 1, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {number} value  */
+/** @param {number} value */
 proto.crossme.Puzzle.Cell.prototype.setNumber = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -381,13 +478,13 @@ proto.crossme.Puzzle.Cell.prototype.setNumber = function(value) {
  * @return {boolean}
  */
 proto.crossme.Puzzle.Cell.prototype.getBlack = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldProto3(this, 2, false));
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
 };
 
 
-/** @param {boolean} value  */
+/** @param {boolean} value */
 proto.crossme.Puzzle.Cell.prototype.setBlack = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3BooleanField(this, 2, value);
 };
 
 
@@ -398,13 +495,13 @@ proto.crossme.Puzzle.Cell.prototype.setBlack = function(value) {
  * @return {boolean}
  */
 proto.crossme.Puzzle.Cell.prototype.getCircled = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldProto3(this, 3, false));
+  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
 };
 
 
-/** @param {boolean} value  */
+/** @param {boolean} value */
 proto.crossme.Puzzle.Cell.prototype.setCircled = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3BooleanField(this, 3, value);
 };
 
 
@@ -413,13 +510,13 @@ proto.crossme.Puzzle.Cell.prototype.setCircled = function(value) {
  * @return {string}
  */
 proto.crossme.Puzzle.Cell.prototype.getFill = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 4, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
 };
 
 
-/** @param {string} value  */
+/** @param {string} value */
 proto.crossme.Puzzle.Cell.prototype.setFill = function(value) {
-  jspb.Message.setField(this, 4, value);
+  jspb.Message.setProto3StringField(this, 4, value);
 };
 
 
@@ -428,13 +525,13 @@ proto.crossme.Puzzle.Cell.prototype.setFill = function(value) {
  * @return {number}
  */
 proto.crossme.Puzzle.Cell.prototype.getClueAcross = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 5, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
 };
 
 
-/** @param {number} value  */
+/** @param {number} value */
 proto.crossme.Puzzle.Cell.prototype.setClueAcross = function(value) {
-  jspb.Message.setField(this, 5, value);
+  jspb.Message.setProto3IntField(this, 5, value);
 };
 
 
@@ -443,13 +540,13 @@ proto.crossme.Puzzle.Cell.prototype.setClueAcross = function(value) {
  * @return {number}
  */
 proto.crossme.Puzzle.Cell.prototype.getClueDown = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 6, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
 };
 
 
-/** @param {number} value  */
+/** @param {number} value */
 proto.crossme.Puzzle.Cell.prototype.setClueDown = function(value) {
-  jspb.Message.setField(this, 6, value);
+  jspb.Message.setProto3IntField(this, 6, value);
 };
 
 
@@ -496,11 +593,12 @@ proto.crossme.Puzzle.Clue.prototype.toObject = function(opt_includeInstance) {
  *     http://goto/soy-param-migration
  * @param {!proto.crossme.Puzzle.Clue} msg The msg instance to transform.
  * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
 proto.crossme.Puzzle.Clue.toObject = function(includeInstance, msg) {
   var f, obj = {
-    number: msg.getNumber(),
-    text: msg.getText()
+    number: jspb.Message.getFieldWithDefault(msg, 1, 0),
+    text: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -512,11 +610,82 @@ proto.crossme.Puzzle.Clue.toObject = function(includeInstance, msg) {
 
 
 /**
- * Creates a deep clone of this proto. No data is shared with the original.
- * @return {!proto.crossme.Puzzle.Clue} The clone.
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.Puzzle.Clue}
  */
-proto.crossme.Puzzle.Clue.prototype.cloneMessage = function() {
-  return /** @type {!proto.crossme.Puzzle.Clue} */ (jspb.Message.cloneMessage(this));
+proto.crossme.Puzzle.Clue.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.Puzzle.Clue;
+  return proto.crossme.Puzzle.Clue.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.Puzzle.Clue} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.Puzzle.Clue}
+ */
+proto.crossme.Puzzle.Clue.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setNumber(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setText(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.crossme.Puzzle.Clue.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.Puzzle.Clue.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.Puzzle.Clue} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.Puzzle.Clue.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getNumber();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
+  f = message.getText();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
@@ -525,13 +694,13 @@ proto.crossme.Puzzle.Clue.prototype.cloneMessage = function() {
  * @return {number}
  */
 proto.crossme.Puzzle.Clue.prototype.getNumber = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 1, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {number} value  */
+/** @param {number} value */
 proto.crossme.Puzzle.Clue.prototype.setNumber = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 
@@ -540,13 +709,13 @@ proto.crossme.Puzzle.Clue.prototype.setNumber = function(value) {
  * @return {string}
  */
 proto.crossme.Puzzle.Clue.prototype.getText = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 3, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {string} value  */
+/** @param {string} value */
 proto.crossme.Puzzle.Clue.prototype.setText = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
 };
 
 
@@ -593,12 +762,13 @@ proto.crossme.Puzzle.Meta.prototype.toObject = function(opt_includeInstance) {
  *     http://goto/soy-param-migration
  * @param {!proto.crossme.Puzzle.Meta} msg The msg instance to transform.
  * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
 proto.crossme.Puzzle.Meta.toObject = function(includeInstance, msg) {
   var f, obj = {
     created: (f = msg.getCreated()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
-    sha256: msg.getSha256(),
-    date: msg.getDate()
+    sha256: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    date: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
   if (includeInstance) {
@@ -610,25 +780,109 @@ proto.crossme.Puzzle.Meta.toObject = function(includeInstance, msg) {
 
 
 /**
- * Creates a deep clone of this proto. No data is shared with the original.
- * @return {!proto.crossme.Puzzle.Meta} The clone.
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.Puzzle.Meta}
  */
-proto.crossme.Puzzle.Meta.prototype.cloneMessage = function() {
-  return /** @type {!proto.crossme.Puzzle.Meta} */ (jspb.Message.cloneMessage(this));
+proto.crossme.Puzzle.Meta.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.Puzzle.Meta;
+  return proto.crossme.Puzzle.Meta.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.Puzzle.Meta} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.Puzzle.Meta}
+ */
+proto.crossme.Puzzle.Meta.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = new google_protobuf_timestamp_pb.Timestamp;
+      reader.readMessage(value,google_protobuf_timestamp_pb.Timestamp.deserializeBinaryFromReader);
+      msg.setCreated(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setSha256(value);
+      break;
+    case 3:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setDate(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.crossme.Puzzle.Meta.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.Puzzle.Meta.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.Puzzle.Meta} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.Puzzle.Meta.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getCreated();
+  if (f != null) {
+    writer.writeMessage(
+      1,
+      f,
+      google_protobuf_timestamp_pb.Timestamp.serializeBinaryToWriter
+    );
+  }
+  f = message.getSha256();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
+  f = message.getDate();
+  if (f.length > 0) {
+    writer.writeString(
+      3,
+      f
+    );
+  }
 };
 
 
 /**
  * optional google.protobuf.Timestamp created = 1;
- * @return {proto.google.protobuf.Timestamp}
+ * @return {?proto.google.protobuf.Timestamp}
  */
 proto.crossme.Puzzle.Meta.prototype.getCreated = function() {
-  return /** @type{proto.google.protobuf.Timestamp} */ (
+  return /** @type{?proto.google.protobuf.Timestamp} */ (
     jspb.Message.getWrapperField(this, google_protobuf_timestamp_pb.Timestamp, 1));
 };
 
 
-/** @param {proto.google.protobuf.Timestamp|undefined} value  */
+/** @param {?proto.google.protobuf.Timestamp|undefined} value */
 proto.crossme.Puzzle.Meta.prototype.setCreated = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
@@ -641,7 +895,7 @@ proto.crossme.Puzzle.Meta.prototype.clearCreated = function() {
 
 /**
  * Returns whether this field is set.
- * @return{!boolean}
+ * @return {!boolean}
  */
 proto.crossme.Puzzle.Meta.prototype.hasCreated = function() {
   return jspb.Message.getField(this, 1) != null;
@@ -653,13 +907,13 @@ proto.crossme.Puzzle.Meta.prototype.hasCreated = function() {
  * @return {string}
  */
 proto.crossme.Puzzle.Meta.prototype.getSha256 = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 2, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
-/** @param {string} value  */
+/** @param {string} value */
 proto.crossme.Puzzle.Meta.prototype.setSha256 = function(value) {
-  jspb.Message.setField(this, 2, value);
+  jspb.Message.setProto3StringField(this, 2, value);
 };
 
 
@@ -668,13 +922,226 @@ proto.crossme.Puzzle.Meta.prototype.setSha256 = function(value) {
  * @return {string}
  */
 proto.crossme.Puzzle.Meta.prototype.getDate = function() {
-  return /** @type {string} */ (jspb.Message.getFieldProto3(this, 3, ""));
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
 };
 
 
-/** @param {string} value  */
+/** @param {string} value */
 proto.crossme.Puzzle.Meta.prototype.setDate = function(value) {
-  jspb.Message.setField(this, 3, value);
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string title = 1;
+ * @return {string}
+ */
+proto.crossme.Puzzle.prototype.getTitle = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.Puzzle.prototype.setTitle = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string author = 2;
+ * @return {string}
+ */
+proto.crossme.Puzzle.prototype.getAuthor = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.Puzzle.prototype.setAuthor = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string copyright = 3;
+ * @return {string}
+ */
+proto.crossme.Puzzle.prototype.getCopyright = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.Puzzle.prototype.setCopyright = function(value) {
+  jspb.Message.setProto3StringField(this, 3, value);
+};
+
+
+/**
+ * optional string note = 4;
+ * @return {string}
+ */
+proto.crossme.Puzzle.prototype.getNote = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 4, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.Puzzle.prototype.setNote = function(value) {
+  jspb.Message.setProto3StringField(this, 4, value);
+};
+
+
+/**
+ * optional int32 width = 5;
+ * @return {number}
+ */
+proto.crossme.Puzzle.prototype.getWidth = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 5, 0));
+};
+
+
+/** @param {number} value */
+proto.crossme.Puzzle.prototype.setWidth = function(value) {
+  jspb.Message.setProto3IntField(this, 5, value);
+};
+
+
+/**
+ * optional int32 height = 6;
+ * @return {number}
+ */
+proto.crossme.Puzzle.prototype.getHeight = function() {
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 6, 0));
+};
+
+
+/** @param {number} value */
+proto.crossme.Puzzle.prototype.setHeight = function(value) {
+  jspb.Message.setProto3IntField(this, 6, value);
+};
+
+
+/**
+ * repeated Cell squares = 8;
+ * @return {!Array<!proto.crossme.Puzzle.Cell>}
+ */
+proto.crossme.Puzzle.prototype.getSquaresList = function() {
+  return /** @type{!Array<!proto.crossme.Puzzle.Cell>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Cell, 8));
+};
+
+
+/** @param {!Array<!proto.crossme.Puzzle.Cell>} value */
+proto.crossme.Puzzle.prototype.setSquaresList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 8, value);
+};
+
+
+/**
+ * @param {!proto.crossme.Puzzle.Cell=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.crossme.Puzzle.Cell}
+ */
+proto.crossme.Puzzle.prototype.addSquares = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 8, opt_value, proto.crossme.Puzzle.Cell, opt_index);
+};
+
+
+proto.crossme.Puzzle.prototype.clearSquaresList = function() {
+  this.setSquaresList([]);
+};
+
+
+/**
+ * repeated Clue across_clues = 9;
+ * @return {!Array<!proto.crossme.Puzzle.Clue>}
+ */
+proto.crossme.Puzzle.prototype.getAcrossCluesList = function() {
+  return /** @type{!Array<!proto.crossme.Puzzle.Clue>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Clue, 9));
+};
+
+
+/** @param {!Array<!proto.crossme.Puzzle.Clue>} value */
+proto.crossme.Puzzle.prototype.setAcrossCluesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 9, value);
+};
+
+
+/**
+ * @param {!proto.crossme.Puzzle.Clue=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.crossme.Puzzle.Clue}
+ */
+proto.crossme.Puzzle.prototype.addAcrossClues = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 9, opt_value, proto.crossme.Puzzle.Clue, opt_index);
+};
+
+
+proto.crossme.Puzzle.prototype.clearAcrossCluesList = function() {
+  this.setAcrossCluesList([]);
+};
+
+
+/**
+ * repeated Clue down_clues = 10;
+ * @return {!Array<!proto.crossme.Puzzle.Clue>}
+ */
+proto.crossme.Puzzle.prototype.getDownCluesList = function() {
+  return /** @type{!Array<!proto.crossme.Puzzle.Clue>} */ (
+    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Puzzle.Clue, 10));
+};
+
+
+/** @param {!Array<!proto.crossme.Puzzle.Clue>} value */
+proto.crossme.Puzzle.prototype.setDownCluesList = function(value) {
+  jspb.Message.setRepeatedWrapperField(this, 10, value);
+};
+
+
+/**
+ * @param {!proto.crossme.Puzzle.Clue=} opt_value
+ * @param {number=} opt_index
+ * @return {!proto.crossme.Puzzle.Clue}
+ */
+proto.crossme.Puzzle.prototype.addDownClues = function(opt_value, opt_index) {
+  return jspb.Message.addToRepeatedWrapperField(this, 10, opt_value, proto.crossme.Puzzle.Clue, opt_index);
+};
+
+
+proto.crossme.Puzzle.prototype.clearDownCluesList = function() {
+  this.setDownCluesList([]);
+};
+
+
+/**
+ * optional Meta metadata = 11;
+ * @return {?proto.crossme.Puzzle.Meta}
+ */
+proto.crossme.Puzzle.prototype.getMetadata = function() {
+  return /** @type{?proto.crossme.Puzzle.Meta} */ (
+    jspb.Message.getWrapperField(this, proto.crossme.Puzzle.Meta, 11));
+};
+
+
+/** @param {?proto.crossme.Puzzle.Meta|undefined} value */
+proto.crossme.Puzzle.prototype.setMetadata = function(value) {
+  jspb.Message.setWrapperField(this, 11, value);
+};
+
+
+proto.crossme.Puzzle.prototype.clearMetadata = function() {
+  this.setMetadata(undefined);
+};
+
+
+/**
+ * Returns whether this field is set.
+ * @return {!boolean}
+ */
+proto.crossme.Puzzle.prototype.hasMetadata = function() {
+  return jspb.Message.getField(this, 11) != null;
 };
 
 

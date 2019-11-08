@@ -13,22 +13,22 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "Y",
       number: 1,
-      clue_down: 1,
-      clue_across: 1
+      clueDown: 1,
+      clueAcross: 1
     },
     {
       black: false,
       fill: "A",
       number: 2,
-      clue_down: 2,
-      clue_across: 1
+      clueDown: 2,
+      clueAcross: 1
     },
     {
       black: false,
       fill: "M",
       number: 3,
-      clue_down: 3,
-      clue_across: 1
+      clueDown: 3,
+      clueAcross: 1
     },
     {
       black: true
@@ -37,43 +37,43 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "I",
       number: 4,
-      clue_down: 4,
-      clue_across: 4
+      clueDown: 4,
+      clueAcross: 4
     },
     {
       black: false,
       fill: "N",
       number: 5,
-      clue_down: 5,
-      clue_across: 4
+      clueDown: 5,
+      clueAcross: 4
     },
     {
       black: false,
       fill: "D",
       number: 6,
-      clue_down: 6,
-      clue_across: 4
+      clueDown: 6,
+      clueAcross: 4
     },
     {
       black: false,
       fill: "E",
       number: 7,
-      clue_down: 7,
-      clue_across: 4
+      clueDown: 7,
+      clueAcross: 4
     },
     {
       black: false,
       fill: "B",
       number: 8,
-      clue_down: 8,
-      clue_across: 4
+      clueDown: 8,
+      clueAcross: 4
     },
     {
       black: false,
       fill: "T",
       number: 9,
-      clue_down: 9,
-      clue_across: 4
+      clueDown: 9,
+      clueAcross: 4
     },
     {
       black: true
@@ -82,48 +82,48 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "A",
       number: 10,
-      clue_down: 10,
-      clue_across: 10
+      clueDown: 10,
+      clueAcross: 10
     },
     {
       black: false,
       fill: "C",
       number: 11,
-      clue_down: 11,
-      clue_across: 10
+      clueDown: 11,
+      clueAcross: 10
     },
     {
       black: false,
       fill: "M",
       number: 12,
-      clue_down: 12,
-      clue_across: 10
+      clueDown: 12,
+      clueAcross: 10
     },
     {
       black: false,
       fill: "E",
       number: 13,
-      clue_down: 13,
-      clue_across: 10
+      clueDown: 13,
+      clueAcross: 10
     },
     {
       black: false,
       fill: "O",
       number: 14,
-      clue_down: 1,
-      clue_across: 14
+      clueDown: 1,
+      clueAcross: 14
     },
     {
       black: false,
       fill: "D",
-      clue_down: 2,
-      clue_across: 14
+      clueDown: 2,
+      clueAcross: 14
     },
     {
       black: false,
       fill: "E",
-      clue_down: 3,
-      clue_across: 14
+      clueDown: 3,
+      clueAcross: 14
     },
     {
       black: true
@@ -132,38 +132,38 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 15,
-      clue_down: 4,
-      clue_across: 15
+      clueDown: 4,
+      clueAcross: 15
     },
     {
       black: false,
       fill: "A",
-      clue_down: 5,
-      clue_across: 15
+      clueDown: 5,
+      clueAcross: 15
     },
     {
       black: false,
       fill: "I",
-      clue_down: 6,
-      clue_across: 15
+      clueDown: 6,
+      clueAcross: 15
     },
     {
       black: false,
       fill: "L",
-      clue_down: 7,
-      clue_across: 15
+      clueDown: 7,
+      clueAcross: 15
     },
     {
       black: false,
       fill: "O",
-      clue_down: 8,
-      clue_across: 15
+      clueDown: 8,
+      clueAcross: 15
     },
     {
       black: false,
       fill: "R",
-      clue_down: 9,
-      clue_across: 15
+      clueDown: 9,
+      clueAcross: 15
     },
     {
       black: true
@@ -172,88 +172,88 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "M",
       number: 16,
-      clue_down: 10,
-      clue_across: 16
+      clueDown: 10,
+      clueAcross: 16
     },
     {
       black: false,
       fill: "O",
-      clue_down: 11,
-      clue_across: 16
+      clueDown: 11,
+      clueAcross: 16
     },
     {
       black: false,
       fill: "O",
-      clue_down: 12,
-      clue_across: 16
+      clueDown: 12,
+      clueAcross: 16
     },
     {
       black: false,
       fill: "G",
-      clue_down: 13,
-      clue_across: 16
+      clueDown: 13,
+      clueAcross: 16
     },
     {
       black: false,
       fill: "M",
       number: 17,
-      clue_down: 1,
-      clue_across: 17
+      clueDown: 1,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "O",
-      clue_down: 2,
-      clue_across: 17
+      clueDown: 2,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "D",
-      clue_down: 3,
-      clue_across: 17
+      clueDown: 3,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "E",
       number: 18,
-      clue_down: 18,
-      clue_across: 17
+      clueDown: 18,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "L",
-      clue_down: 4,
-      clue_across: 17
+      clueDown: 4,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "T",
-      clue_down: 5,
-      clue_across: 17
+      clueDown: 5,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "A",
-      clue_down: 6,
-      clue_across: 17
+      clueDown: 6,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "L",
-      clue_down: 7,
-      clue_across: 17
+      clueDown: 7,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "L",
-      clue_down: 8,
-      clue_across: 17
+      clueDown: 8,
+      clueAcross: 17
     },
     {
       black: false,
       fill: "Y",
-      clue_down: 9,
-      clue_across: 17
+      clueDown: 9,
+      clueAcross: 17
     },
     {
       black: true
@@ -262,57 +262,57 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "A",
       number: 19,
-      clue_down: 10,
-      clue_across: 19
+      clueDown: 10,
+      clueAcross: 19
     },
     {
       black: false,
       fill: "N",
-      clue_down: 11,
-      clue_across: 19
+      clueDown: 11,
+      clueAcross: 19
     },
     {
       black: false,
       fill: "N",
-      clue_down: 12,
-      clue_across: 19
+      clueDown: 12,
+      clueAcross: 19
     },
     {
       black: false,
       fill: "O",
-      clue_down: 13,
-      clue_across: 19
+      clueDown: 13,
+      clueAcross: 19
     },
     {
       black: false,
       fill: "A",
       number: 20,
-      clue_down: 1,
-      clue_across: 20
+      clueDown: 1,
+      clueAcross: 20
     },
     {
       black: false,
       fill: "N",
-      clue_down: 2,
-      clue_across: 20
+      clueDown: 2,
+      clueAcross: 20
     },
     {
       black: false,
       fill: "I",
-      clue_down: 3,
-      clue_across: 20
+      clueDown: 3,
+      clueAcross: 20
     },
     {
       black: false,
       fill: "M",
-      clue_down: 18,
-      clue_across: 20
+      clueDown: 18,
+      clueAcross: 20
     },
     {
       black: false,
       fill: "E",
-      clue_down: 4,
-      clue_across: 20
+      clueDown: 4,
+      clueAcross: 20
     },
     {
       black: true
@@ -327,21 +327,21 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "D",
       number: 21,
-      clue_down: 8,
-      clue_across: 21
+      clueDown: 8,
+      clueAcross: 21
     },
     {
       black: false,
       fill: "M",
-      clue_down: 9,
-      clue_across: 21
+      clueDown: 9,
+      clueAcross: 21
     },
     {
       black: false,
       fill: "V",
       number: 22,
-      clue_down: 22,
-      clue_across: 21
+      clueDown: 22,
+      clueAcross: 21
     },
     {
       black: true
@@ -350,134 +350,134 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 23,
-      clue_down: 11,
-      clue_across: 23
+      clueDown: 11,
+      clueAcross: 23
     },
     {
       black: false,
       fill: "K",
-      clue_down: 12,
-      clue_across: 23
+      clueDown: 12,
+      clueAcross: 23
     },
     {
       black: false,
       fill: "I",
-      clue_down: 13,
-      clue_across: 23
+      clueDown: 13,
+      clueAcross: 23
     },
     {
       black: false,
       fill: "M",
       number: 24,
-      clue_down: 1,
-      clue_across: 24
+      clueDown: 1,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "I",
-      clue_down: 2,
-      clue_across: 24
+      clueDown: 2,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "N",
-      clue_down: 3,
-      clue_across: 24
+      clueDown: 3,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "O",
-      clue_down: 18,
-      clue_across: 24
+      clueDown: 18,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "T",
-      clue_down: 4,
-      clue_across: 24
+      clueDown: 4,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "A",
       number: 25,
-      clue_down: 25,
-      clue_across: 24
+      clueDown: 25,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "U",
       number: 26,
-      clue_down: 26,
-      clue_across: 24
+      clueDown: 26,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "R",
       number: 27,
-      clue_down: 27,
-      clue_across: 24
+      clueDown: 27,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "L",
-      clue_down: 8,
-      clue_across: 24
+      clueDown: 8,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "E",
-      clue_down: 9,
-      clue_across: 24
+      clueDown: 9,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "A",
-      clue_down: 22,
-      clue_across: 24
+      clueDown: 22,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "G",
       number: 28,
-      clue_down: 28,
-      clue_across: 24
+      clueDown: 28,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "U",
-      clue_down: 11,
-      clue_across: 24
+      clueDown: 11,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "E",
-      clue_down: 12,
-      clue_across: 24
+      clueDown: 12,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "S",
-      clue_down: 13,
-      clue_across: 24
+      clueDown: 13,
+      clueAcross: 24
     },
     {
       black: false,
       fill: "A",
       number: 29,
-      clue_down: 1,
-      clue_across: 29
+      clueDown: 1,
+      clueAcross: 29
     },
     {
       black: false,
       fill: "S",
-      clue_down: 2,
-      clue_across: 29
+      clueDown: 2,
+      clueAcross: 29
     },
     {
       black: false,
       fill: "A",
-      clue_down: 3,
-      clue_across: 29
+      clueDown: 3,
+      clueAcross: 29
     },
     {
       black: true
@@ -489,26 +489,26 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 30,
-      clue_down: 25,
-      clue_across: 30
+      clueDown: 25,
+      clueAcross: 30
     },
     {
       black: false,
       fill: "P",
-      clue_down: 26,
-      clue_across: 30
+      clueDown: 26,
+      clueAcross: 30
     },
     {
       black: false,
       fill: "A",
-      clue_down: 27,
-      clue_across: 30
+      clueDown: 27,
+      clueAcross: 30
     },
     {
       black: false,
       fill: "Y",
-      clue_down: 8,
-      clue_across: 30
+      clueDown: 8,
+      clueAcross: 30
     },
     {
       black: true
@@ -517,32 +517,32 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "C",
       number: 31,
-      clue_down: 22,
-      clue_across: 31
+      clueDown: 22,
+      clueAcross: 31
     },
     {
       black: false,
       fill: "O",
-      clue_down: 28,
-      clue_across: 31
+      clueDown: 28,
+      clueAcross: 31
     },
     {
       black: false,
       fill: "M",
-      clue_down: 11,
-      clue_across: 31
+      clueDown: 11,
+      clueAcross: 31
     },
     {
       black: false,
       fill: "E",
-      clue_down: 12,
-      clue_across: 31
+      clueDown: 12,
+      clueAcross: 31
     },
     {
       black: false,
       fill: "T",
-      clue_down: 13,
-      clue_across: 31
+      clueDown: 13,
+      clueAcross: 31
     },
     {
       black: true
@@ -557,33 +557,33 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "N",
       number: 32,
-      clue_down: 32,
-      clue_across: 32
+      clueDown: 32,
+      clueAcross: 32
     },
     {
       black: false,
       fill: "O",
       number: 33,
-      clue_down: 33,
-      clue_across: 32
+      clueDown: 33,
+      clueAcross: 32
     },
     {
       black: false,
       fill: "T",
-      clue_down: 25,
-      clue_across: 32
+      clueDown: 25,
+      clueAcross: 32
     },
     {
       black: false,
       fill: "O",
-      clue_down: 26,
-      clue_across: 32
+      clueDown: 26,
+      clueAcross: 32
     },
     {
       black: false,
       fill: "N",
-      clue_down: 27,
-      clue_across: 32
+      clueDown: 27,
+      clueAcross: 32
     },
     {
       black: true
@@ -592,32 +592,32 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "P",
       number: 34,
-      clue_down: 34,
-      clue_across: 34
+      clueDown: 34,
+      clueAcross: 34
     },
     {
       black: false,
       fill: "A",
-      clue_down: 22,
-      clue_across: 34
+      clueDown: 22,
+      clueAcross: 34
     },
     {
       black: false,
       fill: "R",
-      clue_down: 28,
-      clue_across: 34
+      clueDown: 28,
+      clueAcross: 34
     },
     {
       black: false,
       fill: "E",
-      clue_down: 11,
-      clue_across: 34
+      clueDown: 11,
+      clueAcross: 34
     },
     {
       black: false,
       fill: "S",
-      clue_down: 12,
-      clue_across: 34
+      clueDown: 12,
+      clueAcross: 34
     },
     {
       black: true
@@ -632,69 +632,69 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "B",
       number: 35,
-      clue_down: 35,
-      clue_across: 35
+      clueDown: 35,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "O",
-      clue_down: 32,
-      clue_across: 35
+      clueDown: 32,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "X",
-      clue_down: 33,
-      clue_across: 35
+      clueDown: 33,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "I",
-      clue_down: 25,
-      clue_across: 35
+      clueDown: 25,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "N",
-      clue_down: 26,
-      clue_across: 35
+      clueDown: 26,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "G",
-      clue_down: 27,
-      clue_across: 35
+      clueDown: 27,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "W",
       number: 36,
-      clue_down: 36,
-      clue_across: 35
+      clueDown: 36,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "A",
-      clue_down: 34,
-      clue_across: 35
+      clueDown: 34,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "T",
-      clue_down: 22,
-      clue_across: 35
+      clueDown: 22,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "E",
-      clue_down: 28,
-      clue_across: 35
+      clueDown: 28,
+      clueAcross: 35
     },
     {
       black: false,
       fill: "R",
-      clue_down: 11,
-      clue_across: 35
+      clueDown: 11,
+      clueAcross: 35
     },
     {
       black: true
@@ -709,32 +709,32 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 37,
-      clue_down: 37,
-      clue_across: 37
+      clueDown: 37,
+      clueAcross: 37
     },
     {
       black: false,
       fill: "E",
-      clue_down: 35,
-      clue_across: 37
+      clueDown: 35,
+      clueAcross: 37
     },
     {
       black: false,
       fill: "D",
-      clue_down: 32,
-      clue_across: 37
+      clueDown: 32,
+      clueAcross: 37
     },
     {
       black: false,
       fill: "E",
-      clue_down: 33,
-      clue_across: 37
+      clueDown: 33,
+      clueAcross: 37
     },
     {
       black: false,
       fill: "R",
-      clue_down: 25,
-      clue_across: 37
+      clueDown: 25,
+      clueAcross: 37
     },
     {
       black: true
@@ -743,32 +743,32 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "E",
       number: 38,
-      clue_down: 27,
-      clue_across: 38
+      clueDown: 27,
+      clueAcross: 38
     },
     {
       black: false,
       fill: "R",
-      clue_down: 36,
-      clue_across: 38
+      clueDown: 36,
+      clueAcross: 38
     },
     {
       black: false,
       fill: "R",
-      clue_down: 34,
-      clue_across: 38
+      clueDown: 34,
+      clueAcross: 38
     },
     {
       black: false,
       fill: "E",
-      clue_down: 22,
-      clue_across: 38
+      clueDown: 22,
+      clueAcross: 38
     },
     {
       black: false,
       fill: "D",
-      clue_down: 28,
-      clue_across: 38
+      clueDown: 28,
+      clueAcross: 38
     },
     {
       black: true
@@ -783,32 +783,32 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "A",
       number: 39,
-      clue_down: 39,
-      clue_across: 39
+      clueDown: 39,
+      clueAcross: 39
     },
     {
       black: false,
       fill: "L",
-      clue_down: 37,
-      clue_across: 39
+      clueDown: 37,
+      clueAcross: 39
     },
     {
       black: false,
       fill: "L",
-      clue_down: 35,
-      clue_across: 39
+      clueDown: 35,
+      clueAcross: 39
     },
     {
       black: false,
       fill: "O",
-      clue_down: 32,
-      clue_across: 39
+      clueDown: 32,
+      clueAcross: 39
     },
     {
       black: false,
       fill: "Y",
-      clue_down: 33,
-      clue_across: 39
+      clueDown: 33,
+      clueAcross: 39
     },
     {
       black: true
@@ -817,26 +817,26 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "B",
       number: 40,
-      clue_down: 40,
-      clue_across: 40
+      clueDown: 40,
+      clueAcross: 40
     },
     {
       black: false,
       fill: "R",
-      clue_down: 27,
-      clue_across: 40
+      clueDown: 27,
+      clueAcross: 40
     },
     {
       black: false,
       fill: "I",
-      clue_down: 36,
-      clue_across: 40
+      clueDown: 36,
+      clueAcross: 40
     },
     {
       black: false,
       fill: "S",
-      clue_down: 34,
-      clue_across: 40
+      clueDown: 34,
+      clueAcross: 40
     },
     {
       black: true
@@ -848,135 +848,135 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "R",
       number: 41,
-      clue_down: 41,
-      clue_across: 41
+      clueDown: 41,
+      clueAcross: 41
     },
     {
       black: false,
       fill: "P",
       number: 42,
-      clue_down: 42,
-      clue_across: 41
+      clueDown: 42,
+      clueAcross: 41
     },
     {
       black: false,
       fill: "M",
       number: 43,
-      clue_down: 43,
-      clue_across: 41
+      clueDown: 43,
+      clueAcross: 41
     },
     {
       black: false,
       fill: "B",
       number: 44,
-      clue_down: 39,
-      clue_across: 44
+      clueDown: 39,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "O",
-      clue_down: 37,
-      clue_across: 44
+      clueDown: 37,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "O",
-      clue_down: 35,
-      clue_across: 44
+      clueDown: 35,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "Z",
-      clue_down: 32,
-      clue_across: 44
+      clueDown: 32,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "E",
-      clue_down: 33,
-      clue_across: 44
+      clueDown: 33,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "T",
       number: 45,
-      clue_down: 45,
-      clue_across: 44
+      clueDown: 45,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "A",
-      clue_down: 40,
-      clue_across: 44
+      clueDown: 40,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "S",
-      clue_down: 27,
-      clue_across: 44
+      clueDown: 27,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "T",
-      clue_down: 36,
-      clue_across: 44
+      clueDown: 36,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "E",
-      clue_down: 34,
-      clue_across: 44
+      clueDown: 34,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "R",
       number: 46,
-      clue_down: 46,
-      clue_across: 44
+      clueDown: 46,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "S",
       number: 47,
-      clue_down: 47,
-      clue_across: 44
+      clueDown: 47,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "E",
-      clue_down: 41,
-      clue_across: 44
+      clueDown: 41,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "A",
-      clue_down: 42,
-      clue_across: 44
+      clueDown: 42,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "T",
-      clue_down: 43,
-      clue_across: 44
+      clueDown: 43,
+      clueAcross: 44
     },
     {
       black: false,
       fill: "R",
       number: 48,
-      clue_down: 39,
-      clue_across: 48
+      clueDown: 39,
+      clueAcross: 48
     },
     {
       black: false,
       fill: "E",
-      clue_down: 37,
-      clue_across: 48
+      clueDown: 37,
+      clueAcross: 48
     },
     {
       black: false,
       fill: "N",
-      clue_down: 35,
-      clue_across: 48
+      clueDown: 35,
+      clueAcross: 48
     },
     {
       black: true
@@ -985,20 +985,20 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 49,
-      clue_down: 33,
-      clue_across: 49
+      clueDown: 33,
+      clueAcross: 49
     },
     {
       black: false,
       fill: "O",
-      clue_down: 45,
-      clue_across: 49
+      clueDown: 45,
+      clueAcross: 49
     },
     {
       black: false,
       fill: "N",
-      clue_down: 40,
-      clue_across: 49
+      clueDown: 40,
+      clueAcross: 49
     },
     {
       black: true
@@ -1013,58 +1013,58 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "O",
       number: 50,
-      clue_down: 46,
-      clue_across: 50
+      clueDown: 46,
+      clueAcross: 50
     },
     {
       black: false,
       fill: "U",
-      clue_down: 47,
-      clue_across: 50
+      clueDown: 47,
+      clueAcross: 50
     },
     {
       black: false,
       fill: "T",
-      clue_down: 41,
-      clue_across: 50
+      clueDown: 41,
+      clueAcross: 50
     },
     {
       black: false,
       fill: "I",
-      clue_down: 42,
-      clue_across: 50
+      clueDown: 42,
+      clueAcross: 50
     },
     {
       black: false,
       fill: "E",
-      clue_down: 43,
-      clue_across: 50
+      clueDown: 43,
+      clueAcross: 50
     },
     {
       black: false,
       fill: "E",
       number: 51,
-      clue_down: 39,
-      clue_across: 51
+      clueDown: 39,
+      clueAcross: 51
     },
     {
       black: false,
       fill: "G",
-      clue_down: 37,
-      clue_across: 51
+      clueDown: 37,
+      clueAcross: 51
     },
     {
       black: false,
       fill: "G",
-      clue_down: 35,
-      clue_across: 51
+      clueDown: 35,
+      clueAcross: 51
     },
     {
       black: false,
       fill: "S",
       number: 52,
-      clue_down: 52,
-      clue_across: 51
+      clueDown: 52,
+      clueAcross: 51
     },
     {
       black: true
@@ -1073,90 +1073,90 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "W",
       number: 53,
-      clue_down: 45,
-      clue_across: 53
+      clueDown: 45,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "A",
-      clue_down: 40,
-      clue_across: 53
+      clueDown: 40,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "R",
       number: 54,
-      clue_down: 54,
-      clue_across: 53
+      clueDown: 54,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "H",
       number: 55,
-      clue_down: 55,
-      clue_across: 53
+      clueDown: 55,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "O",
       number: 56,
-      clue_down: 56,
-      clue_across: 53
+      clueDown: 56,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "L",
-      clue_down: 46,
-      clue_across: 53
+      clueDown: 46,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "M",
-      clue_down: 47,
-      clue_across: 53
+      clueDown: 47,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "A",
-      clue_down: 41,
-      clue_across: 53
+      clueDown: 41,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "R",
-      clue_down: 42,
-      clue_across: 53
+      clueDown: 42,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "T",
-      clue_down: 43,
-      clue_across: 53
+      clueDown: 43,
+      clueAcross: 53
     },
     {
       black: false,
       fill: "V",
       number: 57,
-      clue_down: 39,
-      clue_across: 57
+      clueDown: 39,
+      clueAcross: 57
     },
     {
       black: false,
       fill: "I",
-      clue_down: 37,
-      clue_across: 57
+      clueDown: 37,
+      clueAcross: 57
     },
     {
       black: false,
       fill: "E",
-      clue_down: 35,
-      clue_across: 57
+      clueDown: 35,
+      clueAcross: 57
     },
     {
       black: false,
       fill: "T",
-      clue_down: 52,
-      clue_across: 57
+      clueDown: 52,
+      clueAcross: 57
     },
     {
       black: true
@@ -1165,38 +1165,38 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "E",
       number: 58,
-      clue_down: 45,
-      clue_across: 58
+      clueDown: 45,
+      clueAcross: 58
     },
     {
       black: false,
       fill: "N",
-      clue_down: 40,
-      clue_across: 58
+      clueDown: 40,
+      clueAcross: 58
     },
     {
       black: false,
       fill: "D",
-      clue_down: 54,
-      clue_across: 58
+      clueDown: 54,
+      clueAcross: 58
     },
     {
       black: false,
       fill: "U",
-      clue_down: 55,
-      clue_across: 58
+      clueDown: 55,
+      clueAcross: 58
     },
     {
       black: false,
       fill: "R",
-      clue_down: 56,
-      clue_across: 58
+      clueDown: 56,
+      clueAcross: 58
     },
     {
       black: false,
       fill: "E",
-      clue_down: 46,
-      clue_across: 58
+      clueDown: 46,
+      clueAcross: 58
     },
     {
       black: true
@@ -1205,45 +1205,45 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "G",
       number: 59,
-      clue_down: 41,
-      clue_across: 59
+      clueDown: 41,
+      clueAcross: 59
     },
     {
       black: false,
       fill: "U",
-      clue_down: 42,
-      clue_across: 59
+      clueDown: 42,
+      clueAcross: 59
     },
     {
       black: false,
       fill: "N",
-      clue_down: 43,
-      clue_across: 59
+      clueDown: 43,
+      clueAcross: 59
     },
     {
       black: false,
       fill: "A",
       number: 60,
-      clue_down: 39,
-      clue_across: 60
+      clueDown: 39,
+      clueAcross: 60
     },
     {
       black: false,
       fill: "N",
-      clue_down: 37,
-      clue_across: 60
+      clueDown: 37,
+      clueAcross: 60
     },
     {
       black: false,
       fill: "D",
-      clue_down: 35,
-      clue_across: 60
+      clueDown: 35,
+      clueAcross: 60
     },
     {
       black: false,
       fill: "Y",
-      clue_down: 52,
-      clue_across: 60
+      clueDown: 52,
+      clueAcross: 60
     },
     {
       black: true
@@ -1252,38 +1252,38 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "R",
       number: 61,
-      clue_down: 45,
-      clue_across: 61
+      clueDown: 45,
+      clueAcross: 61
     },
     {
       black: false,
       fill: "A",
-      clue_down: 40,
-      clue_across: 61
+      clueDown: 40,
+      clueAcross: 61
     },
     {
       black: false,
       fill: "S",
-      clue_down: 54,
-      clue_across: 61
+      clueDown: 54,
+      clueAcross: 61
     },
     {
       black: false,
       fill: "H",
-      clue_down: 55,
-      clue_across: 61
+      clueDown: 55,
+      clueAcross: 61
     },
     {
       black: false,
       fill: "E",
-      clue_down: 56,
-      clue_across: 61
+      clueDown: 56,
+      clueAcross: 61
     },
     {
       black: false,
       fill: "S",
-      clue_down: 46,
-      clue_across: 61
+      clueDown: 46,
+      clueAcross: 61
     },
     {
       black: true
@@ -1292,20 +1292,20 @@ const puzzle: Puzzle = Object.freeze({
       black: false,
       fill: "S",
       number: 62,
-      clue_down: 41,
-      clue_across: 62
+      clueDown: 41,
+      clueAcross: 62
     },
     {
       black: false,
       fill: "P",
-      clue_down: 42,
-      clue_across: 62
+      clueDown: 42,
+      clueAcross: 62
     },
     {
       black: false,
       fill: "A",
-      clue_down: 43,
-      clue_across: 62
+      clueDown: 43,
+      clueAcross: 62
     }
   ],
   down_clues: [

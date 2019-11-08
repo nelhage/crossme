@@ -7,8 +7,8 @@ export interface LetterCell {
   fill: string;
   number?: number;
   circled?: boolean;
-  clue_across: number;
-  clue_down: number;
+  clueAcross: number;
+  clueDown: number;
 }
 
 export type Cell = BlackCell | LetterCell;

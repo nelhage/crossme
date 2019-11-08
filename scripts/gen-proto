@@ -1,7 +1,8 @@
 #!/bin/bash
 set -eu
 cd "$(dirname "$0")/.."
-protoc -I. pb/*.proto \
-       --go_out=paths=source_relative:. \
-       --js_out=import_style=commonjs:v2/src/ \
-       --grpc-web_out=import_style=typescript,mode=grpcwebtext:v2/src/
+protoc -Ipb \
+       --go_out=paths=source_relative,plugins=grpc:pb \
+       --js_out=import_style=commonjs:v2/src/pb/ \
+       --grpc-web_out=import_style=typescript,mode=grpcwebtext:v2/src/pb/ \
+       pb/*.proto

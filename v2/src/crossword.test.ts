@@ -41,7 +41,7 @@ function computeNumbering(
           if (sq.black) {
             break;
           }
-          (sq as Types.LetterCell).clue_down = n;
+          (sq as Types.LetterCell).clueDown = n;
         }
       }
       if (needsAcross(r, c)) {
@@ -52,7 +52,7 @@ function computeNumbering(
             break;
           }
 
-          (sq as Types.LetterCell).clue_across = n;
+          (sq as Types.LetterCell).clueAcross = n;
         }
       }
       n += 1;
@@ -85,9 +85,9 @@ function parseGame(template: string): Crossword.Game {
       if (ch === "#") {
         grid.push({ black: true });
       } else if (ch === ".") {
-        grid.push({ black: false, fill: "X", clue_across: 0, clue_down: 0 });
+        grid.push({ black: false, fill: "X", clueAcross: 0, clueDown: 0 });
       } else if (ch.match(/[A-Z]/)) {
-        grid.push({ black: false, fill: ch, clue_across: 0, clue_down: 0 });
+        grid.push({ black: false, fill: ch, clueAcross: 0, clueDown: 0 });
         fill = ch;
       } else {
         throw new Error(`bad fill char: '${ch}'`);

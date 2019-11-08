@@ -1,6 +1,8 @@
 /**
  * @fileoverview
  * @enhanceable
+ * @suppress {messageConventions} JS Compiler reports an error if a variable or
+ *     field starts with 'MSG_' and isn't a translatable message.
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
@@ -53,10 +55,11 @@ proto.crossme.Config.prototype.toObject = function(opt_includeInstance) {
  *     http://goto/soy-param-migration
  * @param {!proto.crossme.Config} msg The msg instance to transform.
  * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
  */
 proto.crossme.Config.toObject = function(includeInstance, msg) {
   var f, obj = {
-    schemaVersion: msg.getSchemaVersion()
+    schemaVersion: jspb.Message.getFieldWithDefault(msg, 1, 0)
   };
 
   if (includeInstance) {
@@ -68,11 +71,71 @@ proto.crossme.Config.toObject = function(includeInstance, msg) {
 
 
 /**
- * Creates a deep clone of this proto. No data is shared with the original.
- * @return {!proto.crossme.Config} The clone.
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.Config}
  */
-proto.crossme.Config.prototype.cloneMessage = function() {
-  return /** @type {!proto.crossme.Config} */ (jspb.Message.cloneMessage(this));
+proto.crossme.Config.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.Config;
+  return proto.crossme.Config.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.Config} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.Config}
+ */
+proto.crossme.Config.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    case 1:
+      var value = /** @type {number} */ (reader.readInt32());
+      msg.setSchemaVersion(value);
+      break;
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.crossme.Config.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.Config.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.Config} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.Config.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
+  f = message.getSchemaVersion();
+  if (f !== 0) {
+    writer.writeInt32(
+      1,
+      f
+    );
+  }
 };
 
 
@@ -81,13 +144,13 @@ proto.crossme.Config.prototype.cloneMessage = function() {
  * @return {number}
  */
 proto.crossme.Config.prototype.getSchemaVersion = function() {
-  return /** @type {number} */ (jspb.Message.getFieldProto3(this, 1, 0));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
 };
 
 
-/** @param {number} value  */
+/** @param {number} value */
 proto.crossme.Config.prototype.setSchemaVersion = function(value) {
-  jspb.Message.setField(this, 1, value);
+  jspb.Message.setProto3IntField(this, 1, value);
 };
 
 

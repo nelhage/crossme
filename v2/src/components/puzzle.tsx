@@ -153,8 +153,8 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   selectedClueNumber(): number {
     const square = Crossword.selectedSquare(this.state.game);
     return this.state.game.cursor.direction === Types.Direction.DOWN
-      ? square.clue_down
-      : square.clue_across;
+      ? square.clueDown
+      : square.clueAcross;
   }
 
   direction(): Types.Direction {
@@ -196,8 +196,8 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         />
         <ClueBox
           puzzle={this.props.puzzle}
-          down_clue={sel.clue_down}
-          across_clue={sel.clue_across}
+          down_clue={sel.clueDown}
+          across_clue={sel.clueAcross}
           direction={this.direction()}
           onSelect={this.onSelectClue}
         />

@@ -13,6 +13,7 @@
     "create-react-app": "^3.2.0",
     "eslint-config-react-app": "^5.0.2",
     "google-protobuf": "^3.10.0",
+    "grpc-web": "^1.0.7",
     "immutable": "^4.0.0-rc.12",
     "jquery": "^3.4.1",
     "popper.js": "^1.15.0",
@@ -50,5 +51,5 @@
   "devDependencies": {
     "@testing-library/react": "^9.2.0"
   },
-  "proxy": "http://localhost:4000"
+  "proxy": "http://localhost:8080"
 }

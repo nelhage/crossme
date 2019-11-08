@@ -192,8 +192,8 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
     }
     if (
       inword &&
-      ((dc && sel.clue_across !== sq.clue_across) ||
-        (dr && sel.clue_down !== sq.clue_down))
+      ((dc && sel.clueAcross !== sq.clueAcross) ||
+        (dr && sel.clueDown !== sq.clueDown))
     ) {
       return false;
     }
@@ -327,8 +327,8 @@ function nextClue(
   let direction = g.cursor.direction;
   const firstClue =
     direction === Types.Direction.DOWN
-      ? selectedSquare(g).clue_down
-      : selectedSquare(g).clue_across;
+      ? selectedSquare(g).clueDown
+      : selectedSquare(g).clueAcross;
   const clues = cluesForDirection(g, direction);
   const otherClues = cluesForDirection(g, otherDirection(direction));
   const activeIndex = clues.findIndex(c => c.number === firstClue);
@@ -513,9 +513,9 @@ function eachTarget(
       ? () => true
       : sq => {
           if (g.cursor.direction === Types.Direction.ACROSS) {
-            return sq.clue_across === active.clue_across;
+            return sq.clueAcross === active.clueAcross;
           } else {
-            return sq.clue_down === active.clue_down;
+            return sq.clueDown === active.clueDown;
           }
         };
   return withFill(g, fills => {

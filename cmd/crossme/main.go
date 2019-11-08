@@ -3,36 +3,16 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"flag"
 	"io/ioutil"
 	"log"
-	"net/http"
+	"net"
 	"os"
 
 	"crossme.app/src/pb"
 	"crossme.app/src/puz"
-	"crossme.app/src/repo"
+	"google.golang.org/grpc"
 )
-
-type Server struct {
-	puz    *puz.PuzFile
-	sha256 string
-}
-
-func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	proto := repo.Puz2Proto(s.puz)
-	out := struct {
-		Puzzle *pb.Puzzle `json:"puzzle"`
-	}{
-		Puzzle: proto,
-	}
-	w.Header().Set("content-type", "application/json")
-	err := json.NewEncoder(w).Encode(&out)
-	if err != nil {
-		log.Printf("encoding json: %v", err)
-	}
-}
 
 func main() {
 	var (
@@ -56,6 +36,16 @@ func main() {
 
 	hash := sha256.Sum256(data)
 
-	server := Server{puz: puzzle, sha256: hex.EncodeToString(hash[:])}
-	log.Fatal(http.ListenAndServe(*bind, &server))
+	server := &Server{puz: puzzle, sha256: hex.EncodeToString(hash[:])}
+
+	lis, err := net.Listen("tcp", *bind)
+	if err != nil {
+		log.Fatalf("failed to listen: %v", err)
+	}
+	grpcServer := grpc.NewServer()
+	pb.RegisterCrossMeServer(grpcServer, server)
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatal("grpc.Serve: ", err)
+	}
 }
