@@ -4,6 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"flag"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,7 +25,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	out := struct {
 		Puzzle *pb.Puzzle `json:"puzzle"`
 	}{
-		Puzzle: &proto,
+		Puzzle: proto,
 	}
 	w.Header().Set("content-type", "application/json")
 	err := json.NewEncoder(w).Encode(&out)
@@ -34,11 +35,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	if len(os.Args) != 2 {
+	var (
+		bind = flag.String("bind", "localhost:4000", "bind address")
+	)
+	flag.Parse()
+	args := flag.Args()
+	if len(args) != 1 {
 		log.Fatalf("Usage: %s puzzle.puz", os.Args[0])
 	}
 
-	data, err := ioutil.ReadFile(os.Args[1])
+	data, err := ioutil.ReadFile(args[0])
 	if err != nil {
 		log.Fatalf("Reading puzzle: %v", err)
 	}
@@ -51,5 +57,5 @@ func main() {
 	hash := sha256.Sum256(data)
 
 	server := Server{puz: puzzle, sha256: hex.EncodeToString(hash[:])}
-	log.Fatal(http.ListenAndServe("localhost:4000", &server))
+	log.Fatal(http.ListenAndServe(*bind, &server))
 }
