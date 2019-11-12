@@ -3,6 +3,8 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
+import { NewGame } from "./new_game";
+
 export const Header: React.FC = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="md">
@@ -10,7 +12,7 @@ export const Header: React.FC = () => {
       <Navbar.Toggle />
       <Navbar.Collapse>
         <Nav>
-          <Nav.Link>New Game</Nav.Link>
+          <NewGame />
           <NavDropdown
             title="Recent Games"
             id="recent-games-dropdown"
