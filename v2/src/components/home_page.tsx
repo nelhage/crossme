@@ -7,8 +7,7 @@ export const HomePage: React.FC = () => {
       <h2>Welcome to CrossMe!</h2>
 
       <p>
-        CrossMe is an online collaborative crossword-puzzle solver, written in{" "}
-        <a href="http://www.meteor.com/">Meteor</a> by
+        CrossMe is an online collaborative crossword-puzzle solver by{" "}
         <a href="https://nelhage.com/">Nelson Elhage</a>.
       </p>
 

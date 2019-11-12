@@ -11,6 +11,7 @@ import "./App.css";
 
 import { PuzzleContainer } from "./components/puzzle_container";
 import { HomePage } from "./components/home_page";
+import { Header } from "./components/header";
 
 const RoutePuzzle: React.FC = () => {
   const { puzzleId } = useParams<{ puzzleId: string }>();
@@ -21,13 +22,14 @@ const App: React.FC = () => {
   return (
     <Router>
       <div className="App">
+        <Header />
         <Switch>
-          <Route path="/puzzle/:puzzleId">
-            <RoutePuzzle />
+          <Route exact path="/">
+            <HomePage />
           </Route>
 
-          <Route path="/">
-            <HomePage />
+          <Route path="/puzzle/:puzzleId">
+            <RoutePuzzle />
           </Route>
         </Switch>
       </div>
