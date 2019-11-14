@@ -1,16 +1,19 @@
 package repo
 
+import "database/sql"
+
 const sql_init = `
 CREATE TABLE IF NOT EXISTS config (
-  proto blob
+  proto blob not null
 );
 
 CREATE TABLE IF NOT EXISTS puzzles (
-  proto blob,
-  title text,
-  meta__sha256 text unique primary key,
-  meta__date text,
-  meta__created text
+  proto blob not null,
+  title text not null,
+  meta__sha256 text null unique,
+  meta__id text unique not null primary key,
+  meta__date text not null,
+  meta__created text not null
 );
 
 CREATE INDEX IF NOT EXISTS puzzles__date ON puzzles (meta__date);
@@ -31,25 +34,47 @@ type insert_puz_file_args struct {
 }
 
 const sql_insert_puzzle = `
-REPLACE INTO puzzles (proto, meta__sha256, title, meta__date)
-VALUES (:proto, :sha256, :title, :date)
+INSERT INTO puzzles (proto, title, meta__id, meta__sha256, meta__date, meta__created)
+VALUES (:proto, :title, :id, :sha256, :date, :created)
 `
 
 type insert_puzzle_args struct {
-	Proto  []byte `db:"proto"`
-	Sha256 string `db:"sha256"`
-	Title  string `db:"title"`
-	Date   string `db:"date"`
+	Proto   []byte         `db:"proto"`
+	Title   string         `db:"title"`
+	Id      string         `db:"id"`
+	Sha256  sql.NullString `db:"sha256"`
+	Date    string         `db:"date"`
+	Created string         `db:"created"`
 }
 
 const sql_query_puzzle_index = `
-SELECT meta__sha256 as sha256, title, meta__date as date
+SELECT meta__id as id, title, meta__date as date
 FROM puzzles
 ORDER BY date DESC
 `
 
-const sql_query_puzzle_by_hash = `
+type PuzzleIndex struct {
+	Id    string `db:"id"`
+	Title string `db:"title"`
+	Date  string `db:"date"`
+}
+
+const sql_query_puzzle_by_id = `
 SELECT proto
 FROM puzzles
-WHERE meta__sha256 LIKE ?
+WHERE meta__id = :id
 `
+
+type query_puzzle_by_id_args struct {
+	Id string `db:"id"`
+}
+
+const sql_query_id_by_hash = `
+SELECT meta__id as id
+FROM puzzles
+WHERE meta__sha256 = :sha256
+`
+
+type query_id_by_hash_args struct {
+	Sha256 string `db:"sha256"`
+}

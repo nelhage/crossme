@@ -768,6 +768,7 @@ proto.crossme.Puzzle.Meta.toObject = function(includeInstance, msg) {
   var f, obj = {
     created: (f = msg.getCreated()) && google_protobuf_timestamp_pb.Timestamp.toObject(includeInstance, f),
     sha256: jspb.Message.getFieldWithDefault(msg, 2, ""),
+    id: jspb.Message.getFieldWithDefault(msg, 5, ""),
     date: jspb.Message.getFieldWithDefault(msg, 3, "")
   };
 
@@ -814,6 +815,10 @@ proto.crossme.Puzzle.Meta.deserializeBinaryFromReader = function(msg, reader) {
       var value = /** @type {string} */ (reader.readString());
       msg.setSha256(value);
       break;
+    case 5:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setId(value);
+      break;
     case 3:
       var value = /** @type {string} */ (reader.readString());
       msg.setDate(value);
@@ -859,6 +864,13 @@ proto.crossme.Puzzle.Meta.serializeBinaryToWriter = function(message, writer) {
   if (f.length > 0) {
     writer.writeString(
       2,
+      f
+    );
+  }
+  f = message.getId();
+  if (f.length > 0) {
+    writer.writeString(
+      5,
       f
     );
   }
@@ -914,6 +926,21 @@ proto.crossme.Puzzle.Meta.prototype.getSha256 = function() {
 /** @param {string} value */
 proto.crossme.Puzzle.Meta.prototype.setSha256 = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional string id = 5;
+ * @return {string}
+ */
+proto.crossme.Puzzle.Meta.prototype.getId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 5, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.Puzzle.Meta.prototype.setId = function(value) {
+  jspb.Message.setProto3StringField(this, 5, value);
 };
 
 

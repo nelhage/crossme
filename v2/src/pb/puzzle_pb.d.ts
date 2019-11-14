@@ -134,6 +134,9 @@ export namespace Puzzle {
     getSha256(): string;
     setSha256(value: string): void;
 
+    getId(): string;
+    setId(value: string): void;
+
     getDate(): string;
     setDate(value: string): void;
 
@@ -149,6 +152,7 @@ export namespace Puzzle {
     export type AsObject = {
       created?: google_protobuf_timestamp_pb.Timestamp.AsObject,
       sha256: string,
+      id: string,
       date: string,
     }
   }

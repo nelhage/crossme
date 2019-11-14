@@ -3,8 +3,6 @@ package repo
 import (
 	"database/sql"
 	"errors"
-	"fmt"
-	"strings"
 
 	"crossme.app/src/pb"
 	"github.com/golang/protobuf/proto"
@@ -22,12 +20,11 @@ func (r *Repository) PuzzleIndex() ([]PuzzleIndex, error) {
 	return out, nil
 }
 
-func (r *Repository) PuzzleBySha256(sha string) (*pb.Puzzle, error) {
-	if strings.IndexAny(sha, "_%") != -1 {
-		return nil, ErrNoSuchPuzzle
-	}
+func (r *Repository) PuzzleById(id string) (*pb.Puzzle, error) {
 	var data []byte
-	if err := r.db.Get(&data, sql_query_puzzle_by_hash, fmt.Sprintf("%s%%", sha)); err != nil {
+	if err := namedGet(r.db, &data, sql_query_puzzle_by_id, query_puzzle_by_id_args{
+		Id: id,
+	}); err != nil {
 		if err == sql.ErrNoRows {
 			err = ErrNoSuchPuzzle
 		}

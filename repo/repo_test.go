@@ -2,9 +2,9 @@ package repo
 
 import (
 	"io/ioutil"
-	"log"
 	"os"
 	"path"
+	"sort"
 	"testing"
 
 	"crossme.app/src/puz"
@@ -63,6 +63,7 @@ func TestInsertQuery(t *testing.T) {
 	}
 	defer repo.Close()
 
+	var ids []string
 	for _, name := range []string{
 		"nyt_sun_rebus.puz",
 		"nyt_with_shape.puz",
@@ -77,28 +78,40 @@ func TestInsertQuery(t *testing.T) {
 			t.Fatalf("Loading puzzle: %v", err)
 		}
 
-		err = repo.InsertPuzzle(Puz2Proto(puzzle), data)
+		id, err := repo.InsertPuzzle(Puz2Proto(puzzle), data)
 		if err != nil {
 			t.Fatalf("insert %q: %v", name, err)
 		}
+		ids = append(ids, id)
+	}
+
+	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	if ids[0] == ids[1] {
+		t.Fatalf("duplicate ids: %#v", ids)
 	}
 
 	index, err := repo.PuzzleIndex()
 	if err != nil {
 		t.Fatalf("PuzzleIndex: %v", err)
 	}
+	sort.Slice(index, func(i, j int) bool { return index[i].Id < index[j].Id })
 	if len(index) != 2 {
-		t.Fatalf("expected two puzzles")
+		t.Fatalf("expected two puzzles, got %d", len(index))
 	}
-	log.Printf("%#v", index)
-	for _, idx := range index {
-		rt, err := repo.PuzzleBySha256(idx.Sha256)
-		if err != nil {
-			t.Errorf("Get(%q): %v", idx.Sha256, err)
+
+	for i, idx := range index {
+		if idx.Id != ids[i] {
+			t.Errorf("got back the wrong id, got %s want %s", idx.Id, ids[i])
 		}
-		if rt.Metadata.Sha256 != idx.Sha256 ||
+		rt, err := repo.PuzzleById(idx.Id)
+		if err != nil {
+			t.Errorf("Get(%q): %v", idx.Id, err)
+			continue
+		}
+
+		if rt.Metadata.Id != idx.Id ||
 			rt.Title != idx.Title {
-			t.Errorf("%q[sha=%s]: Failed to round trip", idx.Title, idx.Sha256)
+			t.Errorf("%q[sha=%s]: Failed to round trip", idx.Title, idx.Id)
 		}
 	}
 }

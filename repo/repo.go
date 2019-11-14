@@ -46,6 +46,7 @@ func (r *Repository) init() error {
 			return err
 		}
 	}
+
 	return nil
 }
 

@@ -40,6 +40,9 @@ message Puzzle {
         // hex
         string sha256 = 2;
 
+        // Unique ID used to refer to this puzzle
+        string id = 5;
+
         // YYYY-MM-DD parsed date that the puzzle was published, or ""
         string date = 3;
     }

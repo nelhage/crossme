@@ -31,7 +31,7 @@ func main() {
 			log.Fatalf("Loading puzzle: %v", err)
 		}
 
-		err = repository.InsertPuzzle(repo.Puz2Proto(puzzle), data)
+		_, err = repository.InsertPuzzle(repo.Puz2Proto(puzzle), data)
 		if err != nil {
 			log.Fatalf("insert %q: %v", arg, err)
 		}
