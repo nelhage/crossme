@@ -17,9 +17,14 @@ var datePatterns []datePattern = []datePattern{
 	{
 		regexp.MustCompile(`\d{1,2}/\d{1,2}/\d{2,4}`),
 		"1/2/06",
-	}, {
+	},
+	{
+		regexp.MustCompile(`\w{3}\s+\d+,?\s+\d+`),
+		"Jan 2, 2006",
+	},
+	{
 		regexp.MustCompile(`\w+\s+\d+,?\s+\d+`),
-		"Jan 02, 2006",
+		"January 2, 2006",
 	},
 }
 
