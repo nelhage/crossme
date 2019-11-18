@@ -47,3 +47,9 @@ message Puzzle {
         string date = 3;
     }
 }
+
+message PuzzleIndex {
+    string id = 1;
+    string title = 2;
+    string date = 3;
+}

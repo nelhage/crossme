@@ -53,12 +53,6 @@ FROM puzzles
 ORDER BY date DESC
 `
 
-type PuzzleIndex struct {
-	Id    string `db:"id"`
-	Title string `db:"title"`
-	Date  string `db:"date"`
-}
-
 const sql_query_puzzle_by_id = `
 SELECT proto
 FROM puzzles

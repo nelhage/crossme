@@ -5,6 +5,14 @@ import "puzzle.proto";
 
 option go_package = "crossme.app/src/pb";
 
+message GetPuzzleIndexArgs {
+
+}
+
+message GetPuzzleIndexResponse {
+    repeated crossme.PuzzleIndex puzzles = 1;
+}
+
 message GetPuzzleByIdArgs {
     string id = 1;
 }
@@ -14,5 +22,6 @@ message GetPuzzleResponse {
 }
 
 service CrossMe {
+    rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
 }

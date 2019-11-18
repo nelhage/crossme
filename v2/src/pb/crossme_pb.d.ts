@@ -2,6 +2,40 @@ import * as jspb from "google-protobuf"
 
 import * as puzzle_pb from './puzzle_pb';
 
+export class GetPuzzleIndexArgs extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetPuzzleIndexArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: GetPuzzleIndexArgs): GetPuzzleIndexArgs.AsObject;
+  static serializeBinaryToWriter(message: GetPuzzleIndexArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetPuzzleIndexArgs;
+  static deserializeBinaryFromReader(message: GetPuzzleIndexArgs, reader: jspb.BinaryReader): GetPuzzleIndexArgs;
+}
+
+export namespace GetPuzzleIndexArgs {
+  export type AsObject = {
+  }
+}
+
+export class GetPuzzleIndexResponse extends jspb.Message {
+  getPuzzlesList(): Array<puzzle_pb.PuzzleIndex>;
+  setPuzzlesList(value: Array<puzzle_pb.PuzzleIndex>): void;
+  clearPuzzlesList(): void;
+  addPuzzles(value?: puzzle_pb.PuzzleIndex, index?: number): puzzle_pb.PuzzleIndex;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetPuzzleIndexResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetPuzzleIndexResponse): GetPuzzleIndexResponse.AsObject;
+  static serializeBinaryToWriter(message: GetPuzzleIndexResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetPuzzleIndexResponse;
+  static deserializeBinaryFromReader(message: GetPuzzleIndexResponse, reader: jspb.BinaryReader): GetPuzzleIndexResponse;
+}
+
+export namespace GetPuzzleIndexResponse {
+  export type AsObject = {
+    puzzlesList: Array<puzzle_pb.PuzzleIndex.AsObject>,
+  }
+}
+
 export class GetPuzzleByIdArgs extends jspb.Message {
   getId(): string;
   setId(value: string): void;

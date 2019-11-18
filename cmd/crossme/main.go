@@ -1,42 +1,28 @@
 package main
 
 import (
-	"crypto/sha256"
-	"encoding/hex"
 	"flag"
-	"io/ioutil"
 	"log"
 	"net"
-	"os"
 
 	"crossme.app/src/pb"
-	"crossme.app/src/puz"
+	"crossme.app/src/repo"
 	"google.golang.org/grpc"
 )
 
 func main() {
 	var (
 		bind = flag.String("bind", "localhost:4000", "bind address")
+		db   = flag.String("db", ":memory:", "Database file")
 	)
 	flag.Parse()
-	args := flag.Args()
-	if len(args) != 1 {
-		log.Fatalf("Usage: %s puzzle.puz", os.Args[0])
-	}
 
-	data, err := ioutil.ReadFile(args[0])
+	r, err := repo.Open(*db)
 	if err != nil {
-		log.Fatalf("Reading puzzle: %v", err)
+		log.Fatal("open db: ", err)
 	}
 
-	puzzle, err := puz.FromBytes(data)
-	if err != nil {
-		log.Fatalf("Loading puzzle: %v", err)
-	}
-
-	hash := sha256.Sum256(data)
-
-	server := &Server{puz: puzzle, sha256: hex.EncodeToString(hash[:])}
+	server := &Server{repo: r}
 
 	lis, err := net.Listen("tcp", *bind)
 	if err != nil {

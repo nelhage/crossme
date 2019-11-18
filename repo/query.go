@@ -12,10 +12,19 @@ var (
 	ErrNoSuchPuzzle = errors.New("no such puzzle")
 )
 
-func (r *Repository) PuzzleIndex() ([]PuzzleIndex, error) {
-	var out []PuzzleIndex
-	if err := r.db.Select(&out, sql_query_puzzle_index); err != nil {
+func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {
+	var out []*pb.PuzzleIndex
+	rows, err := r.db.Query(sql_query_puzzle_index)
+	if err != nil {
 		return nil, err
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var puz pb.PuzzleIndex
+		if err := rows.Scan(&puz.Id, &puz.Title, &puz.Date); err != nil {
+			return nil, err
+		}
+		out = append(out, &puz)
 	}
 	return out, nil
 }

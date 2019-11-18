@@ -24,6 +24,76 @@ var _ = math.Inf
 // proto package needs to be updated.
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
+type GetPuzzleIndexArgs struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *GetPuzzleIndexArgs) Reset()         { *m = GetPuzzleIndexArgs{} }
+func (m *GetPuzzleIndexArgs) String() string { return proto.CompactTextString(m) }
+func (*GetPuzzleIndexArgs) ProtoMessage()    {}
+func (*GetPuzzleIndexArgs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cc86cf064ca37a06, []int{0}
+}
+
+func (m *GetPuzzleIndexArgs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPuzzleIndexArgs.Unmarshal(m, b)
+}
+func (m *GetPuzzleIndexArgs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPuzzleIndexArgs.Marshal(b, m, deterministic)
+}
+func (m *GetPuzzleIndexArgs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPuzzleIndexArgs.Merge(m, src)
+}
+func (m *GetPuzzleIndexArgs) XXX_Size() int {
+	return xxx_messageInfo_GetPuzzleIndexArgs.Size(m)
+}
+func (m *GetPuzzleIndexArgs) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPuzzleIndexArgs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPuzzleIndexArgs proto.InternalMessageInfo
+
+type GetPuzzleIndexResponse struct {
+	Puzzles              []*PuzzleIndex `protobuf:"bytes,1,rep,name=puzzles,proto3" json:"puzzles,omitempty"`
+	XXX_NoUnkeyedLiteral struct{}       `json:"-"`
+	XXX_unrecognized     []byte         `json:"-"`
+	XXX_sizecache        int32          `json:"-"`
+}
+
+func (m *GetPuzzleIndexResponse) Reset()         { *m = GetPuzzleIndexResponse{} }
+func (m *GetPuzzleIndexResponse) String() string { return proto.CompactTextString(m) }
+func (*GetPuzzleIndexResponse) ProtoMessage()    {}
+func (*GetPuzzleIndexResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cc86cf064ca37a06, []int{1}
+}
+
+func (m *GetPuzzleIndexResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_GetPuzzleIndexResponse.Unmarshal(m, b)
+}
+func (m *GetPuzzleIndexResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_GetPuzzleIndexResponse.Marshal(b, m, deterministic)
+}
+func (m *GetPuzzleIndexResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_GetPuzzleIndexResponse.Merge(m, src)
+}
+func (m *GetPuzzleIndexResponse) XXX_Size() int {
+	return xxx_messageInfo_GetPuzzleIndexResponse.Size(m)
+}
+func (m *GetPuzzleIndexResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_GetPuzzleIndexResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_GetPuzzleIndexResponse proto.InternalMessageInfo
+
+func (m *GetPuzzleIndexResponse) GetPuzzles() []*PuzzleIndex {
+	if m != nil {
+		return m.Puzzles
+	}
+	return nil
+}
+
 type GetPuzzleByIdArgs struct {
 	Id                   string   `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
@@ -35,7 +105,7 @@ func (m *GetPuzzleByIdArgs) Reset()         { *m = GetPuzzleByIdArgs{} }
 func (m *GetPuzzleByIdArgs) String() string { return proto.CompactTextString(m) }
 func (*GetPuzzleByIdArgs) ProtoMessage()    {}
 func (*GetPuzzleByIdArgs) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cc86cf064ca37a06, []int{0}
+	return fileDescriptor_cc86cf064ca37a06, []int{2}
 }
 
 func (m *GetPuzzleByIdArgs) XXX_Unmarshal(b []byte) error {
@@ -74,7 +144,7 @@ func (m *GetPuzzleResponse) Reset()         { *m = GetPuzzleResponse{} }
 func (m *GetPuzzleResponse) String() string { return proto.CompactTextString(m) }
 func (*GetPuzzleResponse) ProtoMessage()    {}
 func (*GetPuzzleResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cc86cf064ca37a06, []int{1}
+	return fileDescriptor_cc86cf064ca37a06, []int{3}
 }
 
 func (m *GetPuzzleResponse) XXX_Unmarshal(b []byte) error {
@@ -103,6 +173,8 @@ func (m *GetPuzzleResponse) GetPuzzle() *Puzzle {
 }
 
 func init() {
+	proto.RegisterType((*GetPuzzleIndexArgs)(nil), "crossme.GetPuzzleIndexArgs")
+	proto.RegisterType((*GetPuzzleIndexResponse)(nil), "crossme.GetPuzzleIndexResponse")
 	proto.RegisterType((*GetPuzzleByIdArgs)(nil), "crossme.GetPuzzleByIdArgs")
 	proto.RegisterType((*GetPuzzleResponse)(nil), "crossme.GetPuzzleResponse")
 }
@@ -110,18 +182,21 @@ func init() {
 func init() { proto.RegisterFile("crossme.proto", fileDescriptor_cc86cf064ca37a06) }
 
 var fileDescriptor_cc86cf064ca37a06 = []byte{
-	// 164 bytes of a gzipped FileDescriptorProto
+	// 224 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x2e, 0xca, 0x2f,
 	0x2e, 0xce, 0x4d, 0xd5, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x87, 0x72, 0xa5, 0x78, 0x0a,
-	0x4a, 0xab, 0xaa, 0x72, 0xa0, 0xc2, 0x4a, 0xca, 0x5c, 0x82, 0xee, 0xa9, 0x25, 0x01, 0x60, 0x21,
-	0xa7, 0x4a, 0xcf, 0x14, 0xc7, 0xa2, 0xf4, 0x62, 0x21, 0x3e, 0x2e, 0xa6, 0xcc, 0x14, 0x09, 0x46,
-	0x05, 0x46, 0x0d, 0xce, 0x20, 0xa6, 0xcc, 0x14, 0x25, 0x1b, 0x24, 0x45, 0x41, 0xa9, 0xc5, 0x05,
-	0xf9, 0x79, 0xc5, 0xa9, 0x42, 0xea, 0x5c, 0x6c, 0x10, 0x93, 0xc0, 0x0a, 0xb9, 0x8d, 0xf8, 0xf5,
-	0x60, 0x16, 0x42, 0x15, 0x42, 0xa5, 0x8d, 0x82, 0xb8, 0xd8, 0x9d, 0x41, 0x32, 0xbe, 0xa9, 0x42,
-	0xee, 0x5c, 0xbc, 0x28, 0xb6, 0x09, 0x49, 0xc1, 0x35, 0x61, 0xb8, 0x42, 0x0a, 0x8b, 0x1c, 0xcc,
-	0x72, 0x27, 0x91, 0x28, 0x21, 0x98, 0x64, 0x62, 0x41, 0x81, 0x7e, 0x71, 0x51, 0xb2, 0x7e, 0x41,
-	0x52, 0x12, 0x1b, 0xd8, 0x4f, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0xdf, 0x7b, 0x6c, 0xfb,
-	0xfb, 0x00, 0x00, 0x00,
+	0x4a, 0xab, 0xaa, 0x72, 0xa0, 0xc2, 0x4a, 0x22, 0x5c, 0x42, 0xee, 0xa9, 0x25, 0x01, 0x60, 0x21,
+	0xcf, 0xbc, 0x94, 0xd4, 0x0a, 0xc7, 0xa2, 0xf4, 0x62, 0x25, 0x0f, 0x2e, 0x31, 0x54, 0xd1, 0xa0,
+	0xd4, 0xe2, 0x82, 0xfc, 0xbc, 0xe2, 0x54, 0x21, 0x3d, 0x2e, 0x76, 0x88, 0xfe, 0x62, 0x09, 0x46,
+	0x05, 0x66, 0x0d, 0x6e, 0x23, 0x11, 0x3d, 0x98, 0x3d, 0xc8, 0xca, 0x61, 0x8a, 0x94, 0x94, 0xb9,
+	0x04, 0xe1, 0x26, 0x39, 0x55, 0x7a, 0xa6, 0x80, 0x8c, 0x17, 0xe2, 0xe3, 0x62, 0xca, 0x4c, 0x91,
+	0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0c, 0x62, 0xca, 0x4c, 0x51, 0xb2, 0x41, 0x52, 0x04, 0xb7, 0x49,
+	0x9d, 0x8b, 0x0d, 0x62, 0x08, 0x58, 0x21, 0xb7, 0x11, 0x3f, 0x9a, 0x45, 0x41, 0x50, 0x69, 0xa3,
+	0x45, 0x8c, 0x5c, 0xec, 0xce, 0x20, 0x29, 0xdf, 0x54, 0x21, 0x3f, 0x2e, 0x3e, 0x54, 0x87, 0x0b,
+	0x49, 0xc3, 0xb5, 0x61, 0xfa, 0x53, 0x4a, 0x1e, 0x87, 0x24, 0xdc, 0x11, 0xee, 0x5c, 0xbc, 0x28,
+	0xce, 0x17, 0x92, 0xc2, 0xd4, 0x01, 0xf3, 0x96, 0x14, 0x16, 0x39, 0x98, 0x41, 0x4e, 0x22, 0x51,
+	0x42, 0x30, 0xc9, 0xc4, 0x82, 0x02, 0xfd, 0xe2, 0xa2, 0x64, 0xfd, 0x82, 0xa4, 0x24, 0x36, 0x70,
+	0x24, 0x18, 0x03, 0x02, 0x00, 0x00, 0xff, 0xff, 0x84, 0xf8, 0xea, 0xa3, 0xac, 0x01, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -136,6 +211,7 @@ const _ = grpc.SupportPackageIsVersion4
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
 type CrossMeClient interface {
+	GetPuzzleIndex(ctx context.Context, in *GetPuzzleIndexArgs, opts ...grpc.CallOption) (*GetPuzzleIndexResponse, error)
 	GetPuzzleById(ctx context.Context, in *GetPuzzleByIdArgs, opts ...grpc.CallOption) (*GetPuzzleResponse, error)
 }
 
@@ -145,6 +221,15 @@ type crossMeClient struct {
 
 func NewCrossMeClient(cc *grpc.ClientConn) CrossMeClient {
 	return &crossMeClient{cc}
+}
+
+func (c *crossMeClient) GetPuzzleIndex(ctx context.Context, in *GetPuzzleIndexArgs, opts ...grpc.CallOption) (*GetPuzzleIndexResponse, error) {
+	out := new(GetPuzzleIndexResponse)
+	err := c.cc.Invoke(ctx, "/crossme.CrossMe/GetPuzzleIndex", in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *crossMeClient) GetPuzzleById(ctx context.Context, in *GetPuzzleByIdArgs, opts ...grpc.CallOption) (*GetPuzzleResponse, error) {
@@ -158,6 +243,7 @@ func (c *crossMeClient) GetPuzzleById(ctx context.Context, in *GetPuzzleByIdArgs
 
 // CrossMeServer is the server API for CrossMe service.
 type CrossMeServer interface {
+	GetPuzzleIndex(context.Context, *GetPuzzleIndexArgs) (*GetPuzzleIndexResponse, error)
 	GetPuzzleById(context.Context, *GetPuzzleByIdArgs) (*GetPuzzleResponse, error)
 }
 
@@ -165,12 +251,33 @@ type CrossMeServer interface {
 type UnimplementedCrossMeServer struct {
 }
 
+func (*UnimplementedCrossMeServer) GetPuzzleIndex(ctx context.Context, req *GetPuzzleIndexArgs) (*GetPuzzleIndexResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPuzzleIndex not implemented")
+}
 func (*UnimplementedCrossMeServer) GetPuzzleById(ctx context.Context, req *GetPuzzleByIdArgs) (*GetPuzzleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPuzzleById not implemented")
 }
 
 func RegisterCrossMeServer(s *grpc.Server, srv CrossMeServer) {
 	s.RegisterService(&_CrossMe_serviceDesc, srv)
+}
+
+func _CrossMe_GetPuzzleIndex_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPuzzleIndexArgs)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CrossMeServer).GetPuzzleIndex(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/crossme.CrossMe/GetPuzzleIndex",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrossMeServer).GetPuzzleIndex(ctx, req.(*GetPuzzleIndexArgs))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _CrossMe_GetPuzzleById_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -195,6 +302,10 @@ var _CrossMe_serviceDesc = grpc.ServiceDesc{
 	ServiceName: "crossme.CrossMe",
 	HandlerType: (*CrossMeServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "GetPuzzleIndex",
+			Handler:    _CrossMe_GetPuzzleIndex_Handler,
+		},
 		{
 			MethodName: "GetPuzzleById",
 			Handler:    _CrossMe_GetPuzzleById_Handler,

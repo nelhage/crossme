@@ -159,3 +159,29 @@ export namespace Puzzle {
 
 }
 
+export class PuzzleIndex extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  getTitle(): string;
+  setTitle(value: string): void;
+
+  getDate(): string;
+  setDate(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PuzzleIndex.AsObject;
+  static toObject(includeInstance: boolean, msg: PuzzleIndex): PuzzleIndex.AsObject;
+  static serializeBinaryToWriter(message: PuzzleIndex, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PuzzleIndex;
+  static deserializeBinaryFromReader(message: PuzzleIndex, reader: jspb.BinaryReader): PuzzleIndex;
+}
+
+export namespace PuzzleIndex {
+  export type AsObject = {
+    id: string,
+    title: string,
+    date: string,
+  }
+}
+
