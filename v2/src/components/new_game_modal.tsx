@@ -6,6 +6,8 @@ import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
+import { useHistory } from "react-router";
+
 import { PuzzleIndex } from "../pb/puzzle_pb";
 import * as Pb from "../pb/crossme_pb";
 import { useClient } from "../rpc";
@@ -20,6 +22,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
   onClose
 }) => {
   const [index, setIndex] = useState<Array<PuzzleIndex>>([]);
+  const [selectedId, setSelectedId] = useState<null | string>(null);
   const client = useClient();
   useEffect(() => {
     const args = new Pb.GetPuzzleIndexArgs();
@@ -31,12 +34,24 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       setIndex(resp.getPuzzlesList());
     });
   }, [client]);
+  const history = useHistory();
   const puzzles = index.map(puz => {
     return {
       value: puz.getId(),
       label: puz.getTitle()
     };
   });
+  const selectGame = (value: any) => {
+    if (value && value.value) {
+      setSelectedId(value.value);
+    }
+  };
+  const newGame = () => {
+    if (selectedId) {
+      history.push(`/puzzle/${selectedId}`);
+      onClose();
+    }
+  };
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header>
@@ -48,7 +63,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
             <Form.Group>
               <Form.Row className="mb-3">
                 <div style={{ width: "100%" }}>
-                  <Select options={puzzles} />
+                  <Select options={puzzles} onChange={selectGame} />
                 </div>
               </Form.Row>
               <Form.Row className="mb-3">
@@ -59,10 +74,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
                   >
                     Preview
                   </Button>
-                  <Button
-                    variant="primary"
-                    /*onClick={this.newGame.bind(this)}*/
-                  >
+                  <Button variant="primary" onClick={newGame}>
                     New Game
                   </Button>
                 </ButtonGroup>
