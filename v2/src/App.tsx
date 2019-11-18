@@ -9,6 +9,9 @@ import {
 
 import "./App.css";
 
+import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
+
+import { ClientContext } from "./rpc";
 import { PuzzleContainer } from "./components/puzzle_container";
 import { HomePage } from "./components/home_page";
 import { Header } from "./components/header";
@@ -19,21 +22,28 @@ const RoutePuzzle: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  return (
-    <Router>
-      <div className="App">
-        <Header />
-        <Switch>
-          <Route exact path="/">
-            <HomePage />
-          </Route>
+  const client = React.useMemo(
+    () => new CrossMeClient(window.location.origin + "/api", null, null),
+    []
+  );
 
-          <Route path="/puzzle/:puzzleId">
-            <RoutePuzzle />
-          </Route>
-        </Switch>
-      </div>
-    </Router>
+  return (
+    <ClientContext.Provider value={client}>
+      <Router>
+        <div className="App">
+          <Header />
+          <Switch>
+            <Route exact path="/">
+              <HomePage />
+            </Route>
+
+            <Route path="/puzzle/:puzzleId">
+              <RoutePuzzle />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
+    </ClientContext.Provider>
   );
 };
 

@@ -4,7 +4,7 @@ import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
 
 import * as Pb from "../pb/crossme_pb";
-import { CrossMeClient } from "../pb/CrossmeServiceClientPb";
+import { useClient } from "../rpc";
 
 export interface PuzzleContainerProps {
   puzzleId: string;
@@ -14,12 +14,8 @@ export const PuzzleContainer: React.FC<PuzzleContainerProps> = ({
   puzzleId
 }) => {
   const [puzzle, setPuzzle] = useState(null as null | Types.Puzzle);
+  const client = useClient();
   useEffect(() => {
-    const client = new CrossMeClient(
-      window.location.origin + "/api",
-      null,
-      null
-    );
     const args = new Pb.GetPuzzleByIdArgs();
     args.setId(puzzleId);
     client.getPuzzleById(args, null, (err, resp) => {
@@ -50,7 +46,7 @@ export const PuzzleContainer: React.FC<PuzzleContainerProps> = ({
       };
       setPuzzle(puz);
     });
-  }, [puzzleId]);
+  }, [client, puzzleId]);
   if (puzzle) {
     return <PuzzleComponent puzzle={puzzle} key={puzzleId} />;
   } else {
