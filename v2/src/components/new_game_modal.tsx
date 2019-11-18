@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
+import Select from "react-select";
 import Form from "react-bootstrap/Form";
 import Modal from "react-bootstrap/Modal";
 import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
+
+import { PuzzleIndex } from "../pb/puzzle_pb";
+import * as Pb from "../pb/crossme_pb";
+import { useClient } from "../rpc";
 
 export interface NewGameModalProps {
   show: boolean;
@@ -14,6 +19,24 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
   show,
   onClose
 }) => {
+  const [index, setIndex] = useState<Array<PuzzleIndex>>([]);
+  const client = useClient();
+  useEffect(() => {
+    const args = new Pb.GetPuzzleIndexArgs();
+    client.getPuzzleIndex(args, null, (err, resp) => {
+      if (err !== null) {
+        console.log("unable to load puzzle index: ", err);
+        return;
+      }
+      setIndex(resp.getPuzzlesList());
+    });
+  }, [client]);
+  const puzzles = index.map(puz => {
+    return {
+      value: puz.getId(),
+      label: puz.getTitle()
+    };
+  });
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header>
@@ -21,19 +44,18 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       </Modal.Header>
       <Modal.Body>
         <div id="selector">
-          <Form inline={true}>
-            <Form.Label className="mr-3" htmlFor="switchpuzzle">
-              Puzzle:
-            </Form.Label>
-            <Form.Group controlId="switchpuzzle">
+          <Form>
+            <Form.Group>
               <Form.Row className="mb-3">
-                <select className="mx-3">
-                  <option>puzzle 1</option>
-                </select>
+                <div style={{ width: "100%" }}>
+                  <Select options={puzzles} />
+                </div>
+              </Form.Row>
+              <Form.Row className="mb-3">
                 <ButtonGroup>
                   <Button
                     variant="secondary"
-                    className="ml-3" /*onClick={this.doPreview.bind(this)}*/
+                    /*onClick={this.doPreview.bind(this)}*/
                   >
                     Preview
                   </Button>
@@ -48,6 +70,8 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
             </Form.Group>
           </Form>
         </div>
+
+        <hr />
 
         <Form>
           <div>

@@ -7,7 +7,7 @@ if tmux has-session -t crossme 2>/dev/null; then
     echo "Session already exists; exiting"
     exit 1
 fi
-tmux new-session -s crossme -d
+tmux new-session -s crossme -d -c "$crossme"
 
 tmux neww -t crossme:0 -k -c "$crossme/v2" -n react
 tmux send -t crossme:react 'npm start' C-m
@@ -16,4 +16,4 @@ tmux neww -t crossme:1 -k -c "$crossme" -n envoy
 tmux send -t crossme:envoy 'docker run --rm --network=host -v "$(pwd):/crossme"  envoyproxy/envoy:latest /usr/local/bin/envoy -c /crossme/v2/envoy.yaml' C-m
 
 tmux neww -t crossme:2 -k -c "$crossme" -n golang
-tmux send -t crossme:golang 'go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 puz/testdata/nyt_sun_rebus.puz' C-m
+tmux send -t crossme:golang 'go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db crossme.db'
