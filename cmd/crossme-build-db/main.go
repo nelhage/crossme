@@ -4,7 +4,6 @@ import (
 	"flag"
 	"io/ioutil"
 	"log"
-	"os"
 
 	"crossme.app/src/puz"
 	"crossme.app/src/repo"
@@ -21,7 +20,7 @@ func main() {
 		log.Fatal(err)
 	}
 	for _, arg := range flag.Args() {
-		data, err := ioutil.ReadFile(os.Args[1])
+		data, err := ioutil.ReadFile(arg)
 		if err != nil {
 			log.Fatalf("Reading puzzle: %v", err)
 		}
