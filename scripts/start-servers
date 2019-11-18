@@ -16,4 +16,7 @@ tmux neww -t crossme:1 -k -c "$crossme" -n envoy
 tmux send -t crossme:envoy 'docker run --rm --network=host -v "$(pwd):/crossme"  envoyproxy/envoy:latest /usr/local/bin/envoy -c /crossme/v2/envoy.yaml' C-m
 
 tmux neww -t crossme:2 -k -c "$crossme" -n golang
-tmux send -t crossme:golang 'go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db crossme.db'
+tmux send -t crossme:golang 'go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db crossme.db' C-m
+
+tmux neww -t crossme:3 -c "$crossme"
+exec tmux a -dt crossme
