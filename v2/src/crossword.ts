@@ -51,14 +51,16 @@ export function newGame(puzzle: Types.Puzzle): Game {
     }
   });
 
+  const idx = puzzle.squares.findIndex(el => !el.black);
+  const { row, column } = unpackIndex(puzzle, idx);
+
   return {
     by_clue,
     puzzle,
-    // TODO: detect first blank square
     cursor: {
-      row: 1,
-      column: 2,
-      direction: Types.Direction.DOWN,
+      row,
+      column,
+      direction: Types.Direction.ACROSS,
       pencil: false
     },
     fill: Map()
