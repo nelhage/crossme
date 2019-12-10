@@ -1,0 +1,34 @@
+syntax = "proto3";
+package crossme;
+
+option go_package = "crossme.app/src/pb";
+
+message Fill {
+    string puzzle_id = 1;
+    bool complete = 2;
+
+    // Lamport timestamp for this structure
+    int64 clock = 3;
+
+    enum Flags {
+        NONE = 0;
+        CHECKED_RIGHT = 1;
+        CHECKED_WRONG = 2;
+        PENCIL = 4;
+
+        DID_CHECK = 8;
+        DID_REVEAL = 16;
+    }
+
+    message Cell {
+        int32 index = 1;
+        int64 clock = 2;
+        string owner = 3;
+
+        string fill = 4;
+        uint32 flags = 5;
+    }
+
+    // This list must be stored in order by `index`
+    repeated Cell cells = 4;
+}
