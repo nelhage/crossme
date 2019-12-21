@@ -28,11 +28,11 @@ func assertMerge(t *testing.T, name string, left *pb.Fill, right *pb.Fill, out *
 	if err != nil {
 		t.Fatalf("Merge: %v", err)
 	}
-	gotbytes, err := json.Marshal(merged)
+	gotbytes, err := json.MarshalIndent(merged, "", "  ")
 	if err != nil {
 		t.Fatalf("Marshal: %v", err)
 	}
-	wantbytes, err := json.Marshal(out)
+	wantbytes, err := json.MarshalIndent(out, "", "  ")
 	if err != nil {
 		t.Fatalf("Marshal: %v", err)
 	}
@@ -40,7 +40,7 @@ func assertMerge(t *testing.T, name string, left *pb.Fill, right *pb.Fill, out *
 	wantstr := string(wantbytes)
 	if gotstr != wantstr {
 		d := diff.Diff(wantstr, gotstr)
-		t.Fatalf("merge error (%s): diff:\n%s", name, d)
+		t.Fatalf("merge error (%s): diff (-want, +got):\n%s", name, d)
 	}
 	return merged
 }
@@ -54,7 +54,6 @@ func runOne(t *testing.T, dir string) {
 	m2 := assertMerge(t, "right, left", r, l, m)
 
 	inc := *m
-	inc.Clock += 1
 
 	assertMerge(t, "(left, right), m", m1, m, &inc)
 	assertMerge(t, "(right, left), m", m2, m, &inc)

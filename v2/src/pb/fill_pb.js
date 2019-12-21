@@ -37,7 +37,7 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<number>}
  * @const
  */
-proto.crossme.Fill.repeatedFields_ = [4];
+proto.crossme.Fill.repeatedFields_ = [4,5];
 
 
 
@@ -71,6 +71,7 @@ proto.crossme.Fill.toObject = function(includeInstance, msg) {
     puzzleId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     complete: jspb.Message.getFieldWithDefault(msg, 2, false),
     clock: jspb.Message.getFieldWithDefault(msg, 3, 0),
+    nodesList: jspb.Message.getRepeatedField(msg, 4),
     cellsList: jspb.Message.toObjectList(msg.getCellsList(),
     proto.crossme.Fill.Cell.toObject, includeInstance)
   };
@@ -122,6 +123,10 @@ proto.crossme.Fill.deserializeBinaryFromReader = function(msg, reader) {
       msg.setClock(value);
       break;
     case 4:
+      var value = /** @type {string} */ (reader.readString());
+      msg.addNodes(value);
+      break;
+    case 5:
       var value = new proto.crossme.Fill.Cell;
       reader.readMessage(value,proto.crossme.Fill.Cell.deserializeBinaryFromReader);
       msg.addCells(value);
@@ -176,10 +181,17 @@ proto.crossme.Fill.serializeBinaryToWriter = function(message, writer) {
       f
     );
   }
+  f = message.getNodesList();
+  if (f.length > 0) {
+    writer.writeRepeatedString(
+      4,
+      f
+    );
+  }
   f = message.getCellsList();
   if (f.length > 0) {
     writer.writeRepeatedMessage(
-      4,
+      5,
       f,
       proto.crossme.Fill.Cell.serializeBinaryToWriter
     );
@@ -248,7 +260,7 @@ proto.crossme.Fill.Cell.toObject = function(includeInstance, msg) {
   var f, obj = {
     index: jspb.Message.getFieldWithDefault(msg, 1, 0),
     clock: jspb.Message.getFieldWithDefault(msg, 2, 0),
-    owner: jspb.Message.getFieldWithDefault(msg, 3, ""),
+    owner: jspb.Message.getFieldWithDefault(msg, 3, 0),
     fill: jspb.Message.getFieldWithDefault(msg, 4, ""),
     flags: jspb.Message.getFieldWithDefault(msg, 5, 0)
   };
@@ -288,7 +300,7 @@ proto.crossme.Fill.Cell.deserializeBinaryFromReader = function(msg, reader) {
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
-      var value = /** @type {number} */ (reader.readInt32());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setIndex(value);
       break;
     case 2:
@@ -296,7 +308,7 @@ proto.crossme.Fill.Cell.deserializeBinaryFromReader = function(msg, reader) {
       msg.setClock(value);
       break;
     case 3:
-      var value = /** @type {string} */ (reader.readString());
+      var value = /** @type {number} */ (reader.readUint32());
       msg.setOwner(value);
       break;
     case 4:
@@ -338,7 +350,7 @@ proto.crossme.Fill.Cell.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getIndex();
   if (f !== 0) {
-    writer.writeInt32(
+    writer.writeUint32(
       1,
       f
     );
@@ -351,8 +363,8 @@ proto.crossme.Fill.Cell.serializeBinaryToWriter = function(message, writer) {
     );
   }
   f = message.getOwner();
-  if (f.length > 0) {
-    writer.writeString(
+  if (f !== 0) {
+    writer.writeUint32(
       3,
       f
     );
@@ -375,7 +387,7 @@ proto.crossme.Fill.Cell.serializeBinaryToWriter = function(message, writer) {
 
 
 /**
- * optional int32 index = 1;
+ * optional uint32 index = 1;
  * @return {number}
  */
 proto.crossme.Fill.Cell.prototype.getIndex = function() {
@@ -405,17 +417,17 @@ proto.crossme.Fill.Cell.prototype.setClock = function(value) {
 
 
 /**
- * optional string owner = 3;
- * @return {string}
+ * optional uint32 owner = 3;
+ * @return {number}
  */
 proto.crossme.Fill.Cell.prototype.getOwner = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 3, ""));
+  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 3, 0));
 };
 
 
-/** @param {string} value */
+/** @param {number} value */
 proto.crossme.Fill.Cell.prototype.setOwner = function(value) {
-  jspb.Message.setProto3StringField(this, 3, value);
+  jspb.Message.setProto3IntField(this, 3, value);
 };
 
 
@@ -497,18 +509,47 @@ proto.crossme.Fill.prototype.setClock = function(value) {
 
 
 /**
- * repeated Cell cells = 4;
+ * repeated string nodes = 4;
+ * @return {!Array<string>}
+ */
+proto.crossme.Fill.prototype.getNodesList = function() {
+  return /** @type {!Array<string>} */ (jspb.Message.getRepeatedField(this, 4));
+};
+
+
+/** @param {!Array<string>} value */
+proto.crossme.Fill.prototype.setNodesList = function(value) {
+  jspb.Message.setField(this, 4, value || []);
+};
+
+
+/**
+ * @param {!string} value
+ * @param {number=} opt_index
+ */
+proto.crossme.Fill.prototype.addNodes = function(value, opt_index) {
+  jspb.Message.addToRepeatedField(this, 4, value, opt_index);
+};
+
+
+proto.crossme.Fill.prototype.clearNodesList = function() {
+  this.setNodesList([]);
+};
+
+
+/**
+ * repeated Cell cells = 5;
  * @return {!Array<!proto.crossme.Fill.Cell>}
  */
 proto.crossme.Fill.prototype.getCellsList = function() {
   return /** @type{!Array<!proto.crossme.Fill.Cell>} */ (
-    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Fill.Cell, 4));
+    jspb.Message.getRepeatedWrapperField(this, proto.crossme.Fill.Cell, 5));
 };
 
 
 /** @param {!Array<!proto.crossme.Fill.Cell>} value */
 proto.crossme.Fill.prototype.setCellsList = function(value) {
-  jspb.Message.setRepeatedWrapperField(this, 4, value);
+  jspb.Message.setRepeatedWrapperField(this, 5, value);
 };
 
 
@@ -518,7 +559,7 @@ proto.crossme.Fill.prototype.setCellsList = function(value) {
  * @return {!proto.crossme.Fill.Cell}
  */
 proto.crossme.Fill.prototype.addCells = function(opt_value, opt_index) {
-  return jspb.Message.addToRepeatedWrapperField(this, 4, opt_value, proto.crossme.Fill.Cell, opt_index);
+  return jspb.Message.addToRepeatedWrapperField(this, 5, opt_value, proto.crossme.Fill.Cell, opt_index);
 };
 
 

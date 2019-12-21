@@ -21,14 +21,20 @@ message Fill {
     }
 
     message Cell {
-        int32 index = 1;
+        uint32 index = 1;
         int64 clock = 2;
-        string owner = 3;
+        uint32 owner = 3;
 
         string fill = 4;
         uint32 flags = 5;
     }
 
+    // List of all node IDs represented in this fill.
+    //
+    // Node IDs are long, so we deduplicate on the wire by sending
+    // int32 references into this array in the `owner` field.
+    repeated string nodes = 4;
+
     // This list must be stored in order by `index`
-    repeated Cell cells = 4;
+    repeated Cell cells = 5;
 }

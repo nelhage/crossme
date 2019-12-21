@@ -10,6 +10,11 @@ export class Fill extends jspb.Message {
   getClock(): number;
   setClock(value: number): void;
 
+  getNodesList(): Array<string>;
+  setNodesList(value: Array<string>): void;
+  clearNodesList(): void;
+  addNodes(value: string, index?: number): void;
+
   getCellsList(): Array<Fill.Cell>;
   setCellsList(value: Array<Fill.Cell>): void;
   clearCellsList(): void;
@@ -28,6 +33,7 @@ export namespace Fill {
     puzzleId: string,
     complete: boolean,
     clock: number,
+    nodesList: Array<string>,
     cellsList: Array<Fill.Cell.AsObject>,
   }
 
@@ -38,8 +44,8 @@ export namespace Fill {
     getClock(): number;
     setClock(value: number): void;
 
-    getOwner(): string;
-    setOwner(value: string): void;
+    getOwner(): number;
+    setOwner(value: number): void;
 
     getFill(): string;
     setFill(value: string): void;
@@ -59,7 +65,7 @@ export namespace Fill {
     export type AsObject = {
       index: number,
       clock: number,
-      owner: string,
+      owner: number,
       fill: string,
       flags: number,
     }

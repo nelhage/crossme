@@ -1,0 +1,14 @@
+{
+  "puzzle_id": "a",
+  "complete": true,
+  "clock": 6,
+  "nodes": [ "node0", "node2" ],
+  "cells": [
+    {
+      "index": 0,
+      "clock": 1,
+      "owner": 1,
+      "fill": "b"
+    }
+  ]
+}
