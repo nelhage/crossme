@@ -1,0 +1,21 @@
+{
+  "puzzle_id": "a",
+  "clock": 5,
+  "nodes": [ "node0" ],
+  "cells": [
+    {
+      "index": 1,
+      "clock": 4,
+      "owner": 0,
+      "fill": "L",
+      "flags": 0
+    },
+    {
+      "index": 2,
+      "clock": 2,
+      "owner": 0,
+      "fill": "U",
+      "flags": 1
+    }
+  ]
+}
