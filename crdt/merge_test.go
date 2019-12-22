@@ -4,10 +4,12 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"path"
+	"strings"
 	"testing"
 
 	"crossme.app/src/pb"
 
+	proto "github.com/golang/protobuf/proto"
 	"github.com/kylelemons/godebug/diff"
 )
 
@@ -20,6 +22,12 @@ func mustReadFile(t *testing.T, path string) *pb.Fill {
 	if err := json.Unmarshal(data, &out); err != nil {
 		t.Fatalf("Unmarshal(%q): %v", path, err)
 	}
+	datfile := strings.Replace(path, ".json", ".dat", -1)
+	encoded, err := proto.Marshal(out)
+	if err != nil {
+		t.Fatalf("re-encode: %v", err)
+	}
+	ioutil.WriteFile(datfile, encoded, 0644)
 	return out
 }
 

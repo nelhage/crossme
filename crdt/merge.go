@@ -22,9 +22,6 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		out.Complete = true
 	}
 
-	var li, ri int
-	out.Cells = make([]*pb.Fill_Cell, 0, len(l.Cells))
-
 	nodemap := make(map[string]uint32)
 	out.Nodes = make([]string, 0, len(l.Nodes))
 	for _, n := range l.Nodes {
@@ -45,6 +42,9 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 	for i, n := range out.Nodes {
 		nodemap[n] = uint32(i)
 	}
+
+	var li, ri int
+	out.Cells = make([]*pb.Fill_Cell, 0, len(l.Cells))
 
 	for li < len(l.Cells) || ri < len(r.Cells) {
 		if ri == len(r.Cells) || (li < len(l.Cells) && l.Cells[li].Index < r.Cells[ri].Index) {
