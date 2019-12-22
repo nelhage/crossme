@@ -19,3 +19,9 @@ jobs:
       - run: cd v2 && npm run prettier -- --check
       - run: cd v2 && npm run lint
       - run: cd v2 && npm run test
+      - run: |
+          set -e
+          curl -Lo /tmp/go.tgz https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
+          tar -C /usr/local -xzf /tmp/go.tgz
+          echo 'export PATH=/usr/local/go/bin:$PATH' >> $BASH_ENV
+      - run: cd v2 && go test ./...
