@@ -21,7 +21,7 @@ function unpackIndex(p: Types.Puzzle, idx: number): Types.Position {
 }
 
 export function cellAt(p: Types.Puzzle, pos: Types.Position): Types.Cell {
-  return p.squares[pos.row * p.width + pos.column];
+  return p.squares[packIndex(p, pos)];
 }
 
 export function newGame(puzzle: Types.Puzzle): Game {
