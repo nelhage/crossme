@@ -1,35 +1,17 @@
 import * as Types from "./types";
-import { Map, ValueObject } from "immutable";
-import * as Immutable from "immutable";
+import { List } from "immutable";
 
-class FillKey implements ValueObject {
-  readonly row: number;
-  readonly column: number;
-
-  constructor(props: Types.Position) {
-    this.row = props.row;
-    this.column = props.column;
-  }
-
-  equals(other: any): boolean {
-    if (other instanceof FillKey) {
-      return this.row === other.row && this.column === other.column;
-    }
-    return false;
-  }
-
-  hashCode(): number {
-    return ((Immutable.hash(this.row) << 3) ^ Immutable.hash(this.column)) | 0;
-  }
-}
-
-type Fill = Map<FillKey, Types.FillState>;
+type Fill = List<Types.FillState | undefined>;
 
 export interface Game {
   readonly by_clue: Readonly<{ [clue: number]: Types.Position }>;
   readonly puzzle: Readonly<Types.Puzzle>;
   readonly cursor: Readonly<Types.Cursor>;
   readonly fill: Fill;
+}
+
+function packIndex(p: Types.Puzzle, pos: Types.Position): number {
+  return pos.column * p.width + pos.row;
 }
 
 function unpackIndex(p: Types.Puzzle, idx: number): Types.Position {
@@ -63,7 +45,7 @@ export function newGame(puzzle: Types.Puzzle): Game {
       direction: Types.Direction.ACROSS,
       pencil: false
     },
-    fill: Map()
+    fill: List()
   };
 }
 
@@ -71,7 +53,7 @@ export function fillAt(
   game: Game,
   position: Types.Position
 ): Types.FillState | undefined {
-  return game.fill.get(new FillKey(position));
+  return game.fill.get(packIndex(game.puzzle, position));
 }
 
 export function withCursor(g: Game, update: Types.CursorUpdate): Game {
@@ -101,18 +83,18 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   if (fill.find(row => row.length !== g.puzzle.width)) {
     throw new Error("bad fill entry");
   }
-  const array: [FillKey, Types.FillState][] = [];
+  const array: Types.FillState[] = [];
   fill.forEach((row, r) => {
     row.forEach((ch, c) => {
       if (ch) {
-        array.push([
-          new FillKey({ row: r, column: c }),
-          { fill: ch, pencil: g.cursor.pencil }
-        ]);
+        array[packIndex(g.puzzle, { row: r, column: c })] = {
+          fill: ch,
+          pencil: g.cursor.pencil
+        };
       }
     });
   });
-  return withFill(g, () => Map(array));
+  return withFill(g, () => List(array));
 }
 
 function withFill(g: Game, update: (fill: Fill) => Fill): Game {
@@ -226,7 +208,10 @@ export function selectClue(
 }
 
 export function fillSquare(g: Game, text: string): Game {
-  const key = new FillKey({ row: g.cursor.row, column: g.cursor.column });
+  const key = packIndex(g.puzzle, {
+    row: g.cursor.row,
+    column: g.cursor.column
+  });
   const fill = g.fill.get(key);
   if (fill && fill.checked === Types.Checked.RIGHT) {
     return g;
@@ -252,7 +237,7 @@ function lastBlankInWord(
     if (sq.black) {
       return true;
     }
-    const fill = g.fill.get(new FillKey(pos));
+    const fill = g.fill.get(packIndex(g.puzzle, pos));
     if (!fill || fill.fill === "") {
       prev = pos;
     }
@@ -271,7 +256,7 @@ function nextBlankInWord(
     if (sq.black) {
       return true;
     }
-    const fill = g.fill.get(new FillKey(pos));
+    const fill = g.fill.get(packIndex(g.puzzle, pos));
     return !fill || fill.fill === "";
   });
   if (found && cellAt(g.puzzle, found).black) {
@@ -430,7 +415,7 @@ export function keypress(g: Game, text: string): Game {
       ) {
         return true;
       }
-      const fill = g.fill.get(new FillKey(pos));
+      const fill = g.fill.get(packIndex(g.puzzle, pos));
       if (!fill || fill.fill === "") {
         return true;
       }
@@ -504,7 +489,7 @@ function eachTarget(
   if (target === Target.SQUARE) {
     return withFill(g, fills =>
       fills.update(
-        new FillKey(g.cursor),
+        packIndex(g.puzzle, g.cursor),
         (state = { fill: "", pencil: false }) => each(selectedSquare(g), state)
       )
     );
@@ -526,10 +511,7 @@ function eachTarget(
       if (sq.black || !want(sq)) {
         return;
       }
-      const pos = unpackIndex(g.puzzle, i);
-      mut.update(new FillKey(pos), (state = { fill: "", pencil: false }) =>
-        each(sq, state)
-      );
+      mut.update(i, (state = { fill: "", pencil: false }) => each(sq, state));
     });
     return mut.asImmutable();
   });
