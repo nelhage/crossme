@@ -1,6 +1,7 @@
 import * as jspb from "google-protobuf"
 
 import * as puzzle_pb from './puzzle_pb';
+import * as fill_pb from './fill_pb';
 
 export class GetPuzzleIndexArgs extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -71,6 +72,54 @@ export class GetPuzzleResponse extends jspb.Message {
 export namespace GetPuzzleResponse {
   export type AsObject = {
     puzzle?: puzzle_pb.Puzzle.AsObject,
+  }
+}
+
+export class InteractEvent extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  getNodeId(): string;
+  setNodeId(value: string): void;
+
+  getFill(): fill_pb.Fill | undefined;
+  setFill(value?: fill_pb.Fill): void;
+  hasFill(): boolean;
+  clearFill(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InteractEvent.AsObject;
+  static toObject(includeInstance: boolean, msg: InteractEvent): InteractEvent.AsObject;
+  static serializeBinaryToWriter(message: InteractEvent, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InteractEvent;
+  static deserializeBinaryFromReader(message: InteractEvent, reader: jspb.BinaryReader): InteractEvent;
+}
+
+export namespace InteractEvent {
+  export type AsObject = {
+    id: string,
+    nodeId: string,
+    fill?: fill_pb.Fill.AsObject,
+  }
+}
+
+export class InteractResponse extends jspb.Message {
+  getFill(): fill_pb.Fill | undefined;
+  setFill(value?: fill_pb.Fill): void;
+  hasFill(): boolean;
+  clearFill(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): InteractResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: InteractResponse): InteractResponse.AsObject;
+  static serializeBinaryToWriter(message: InteractResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): InteractResponse;
+  static deserializeBinaryFromReader(message: InteractResponse, reader: jspb.BinaryReader): InteractResponse;
+}
+
+export namespace InteractResponse {
+  export type AsObject = {
+    fill?: fill_pb.Fill.AsObject,
   }
 }
 

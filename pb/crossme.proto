@@ -2,6 +2,7 @@ syntax = "proto3";
 package crossme;
 
 import "puzzle.proto";
+import "fill.proto";
 
 option go_package = "crossme.app/src/pb";
 
@@ -21,7 +22,17 @@ message GetPuzzleResponse {
     crossme.Puzzle puzzle = 1;
 }
 
+message InteractEvent {
+    string node_id = 1;
+    crossme.Fill fill = 2;
+}
+
+message InteractResponse {
+    crossme.Fill fill = 1;
+}
+
 service CrossMe {
     rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
+    rpc Interact(stream InteractEvent) returns (stream InteractResponse);
 }

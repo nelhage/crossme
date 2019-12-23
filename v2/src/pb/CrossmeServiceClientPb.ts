@@ -10,12 +10,15 @@
 import * as grpcWeb from 'grpc-web';
 
 import * as puzzle_pb from './puzzle_pb';
+import * as fill_pb from './fill_pb';
 
 import {
   GetPuzzleByIdArgs,
   GetPuzzleIndexArgs,
   GetPuzzleIndexResponse,
-  GetPuzzleResponse} from './crossme_pb';
+  GetPuzzleResponse,
+  InteractEvent,
+  InteractResponse} from './crossme_pb';
 
 export class CrossMeClient {
   client_: grpcWeb.AbstractClientBase;
