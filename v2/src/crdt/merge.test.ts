@@ -9,7 +9,7 @@ function readFill(path: string): Fill {
   return Fill.deserializeBinary(bytes);
 }
 
-function assertMerge(name: string, l: Fill, r: Fill, want: Fill): Fill {
+function assertMerge(_name: string, l: Fill, r: Fill, want: Fill): Fill {
   const got = merge(l, r);
   const gotstr = JSON.stringify(got.toObject(), null, 2);
   const wantstr = JSON.stringify(want.toObject(), null, 2);
