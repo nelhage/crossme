@@ -27,13 +27,13 @@ func (ts *TestServer) Stop() {
 	ts.repo.Close()
 }
 
-func (ts *TestServer) Dial() pb.CrossMeClient {
-	dialer := func(string, time.Duration) (net.Conn, error) {
-		return ts.listener.Dial()
-	}
+func (ts *TestServer) dialer(string, time.Duration) (net.Conn, error) {
+	return ts.listener.Dial()
+}
 
+func (ts *TestServer) Dial() pb.CrossMeClient {
 	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithDialer(dialer), grpc.WithInsecure())
+	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithDialer(ts.dialer), grpc.WithInsecure())
 	if err != nil {
 		ts.t.Fatalf("Failed to dial bufnet: %v", err)
 	}
