@@ -99,9 +99,10 @@ func (s *Server) getClient(puzzleid, nodeid string) (*puzzleState, *clientState)
 		close(client.wakeup)
 	}
 	client := &clientState{
-		wakeup: make(chan struct{}),
+		wakeup: make(chan struct{}, 1),
 	}
 	client.pending = puz.fill
+	client.wakeup <- struct{}{}
 	puz.clients[nodeid] = client
 	return puz, client
 }
