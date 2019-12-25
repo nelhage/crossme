@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -13,6 +13,13 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
+
+func New(repo *repo.Repository) *Server {
+	return &Server{
+		repo:    repo,
+		puzzles: make(map[string]*puzzleState),
+	}
+}
 
 type Server struct {
 	sync.Mutex

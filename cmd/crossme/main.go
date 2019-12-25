@@ -7,6 +7,7 @@ import (
 
 	"crossme.app/src/pb"
 	"crossme.app/src/repo"
+	"crossme.app/src/server"
 	"google.golang.org/grpc"
 )
 
@@ -22,14 +23,14 @@ func main() {
 		log.Fatal("open db: ", err)
 	}
 
-	server := &Server{repo: r}
+	srv := server.New(r)
 
 	lis, err := net.Listen("tcp", *bind)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterCrossMeServer(grpcServer, server)
+	pb.RegisterCrossMeServer(grpcServer, srv)
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal("grpc.Serve: ", err)
