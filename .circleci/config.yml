@@ -9,16 +9,16 @@ jobs:
           keys:
             - v2-npm-{{ checksum "v2/package-lock.json" }}
             - v2-npm-
-      - run: cd v2 && npm install
+      - run: cd client && npm install
       - save_cache:
           key: v2-npm-{{ checksum "v2/package-lock.json" }}
           paths:
             - v2/node_modules
 
-      - run: cd v2 && npm run build
-      - run: cd v2 && npm run prettier -- --check
-      - run: cd v2 && npm run lint
-      - run: cd v2 && npm run test
+      - run: cd client && npm run build
+      - run: cd client && npm run prettier -- --check
+      - run: cd client && npm run lint
+      - run: cd client && npm run test
       - run: |
           set -e
           curl -Lo /tmp/go.tgz https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz

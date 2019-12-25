@@ -3,6 +3,6 @@ set -eu
 cd "$(dirname "$0")/.."
 protoc -Ipb \
        --go_out=paths=source_relative,plugins=grpc:pb \
-       --js_out=import_style=commonjs:v2/src/pb/ \
-       --grpc-web_out=import_style=typescript,mode=grpcwebtext:v2/src/pb/ \
+       --js_out=import_style=commonjs:client/src/pb/ \
+       --grpc-web_out=import_style=typescript,mode=grpcwebtext:client/src/pb/ \
        pb/*.proto
