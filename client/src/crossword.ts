@@ -11,7 +11,7 @@ export interface Game {
 }
 
 function packIndex(p: Types.Puzzle, pos: Types.Position): number {
-  return pos.column * p.width + pos.row;
+  return pos.row * p.width + pos.column;
 }
 
 function unpackIndex(p: Types.Puzzle, idx: number): Types.Position {
