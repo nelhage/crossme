@@ -2,7 +2,6 @@ package repo
 
 import (
 	"crypto/rand"
-	"crypto/sha256"
 	"database/sql"
 	"encoding/hex"
 	"fmt"
@@ -23,11 +22,10 @@ func (r *Repository) FlushConfig() error {
 }
 
 func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
-	csum := sha256.Sum256(blob)
-	hash := hex.EncodeToString(csum[:])
 	if puz.Metadata == nil {
 		puz.Metadata = &pb.Puzzle_Meta{}
 	}
+	hash := HashPuz(blob)
 	puz.Metadata.Sha256 = hash
 	if puz.Metadata.Created == nil {
 		now := time.Now()

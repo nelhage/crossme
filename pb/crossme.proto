@@ -22,6 +22,15 @@ message GetPuzzleResponse {
     crossme.Puzzle puzzle = 1;
 }
 
+message UploadPuzzleArgs {
+    string filename = 1;
+    bytes data = 2;
+}
+
+message UploadPuzzleResponse {
+    crossme.Puzzle puzzle = 1;
+}
+
 message InteractEvent {
     message Initialize {
         string puzzle_id = 1;
@@ -43,5 +52,6 @@ message InteractResponse {
 service CrossMe {
     rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
+    rpc UploadPuzzle(UploadPuzzleArgs) returns (UploadPuzzleResponse);
     rpc Interact(stream InteractEvent) returns (stream InteractResponse);
 }

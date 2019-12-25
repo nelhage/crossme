@@ -1,7 +1,9 @@
 package repo
 
 import (
+	"crypto/sha256"
 	"database/sql"
+	"encoding/hex"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -25,4 +27,9 @@ func namedGet(q namedQueryer, out interface{}, query string, arg interface{}) er
 	}
 	return err
 
+}
+
+func HashPuz(blob []byte) string {
+	csum := sha256.Sum256(blob)
+	return hex.EncodeToString(csum[:])
 }

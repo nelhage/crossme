@@ -75,6 +75,50 @@ export namespace GetPuzzleResponse {
   }
 }
 
+export class UploadPuzzleArgs extends jspb.Message {
+  getFilename(): string;
+  setFilename(value: string): void;
+
+  getData(): Uint8Array | string;
+  getData_asU8(): Uint8Array;
+  getData_asB64(): string;
+  setData(value: Uint8Array | string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UploadPuzzleArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: UploadPuzzleArgs): UploadPuzzleArgs.AsObject;
+  static serializeBinaryToWriter(message: UploadPuzzleArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UploadPuzzleArgs;
+  static deserializeBinaryFromReader(message: UploadPuzzleArgs, reader: jspb.BinaryReader): UploadPuzzleArgs;
+}
+
+export namespace UploadPuzzleArgs {
+  export type AsObject = {
+    filename: string,
+    data: Uint8Array | string,
+  }
+}
+
+export class UploadPuzzleResponse extends jspb.Message {
+  getPuzzle(): puzzle_pb.Puzzle | undefined;
+  setPuzzle(value?: puzzle_pb.Puzzle): void;
+  hasPuzzle(): boolean;
+  clearPuzzle(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UploadPuzzleResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: UploadPuzzleResponse): UploadPuzzleResponse.AsObject;
+  static serializeBinaryToWriter(message: UploadPuzzleResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UploadPuzzleResponse;
+  static deserializeBinaryFromReader(message: UploadPuzzleResponse, reader: jspb.BinaryReader): UploadPuzzleResponse;
+}
+
+export namespace UploadPuzzleResponse {
+  export type AsObject = {
+    puzzle?: puzzle_pb.Puzzle.AsObject,
+  }
+}
+
 export class InteractEvent extends jspb.Message {
   getInitialize(): InteractEvent.Initialize | undefined;
   setInitialize(value?: InteractEvent.Initialize): void;

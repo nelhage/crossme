@@ -18,7 +18,9 @@ import {
   GetPuzzleIndexResponse,
   GetPuzzleResponse,
   InteractEvent,
-  InteractResponse} from './crossme_pb';
+  InteractResponse,
+  UploadPuzzleArgs,
+  UploadPuzzleResponse} from './crossme_pb';
 
 export class CrossMeClient {
   client_: grpcWeb.AbstractClientBase;
@@ -80,6 +82,28 @@ export class CrossMeClient {
       request,
       metadata || {},
       this.methodInfoGetPuzzleById,
+      callback);
+  }
+
+  methodInfoUploadPuzzle = new grpcWeb.AbstractClientBase.MethodInfo(
+    UploadPuzzleResponse,
+    (request: UploadPuzzleArgs) => {
+      return request.serializeBinary();
+    },
+    UploadPuzzleResponse.deserializeBinary
+  );
+
+  uploadPuzzle(
+    request: UploadPuzzleArgs,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: UploadPuzzleResponse) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/crossme.CrossMe/UploadPuzzle',
+      request,
+      metadata || {},
+      this.methodInfoUploadPuzzle,
       callback);
   }
 

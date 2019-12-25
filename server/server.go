@@ -9,6 +9,7 @@ import (
 
 	"crossme.app/src/crdt"
 	"crossme.app/src/pb"
+	"crossme.app/src/puz"
 	"crossme.app/src/repo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -73,6 +74,22 @@ func (s *Server) GetPuzzleById(ctx context.Context, in *pb.GetPuzzleByIdArgs) (*
 		Puzzle: puz,
 	}
 	return resp, nil
+}
+
+func (s *Server) UploadPuzzle(ctx context.Context, in *pb.UploadPuzzleArgs) (*pb.UploadPuzzleResponse, error) {
+	puzfile, err := puz.FromBytes(in.Data)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+	proto := repo.Puz2Proto(puzfile)
+
+	_, err = s.repo.InsertPuzzle(proto, in.Data)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.UploadPuzzleResponse{
+		Puzzle: proto,
+	}, nil
 }
 
 func (s *Server) getClient(puzzleid, nodeid string) (*puzzleState, *clientState) {

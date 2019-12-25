@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"io/ioutil"
 	"net"
 	"testing"
 	"time"
@@ -64,6 +65,7 @@ func TestTestServer(t *testing.T) {
 	ctx := context.Background()
 
 	srv := makeServer(t)
+	defer srv.Stop()
 	client := srv.Dial()
 
 	index, err := client.GetPuzzleIndex(ctx, &pb.GetPuzzleIndexArgs{})
@@ -73,5 +75,33 @@ func TestTestServer(t *testing.T) {
 	if len(index.Puzzles) != 0 {
 		t.Fatalf("Server has puzzles: %d", len(index.Puzzles))
 	}
+}
+
+func TestUploadPuzzle(t *testing.T) {
+	ctx := context.Background()
+
+	srv := makeServer(t)
 	defer srv.Stop()
+
+	client := srv.Dial()
+
+	if _, err := client.UploadPuzzle(ctx, &pb.UploadPuzzleArgs{Data: []byte{}}); err == nil {
+		t.Fatalf("UploadPuzzle('') succeeded!")
+	}
+
+	bytes, err := ioutil.ReadFile("../puz/testdata/nyt_weekday_with_notes.puz")
+	if err != nil {
+		panic("ReadFile")
+	}
+
+	resp, err := client.UploadPuzzle(ctx, &pb.UploadPuzzleArgs{
+		Filename: "nyt_weekday_with_notes.puz",
+		Data:     bytes})
+	if err != nil {
+		t.Fatalf("Upload failed: %v", err)
+	}
+	if resp.Puzzle.Metadata == nil {
+		t.Fatalf("expected uploaded puzzle to have metadata!")
+	}
+
 }
