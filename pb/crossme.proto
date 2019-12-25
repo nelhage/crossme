@@ -23,8 +23,17 @@ message GetPuzzleResponse {
 }
 
 message InteractEvent {
-    string node_id = 1;
-    crossme.Fill fill = 2;
+    message Initialize {
+        string puzzle_id = 1;
+        string node_id = 2;
+    }
+    message FillChanged {
+        crossme.Fill fill = 1;
+    }
+    oneof event {
+        Initialize initialize = 1;
+        FillChanged fill_changed = 2;
+    };
 }
 
 message InteractResponse {

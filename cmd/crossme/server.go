@@ -151,16 +151,12 @@ func (s *Server) streamFromClient(ctx context.Context,
 			if evt == nil {
 				return nil
 			}
-			if evt.Fill == nil {
-				return status.Error(codes.InvalidArgument, "No fill provided")
+
+			change := evt.GetFillChanged()
+			if change == nil || change.Fill == nil {
+				return status.Error(codes.InvalidArgument, "All events after the first must be FillChanged events with a Fill")
 			}
-			if evt.NodeId != "" {
-				return status.Error(codes.InvalidArgument, "Only the first event may have a node ID")
-			}
-			if evt.Fill.PuzzleId != "" {
-				return status.Error(codes.InvalidArgument, "Only the first event may have a puzzle ID")
-			}
-			if err := s.broadcastFill(ctx, puzzle, evt.Fill); err != nil {
+			if err := s.broadcastFill(ctx, puzzle, change.Fill); err != nil {
 				return err
 			}
 		case <-ctx.Done():
@@ -199,16 +195,11 @@ func (s *Server) Interact(stream pb.CrossMe_InteractServer) error {
 	if err != nil {
 		return err
 	}
-	if ev.Fill == nil {
-		return status.Error(codes.InvalidArgument, "no fill provided")
+	init := ev.GetInitialize()
+	if init == nil {
+		return status.Error(codes.InvalidArgument, "The first event must be an initialize event")
 	}
-	if ev.NodeId == "" {
-		return status.Error(codes.InvalidArgument, "no node ID provided")
-	}
-	if ev.Fill.PuzzleId == "" {
-		return status.Error(codes.InvalidArgument, "no puzzle ID provided")
-	}
-	puzzle, client := s.getClient(ev.Fill.PuzzleId, ev.NodeId)
+	puzzle, client := s.getClient(init.PuzzleId, init.NodeId)
 
 	group.Go(func() error {
 		return s.streamFromClient(ctx, stream, puzzle, client)

@@ -76,16 +76,17 @@ export namespace GetPuzzleResponse {
 }
 
 export class InteractEvent extends jspb.Message {
-  getId(): string;
-  setId(value: string): void;
+  getInitialize(): InteractEvent.Initialize | undefined;
+  setInitialize(value?: InteractEvent.Initialize): void;
+  hasInitialize(): boolean;
+  clearInitialize(): void;
 
-  getNodeId(): string;
-  setNodeId(value: string): void;
+  getFillChanged(): InteractEvent.FillChanged | undefined;
+  setFillChanged(value?: InteractEvent.FillChanged): void;
+  hasFillChanged(): boolean;
+  clearFillChanged(): void;
 
-  getFill(): fill_pb.Fill | undefined;
-  setFill(value?: fill_pb.Fill): void;
-  hasFill(): boolean;
-  clearFill(): void;
+  getEventCase(): InteractEvent.EventCase;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): InteractEvent.AsObject;
@@ -97,9 +98,58 @@ export class InteractEvent extends jspb.Message {
 
 export namespace InteractEvent {
   export type AsObject = {
-    id: string,
-    nodeId: string,
-    fill?: fill_pb.Fill.AsObject,
+    initialize?: InteractEvent.Initialize.AsObject,
+    fillChanged?: InteractEvent.FillChanged.AsObject,
+  }
+
+  export class Initialize extends jspb.Message {
+    getPuzzleId(): string;
+    setPuzzleId(value: string): void;
+
+    getNodeId(): string;
+    setNodeId(value: string): void;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): Initialize.AsObject;
+    static toObject(includeInstance: boolean, msg: Initialize): Initialize.AsObject;
+    static serializeBinaryToWriter(message: Initialize, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): Initialize;
+    static deserializeBinaryFromReader(message: Initialize, reader: jspb.BinaryReader): Initialize;
+  }
+
+  export namespace Initialize {
+    export type AsObject = {
+      puzzleId: string,
+      nodeId: string,
+    }
+  }
+
+
+  export class FillChanged extends jspb.Message {
+    getFill(): fill_pb.Fill | undefined;
+    setFill(value?: fill_pb.Fill): void;
+    hasFill(): boolean;
+    clearFill(): void;
+
+    serializeBinary(): Uint8Array;
+    toObject(includeInstance?: boolean): FillChanged.AsObject;
+    static toObject(includeInstance: boolean, msg: FillChanged): FillChanged.AsObject;
+    static serializeBinaryToWriter(message: FillChanged, writer: jspb.BinaryWriter): void;
+    static deserializeBinary(bytes: Uint8Array): FillChanged;
+    static deserializeBinaryFromReader(message: FillChanged, reader: jspb.BinaryReader): FillChanged;
+  }
+
+  export namespace FillChanged {
+    export type AsObject = {
+      fill?: fill_pb.Fill.AsObject,
+    }
+  }
+
+
+  export enum EventCase { 
+    EVENT_NOT_SET = 0,
+    INITIALIZE = 1,
+    FILL_CHANGED = 2,
   }
 }
 
