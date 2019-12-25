@@ -1,9 +1,6 @@
 import * as jspb from "google-protobuf"
 
 export class Fill extends jspb.Message {
-  getPuzzleId(): string;
-  setPuzzleId(value: string): void;
-
   getComplete(): boolean;
   setComplete(value: boolean): void;
 
@@ -30,7 +27,6 @@ export class Fill extends jspb.Message {
 
 export namespace Fill {
   export type AsObject = {
-    puzzleId: string,
     complete: boolean,
     clock: number,
     nodesList: Array<string>,

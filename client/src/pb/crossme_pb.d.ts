@@ -119,101 +119,87 @@ export namespace UploadPuzzleResponse {
   }
 }
 
-export class InteractEvent extends jspb.Message {
-  getInitialize(): InteractEvent.Initialize | undefined;
-  setInitialize(value?: InteractEvent.Initialize): void;
-  hasInitialize(): boolean;
-  clearInitialize(): void;
+export class SubscribeArgs extends jspb.Message {
+  getGameId(): string;
+  setGameId(value: string): void;
 
-  getFillChanged(): InteractEvent.FillChanged | undefined;
-  setFillChanged(value?: InteractEvent.FillChanged): void;
-  hasFillChanged(): boolean;
-  clearFillChanged(): void;
-
-  getEventCase(): InteractEvent.EventCase;
+  getNodeId(): string;
+  setNodeId(value: string): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InteractEvent.AsObject;
-  static toObject(includeInstance: boolean, msg: InteractEvent): InteractEvent.AsObject;
-  static serializeBinaryToWriter(message: InteractEvent, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InteractEvent;
-  static deserializeBinaryFromReader(message: InteractEvent, reader: jspb.BinaryReader): InteractEvent;
+  toObject(includeInstance?: boolean): SubscribeArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: SubscribeArgs): SubscribeArgs.AsObject;
+  static serializeBinaryToWriter(message: SubscribeArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SubscribeArgs;
+  static deserializeBinaryFromReader(message: SubscribeArgs, reader: jspb.BinaryReader): SubscribeArgs;
 }
 
-export namespace InteractEvent {
+export namespace SubscribeArgs {
   export type AsObject = {
-    initialize?: InteractEvent.Initialize.AsObject,
-    fillChanged?: InteractEvent.FillChanged.AsObject,
-  }
-
-  export class Initialize extends jspb.Message {
-    getPuzzleId(): string;
-    setPuzzleId(value: string): void;
-
-    getNodeId(): string;
-    setNodeId(value: string): void;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): Initialize.AsObject;
-    static toObject(includeInstance: boolean, msg: Initialize): Initialize.AsObject;
-    static serializeBinaryToWriter(message: Initialize, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): Initialize;
-    static deserializeBinaryFromReader(message: Initialize, reader: jspb.BinaryReader): Initialize;
-  }
-
-  export namespace Initialize {
-    export type AsObject = {
-      puzzleId: string,
-      nodeId: string,
-    }
-  }
-
-
-  export class FillChanged extends jspb.Message {
-    getFill(): fill_pb.Fill | undefined;
-    setFill(value?: fill_pb.Fill): void;
-    hasFill(): boolean;
-    clearFill(): void;
-
-    serializeBinary(): Uint8Array;
-    toObject(includeInstance?: boolean): FillChanged.AsObject;
-    static toObject(includeInstance: boolean, msg: FillChanged): FillChanged.AsObject;
-    static serializeBinaryToWriter(message: FillChanged, writer: jspb.BinaryWriter): void;
-    static deserializeBinary(bytes: Uint8Array): FillChanged;
-    static deserializeBinaryFromReader(message: FillChanged, reader: jspb.BinaryReader): FillChanged;
-  }
-
-  export namespace FillChanged {
-    export type AsObject = {
-      fill?: fill_pb.Fill.AsObject,
-    }
-  }
-
-
-  export enum EventCase { 
-    EVENT_NOT_SET = 0,
-    INITIALIZE = 1,
-    FILL_CHANGED = 2,
+    gameId: string,
+    nodeId: string,
   }
 }
 
-export class InteractResponse extends jspb.Message {
+export class SubscribeEvent extends jspb.Message {
   getFill(): fill_pb.Fill | undefined;
   setFill(value?: fill_pb.Fill): void;
   hasFill(): boolean;
   clearFill(): void;
 
   serializeBinary(): Uint8Array;
-  toObject(includeInstance?: boolean): InteractResponse.AsObject;
-  static toObject(includeInstance: boolean, msg: InteractResponse): InteractResponse.AsObject;
-  static serializeBinaryToWriter(message: InteractResponse, writer: jspb.BinaryWriter): void;
-  static deserializeBinary(bytes: Uint8Array): InteractResponse;
-  static deserializeBinaryFromReader(message: InteractResponse, reader: jspb.BinaryReader): InteractResponse;
+  toObject(includeInstance?: boolean): SubscribeEvent.AsObject;
+  static toObject(includeInstance: boolean, msg: SubscribeEvent): SubscribeEvent.AsObject;
+  static serializeBinaryToWriter(message: SubscribeEvent, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SubscribeEvent;
+  static deserializeBinaryFromReader(message: SubscribeEvent, reader: jspb.BinaryReader): SubscribeEvent;
 }
 
-export namespace InteractResponse {
+export namespace SubscribeEvent {
   export type AsObject = {
     fill?: fill_pb.Fill.AsObject,
+  }
+}
+
+export class UpdateFillArgs extends jspb.Message {
+  getGameId(): string;
+  setGameId(value: string): void;
+
+  getNodeId(): string;
+  setNodeId(value: string): void;
+
+  getFill(): fill_pb.Fill | undefined;
+  setFill(value?: fill_pb.Fill): void;
+  hasFill(): boolean;
+  clearFill(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateFillArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateFillArgs): UpdateFillArgs.AsObject;
+  static serializeBinaryToWriter(message: UpdateFillArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateFillArgs;
+  static deserializeBinaryFromReader(message: UpdateFillArgs, reader: jspb.BinaryReader): UpdateFillArgs;
+}
+
+export namespace UpdateFillArgs {
+  export type AsObject = {
+    gameId: string,
+    nodeId: string,
+    fill?: fill_pb.Fill.AsObject,
+  }
+}
+
+export class UpdateFillResponse extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): UpdateFillResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: UpdateFillResponse): UpdateFillResponse.AsObject;
+  static serializeBinaryToWriter(message: UpdateFillResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): UpdateFillResponse;
+  static deserializeBinaryFromReader(message: UpdateFillResponse, reader: jspb.BinaryReader): UpdateFillResponse;
+}
+
+export namespace UpdateFillResponse {
+  export type AsObject = {
   }
 }
 

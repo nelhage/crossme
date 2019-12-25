@@ -1,14 +1,7 @@
 import { Fill } from "../pb/fill_pb";
 
 export function merge(l: Fill, r: Fill): Fill {
-  if (l.getPuzzleId() != r.getPuzzleId()) {
-    throw new Error(
-      `Puzzle IDs mismatch: ${l.getPuzzleId()} != ${r.getPuzzleId()}`
-    );
-  }
-
   const out = new Fill();
-  out.setPuzzleId(l.getPuzzleId());
   if (l.getClock() > r.getClock()) {
     out.setClock(l.getClock());
   } else {

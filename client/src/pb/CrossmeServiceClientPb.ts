@@ -17,8 +17,10 @@ import {
   GetPuzzleIndexArgs,
   GetPuzzleIndexResponse,
   GetPuzzleResponse,
-  InteractEvent,
-  InteractResponse,
+  SubscribeArgs,
+  SubscribeEvent,
+  UpdateFillArgs,
+  UpdateFillResponse,
   UploadPuzzleArgs,
   UploadPuzzleResponse} from './crossme_pb';
 
@@ -105,6 +107,47 @@ export class CrossMeClient {
       metadata || {},
       this.methodInfoUploadPuzzle,
       callback);
+  }
+
+  methodInfoUpdateFill = new grpcWeb.AbstractClientBase.MethodInfo(
+    UpdateFillResponse,
+    (request: UpdateFillArgs) => {
+      return request.serializeBinary();
+    },
+    UpdateFillResponse.deserializeBinary
+  );
+
+  updateFill(
+    request: UpdateFillArgs,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: UpdateFillResponse) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/crossme.CrossMe/UpdateFill',
+      request,
+      metadata || {},
+      this.methodInfoUpdateFill,
+      callback);
+  }
+
+  methodInfoSubscribe = new grpcWeb.AbstractClientBase.MethodInfo(
+    SubscribeEvent,
+    (request: SubscribeArgs) => {
+      return request.serializeBinary();
+    },
+    SubscribeEvent.deserializeBinary
+  );
+
+  subscribe(
+    request: SubscribeArgs,
+    metadata?: grpcWeb.Metadata) {
+    return this.client_.serverStreaming(
+      this.hostname_ +
+        '/crossme.CrossMe/Subscribe',
+      request,
+      metadata || {},
+      this.methodInfoSubscribe);
   }
 
 }

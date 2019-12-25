@@ -68,7 +68,6 @@ proto.crossme.Fill.prototype.toObject = function(opt_includeInstance) {
  */
 proto.crossme.Fill.toObject = function(includeInstance, msg) {
   var f, obj = {
-    puzzleId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     complete: jspb.Message.getFieldWithDefault(msg, 2, false),
     clock: jspb.Message.getFieldWithDefault(msg, 3, 0),
     nodesList: jspb.Message.getRepeatedField(msg, 4),
@@ -110,10 +109,6 @@ proto.crossme.Fill.deserializeBinaryFromReader = function(msg, reader) {
     }
     var field = reader.getFieldNumber();
     switch (field) {
-    case 1:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setPuzzleId(value);
-      break;
     case 2:
       var value = /** @type {boolean} */ (reader.readBool());
       msg.setComplete(value);
@@ -160,13 +155,6 @@ proto.crossme.Fill.prototype.serializeBinary = function() {
  */
 proto.crossme.Fill.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPuzzleId();
-  if (f.length > 0) {
-    writer.writeString(
-      1,
-      f
-    );
-  }
   f = message.getComplete();
   if (f) {
     writer.writeBool(
@@ -458,21 +446,6 @@ proto.crossme.Fill.Cell.prototype.getFlags = function() {
 /** @param {number} value */
 proto.crossme.Fill.Cell.prototype.setFlags = function(value) {
   jspb.Message.setProto3IntField(this, 5, value);
-};
-
-
-/**
- * optional string puzzle_id = 1;
- * @return {string}
- */
-proto.crossme.Fill.prototype.getPuzzleId = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
-};
-
-
-/** @param {string} value */
-proto.crossme.Fill.prototype.setPuzzleId = function(value) {
-  jspb.Message.setProto3StringField(this, 1, value);
 };
 
 

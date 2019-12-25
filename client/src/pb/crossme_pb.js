@@ -17,10 +17,10 @@ goog.exportSymbol('proto.crossme.GetPuzzleByIdArgs', null, global);
 goog.exportSymbol('proto.crossme.GetPuzzleIndexArgs', null, global);
 goog.exportSymbol('proto.crossme.GetPuzzleIndexResponse', null, global);
 goog.exportSymbol('proto.crossme.GetPuzzleResponse', null, global);
-goog.exportSymbol('proto.crossme.InteractEvent', null, global);
-goog.exportSymbol('proto.crossme.InteractEvent.FillChanged', null, global);
-goog.exportSymbol('proto.crossme.InteractEvent.Initialize', null, global);
-goog.exportSymbol('proto.crossme.InteractResponse', null, global);
+goog.exportSymbol('proto.crossme.SubscribeArgs', null, global);
+goog.exportSymbol('proto.crossme.SubscribeEvent', null, global);
+goog.exportSymbol('proto.crossme.UpdateFillArgs', null, global);
+goog.exportSymbol('proto.crossme.UpdateFillResponse', null, global);
 goog.exportSymbol('proto.crossme.UploadPuzzleArgs', null, global);
 goog.exportSymbol('proto.crossme.UploadPuzzleResponse', null, global);
 
@@ -971,181 +971,12 @@ proto.crossme.UploadPuzzleResponse.prototype.hasPuzzle = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.crossme.InteractEvent = function(opt_data) {
-  jspb.Message.initialize(this, opt_data, 0, -1, null, proto.crossme.InteractEvent.oneofGroups_);
-};
-goog.inherits(proto.crossme.InteractEvent, jspb.Message);
-if (goog.DEBUG && !COMPILED) {
-  proto.crossme.InteractEvent.displayName = 'proto.crossme.InteractEvent';
-}
-/**
- * Oneof group definitions for this message. Each group defines the field
- * numbers belonging to that group. When of these fields' value is set, all
- * other fields in the group are cleared. During deserialization, if multiple
- * fields are encountered for a group, only the last value seen will be kept.
- * @private {!Array<!Array<number>>}
- * @const
- */
-proto.crossme.InteractEvent.oneofGroups_ = [[1,2]];
-
-/**
- * @enum {number}
- */
-proto.crossme.InteractEvent.EventCase = {
-  EVENT_NOT_SET: 0,
-  INITIALIZE: 1,
-  FILL_CHANGED: 2
-};
-
-/**
- * @return {proto.crossme.InteractEvent.EventCase}
- */
-proto.crossme.InteractEvent.prototype.getEventCase = function() {
-  return /** @type {proto.crossme.InteractEvent.EventCase} */(jspb.Message.computeOneofCase(this, proto.crossme.InteractEvent.oneofGroups_[0]));
-};
-
-
-
-if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.crossme.InteractEvent.prototype.toObject = function(opt_includeInstance) {
-  return proto.crossme.InteractEvent.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.crossme.InteractEvent} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.crossme.InteractEvent.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    initialize: (f = msg.getInitialize()) && proto.crossme.InteractEvent.Initialize.toObject(includeInstance, f),
-    fillChanged: (f = msg.getFillChanged()) && proto.crossme.InteractEvent.FillChanged.toObject(includeInstance, f)
-  };
-
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
-}
-
-
-/**
- * Deserializes binary data (in protobuf wire format).
- * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.crossme.InteractEvent}
- */
-proto.crossme.InteractEvent.deserializeBinary = function(bytes) {
-  var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.crossme.InteractEvent;
-  return proto.crossme.InteractEvent.deserializeBinaryFromReader(msg, reader);
-};
-
-
-/**
- * Deserializes binary data (in protobuf wire format) from the
- * given reader into the given message object.
- * @param {!proto.crossme.InteractEvent} msg The message object to deserialize into.
- * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.crossme.InteractEvent}
- */
-proto.crossme.InteractEvent.deserializeBinaryFromReader = function(msg, reader) {
-  while (reader.nextField()) {
-    if (reader.isEndGroup()) {
-      break;
-    }
-    var field = reader.getFieldNumber();
-    switch (field) {
-    case 1:
-      var value = new proto.crossme.InteractEvent.Initialize;
-      reader.readMessage(value,proto.crossme.InteractEvent.Initialize.deserializeBinaryFromReader);
-      msg.setInitialize(value);
-      break;
-    case 2:
-      var value = new proto.crossme.InteractEvent.FillChanged;
-      reader.readMessage(value,proto.crossme.InteractEvent.FillChanged.deserializeBinaryFromReader);
-      msg.setFillChanged(value);
-      break;
-    default:
-      reader.skipField();
-      break;
-    }
-  }
-  return msg;
-};
-
-
-/**
- * Serializes the message to binary data (in protobuf wire format).
- * @return {!Uint8Array}
- */
-proto.crossme.InteractEvent.prototype.serializeBinary = function() {
-  var writer = new jspb.BinaryWriter();
-  proto.crossme.InteractEvent.serializeBinaryToWriter(this, writer);
-  return writer.getResultBuffer();
-};
-
-
-/**
- * Serializes the given message to binary data (in protobuf wire
- * format), writing to the given BinaryWriter.
- * @param {!proto.crossme.InteractEvent} message
- * @param {!jspb.BinaryWriter} writer
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.crossme.InteractEvent.serializeBinaryToWriter = function(message, writer) {
-  var f = undefined;
-  f = message.getInitialize();
-  if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.crossme.InteractEvent.Initialize.serializeBinaryToWriter
-    );
-  }
-  f = message.getFillChanged();
-  if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.crossme.InteractEvent.FillChanged.serializeBinaryToWriter
-    );
-  }
-};
-
-
-
-/**
- * Generated by JsPbCodeGenerator.
- * @param {Array=} opt_data Optional initial data array, typically from a
- * server response, or constructed directly in Javascript. The array is used
- * in place and becomes part of the constructed object. It is not cloned.
- * If no data is provided, the constructed object will be empty, but still
- * valid.
- * @extends {jspb.Message}
- * @constructor
- */
-proto.crossme.InteractEvent.Initialize = function(opt_data) {
+proto.crossme.SubscribeArgs = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.crossme.InteractEvent.Initialize, jspb.Message);
+goog.inherits(proto.crossme.SubscribeArgs, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.crossme.InteractEvent.Initialize.displayName = 'proto.crossme.InteractEvent.Initialize';
+  proto.crossme.SubscribeArgs.displayName = 'proto.crossme.SubscribeArgs';
 }
 
 
@@ -1160,8 +991,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.crossme.InteractEvent.Initialize.prototype.toObject = function(opt_includeInstance) {
-  return proto.crossme.InteractEvent.Initialize.toObject(opt_includeInstance, this);
+proto.crossme.SubscribeArgs.prototype.toObject = function(opt_includeInstance) {
+  return proto.crossme.SubscribeArgs.toObject(opt_includeInstance, this);
 };
 
 
@@ -1170,13 +1001,13 @@ proto.crossme.InteractEvent.Initialize.prototype.toObject = function(opt_include
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.crossme.InteractEvent.Initialize} msg The msg instance to transform.
+ * @param {!proto.crossme.SubscribeArgs} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractEvent.Initialize.toObject = function(includeInstance, msg) {
+proto.crossme.SubscribeArgs.toObject = function(includeInstance, msg) {
   var f, obj = {
-    puzzleId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
     nodeId: jspb.Message.getFieldWithDefault(msg, 2, "")
   };
 
@@ -1191,23 +1022,23 @@ proto.crossme.InteractEvent.Initialize.toObject = function(includeInstance, msg)
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.crossme.InteractEvent.Initialize}
+ * @return {!proto.crossme.SubscribeArgs}
  */
-proto.crossme.InteractEvent.Initialize.deserializeBinary = function(bytes) {
+proto.crossme.SubscribeArgs.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.crossme.InteractEvent.Initialize;
-  return proto.crossme.InteractEvent.Initialize.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.crossme.SubscribeArgs;
+  return proto.crossme.SubscribeArgs.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.crossme.InteractEvent.Initialize} msg The message object to deserialize into.
+ * @param {!proto.crossme.SubscribeArgs} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.crossme.InteractEvent.Initialize}
+ * @return {!proto.crossme.SubscribeArgs}
  */
-proto.crossme.InteractEvent.Initialize.deserializeBinaryFromReader = function(msg, reader) {
+proto.crossme.SubscribeArgs.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1216,7 +1047,7 @@ proto.crossme.InteractEvent.Initialize.deserializeBinaryFromReader = function(ms
     switch (field) {
     case 1:
       var value = /** @type {string} */ (reader.readString());
-      msg.setPuzzleId(value);
+      msg.setGameId(value);
       break;
     case 2:
       var value = /** @type {string} */ (reader.readString());
@@ -1235,9 +1066,9 @@ proto.crossme.InteractEvent.Initialize.deserializeBinaryFromReader = function(ms
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.crossme.InteractEvent.Initialize.prototype.serializeBinary = function() {
+proto.crossme.SubscribeArgs.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.crossme.InteractEvent.Initialize.serializeBinaryToWriter(this, writer);
+  proto.crossme.SubscribeArgs.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1245,13 +1076,13 @@ proto.crossme.InteractEvent.Initialize.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.crossme.InteractEvent.Initialize} message
+ * @param {!proto.crossme.SubscribeArgs} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractEvent.Initialize.serializeBinaryToWriter = function(message, writer) {
+proto.crossme.SubscribeArgs.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
-  f = message.getPuzzleId();
+  f = message.getGameId();
   if (f.length > 0) {
     writer.writeString(
       1,
@@ -1269,16 +1100,16 @@ proto.crossme.InteractEvent.Initialize.serializeBinaryToWriter = function(messag
 
 
 /**
- * optional string puzzle_id = 1;
+ * optional string game_id = 1;
  * @return {string}
  */
-proto.crossme.InteractEvent.Initialize.prototype.getPuzzleId = function() {
+proto.crossme.SubscribeArgs.prototype.getGameId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
 };
 
 
 /** @param {string} value */
-proto.crossme.InteractEvent.Initialize.prototype.setPuzzleId = function(value) {
+proto.crossme.SubscribeArgs.prototype.setGameId = function(value) {
   jspb.Message.setProto3StringField(this, 1, value);
 };
 
@@ -1287,13 +1118,13 @@ proto.crossme.InteractEvent.Initialize.prototype.setPuzzleId = function(value) {
  * optional string node_id = 2;
  * @return {string}
  */
-proto.crossme.InteractEvent.Initialize.prototype.getNodeId = function() {
+proto.crossme.SubscribeArgs.prototype.getNodeId = function() {
   return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
 };
 
 
 /** @param {string} value */
-proto.crossme.InteractEvent.Initialize.prototype.setNodeId = function(value) {
+proto.crossme.SubscribeArgs.prototype.setNodeId = function(value) {
   jspb.Message.setProto3StringField(this, 2, value);
 };
 
@@ -1309,12 +1140,12 @@ proto.crossme.InteractEvent.Initialize.prototype.setNodeId = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.crossme.InteractEvent.FillChanged = function(opt_data) {
+proto.crossme.SubscribeEvent = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.crossme.InteractEvent.FillChanged, jspb.Message);
+goog.inherits(proto.crossme.SubscribeEvent, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.crossme.InteractEvent.FillChanged.displayName = 'proto.crossme.InteractEvent.FillChanged';
+  proto.crossme.SubscribeEvent.displayName = 'proto.crossme.SubscribeEvent';
 }
 
 
@@ -1329,8 +1160,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.crossme.InteractEvent.FillChanged.prototype.toObject = function(opt_includeInstance) {
-  return proto.crossme.InteractEvent.FillChanged.toObject(opt_includeInstance, this);
+proto.crossme.SubscribeEvent.prototype.toObject = function(opt_includeInstance) {
+  return proto.crossme.SubscribeEvent.toObject(opt_includeInstance, this);
 };
 
 
@@ -1339,11 +1170,11 @@ proto.crossme.InteractEvent.FillChanged.prototype.toObject = function(opt_includ
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.crossme.InteractEvent.FillChanged} msg The msg instance to transform.
+ * @param {!proto.crossme.SubscribeEvent} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractEvent.FillChanged.toObject = function(includeInstance, msg) {
+proto.crossme.SubscribeEvent.toObject = function(includeInstance, msg) {
   var f, obj = {
     fill: (f = msg.getFill()) && fill_pb.Fill.toObject(includeInstance, f)
   };
@@ -1359,23 +1190,23 @@ proto.crossme.InteractEvent.FillChanged.toObject = function(includeInstance, msg
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.crossme.InteractEvent.FillChanged}
+ * @return {!proto.crossme.SubscribeEvent}
  */
-proto.crossme.InteractEvent.FillChanged.deserializeBinary = function(bytes) {
+proto.crossme.SubscribeEvent.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.crossme.InteractEvent.FillChanged;
-  return proto.crossme.InteractEvent.FillChanged.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.crossme.SubscribeEvent;
+  return proto.crossme.SubscribeEvent.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.crossme.InteractEvent.FillChanged} msg The message object to deserialize into.
+ * @param {!proto.crossme.SubscribeEvent} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.crossme.InteractEvent.FillChanged}
+ * @return {!proto.crossme.SubscribeEvent}
  */
-proto.crossme.InteractEvent.FillChanged.deserializeBinaryFromReader = function(msg, reader) {
+proto.crossme.SubscribeEvent.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1400,9 +1231,9 @@ proto.crossme.InteractEvent.FillChanged.deserializeBinaryFromReader = function(m
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.crossme.InteractEvent.FillChanged.prototype.serializeBinary = function() {
+proto.crossme.SubscribeEvent.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.crossme.InteractEvent.FillChanged.serializeBinaryToWriter(this, writer);
+  proto.crossme.SubscribeEvent.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1410,11 +1241,11 @@ proto.crossme.InteractEvent.FillChanged.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.crossme.InteractEvent.FillChanged} message
+ * @param {!proto.crossme.SubscribeEvent} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractEvent.FillChanged.serializeBinaryToWriter = function(message, writer) {
+proto.crossme.SubscribeEvent.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
   f = message.getFill();
   if (f != null) {
@@ -1431,19 +1262,19 @@ proto.crossme.InteractEvent.FillChanged.serializeBinaryToWriter = function(messa
  * optional Fill fill = 1;
  * @return {?proto.crossme.Fill}
  */
-proto.crossme.InteractEvent.FillChanged.prototype.getFill = function() {
+proto.crossme.SubscribeEvent.prototype.getFill = function() {
   return /** @type{?proto.crossme.Fill} */ (
     jspb.Message.getWrapperField(this, fill_pb.Fill, 1));
 };
 
 
 /** @param {?proto.crossme.Fill|undefined} value */
-proto.crossme.InteractEvent.FillChanged.prototype.setFill = function(value) {
+proto.crossme.SubscribeEvent.prototype.setFill = function(value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
 
-proto.crossme.InteractEvent.FillChanged.prototype.clearFill = function() {
+proto.crossme.SubscribeEvent.prototype.clearFill = function() {
   this.setFill(undefined);
 };
 
@@ -1452,68 +1283,8 @@ proto.crossme.InteractEvent.FillChanged.prototype.clearFill = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.crossme.InteractEvent.FillChanged.prototype.hasFill = function() {
+proto.crossme.SubscribeEvent.prototype.hasFill = function() {
   return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional Initialize initialize = 1;
- * @return {?proto.crossme.InteractEvent.Initialize}
- */
-proto.crossme.InteractEvent.prototype.getInitialize = function() {
-  return /** @type{?proto.crossme.InteractEvent.Initialize} */ (
-    jspb.Message.getWrapperField(this, proto.crossme.InteractEvent.Initialize, 1));
-};
-
-
-/** @param {?proto.crossme.InteractEvent.Initialize|undefined} value */
-proto.crossme.InteractEvent.prototype.setInitialize = function(value) {
-  jspb.Message.setOneofWrapperField(this, 1, proto.crossme.InteractEvent.oneofGroups_[0], value);
-};
-
-
-proto.crossme.InteractEvent.prototype.clearInitialize = function() {
-  this.setInitialize(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.crossme.InteractEvent.prototype.hasInitialize = function() {
-  return jspb.Message.getField(this, 1) != null;
-};
-
-
-/**
- * optional FillChanged fill_changed = 2;
- * @return {?proto.crossme.InteractEvent.FillChanged}
- */
-proto.crossme.InteractEvent.prototype.getFillChanged = function() {
-  return /** @type{?proto.crossme.InteractEvent.FillChanged} */ (
-    jspb.Message.getWrapperField(this, proto.crossme.InteractEvent.FillChanged, 2));
-};
-
-
-/** @param {?proto.crossme.InteractEvent.FillChanged|undefined} value */
-proto.crossme.InteractEvent.prototype.setFillChanged = function(value) {
-  jspb.Message.setOneofWrapperField(this, 2, proto.crossme.InteractEvent.oneofGroups_[0], value);
-};
-
-
-proto.crossme.InteractEvent.prototype.clearFillChanged = function() {
-  this.setFillChanged(undefined);
-};
-
-
-/**
- * Returns whether this field is set.
- * @return {!boolean}
- */
-proto.crossme.InteractEvent.prototype.hasFillChanged = function() {
-  return jspb.Message.getField(this, 2) != null;
 };
 
 
@@ -1528,12 +1299,12 @@ proto.crossme.InteractEvent.prototype.hasFillChanged = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.crossme.InteractResponse = function(opt_data) {
+proto.crossme.UpdateFillArgs = function(opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
-goog.inherits(proto.crossme.InteractResponse, jspb.Message);
+goog.inherits(proto.crossme.UpdateFillArgs, jspb.Message);
 if (goog.DEBUG && !COMPILED) {
-  proto.crossme.InteractResponse.displayName = 'proto.crossme.InteractResponse';
+  proto.crossme.UpdateFillArgs.displayName = 'proto.crossme.UpdateFillArgs';
 }
 
 
@@ -1548,8 +1319,8 @@ if (jspb.Message.GENERATE_TO_OBJECT) {
  *     for transitional soy proto support: http://goto/soy-param-migration
  * @return {!Object}
  */
-proto.crossme.InteractResponse.prototype.toObject = function(opt_includeInstance) {
-  return proto.crossme.InteractResponse.toObject(opt_includeInstance, this);
+proto.crossme.UpdateFillArgs.prototype.toObject = function(opt_includeInstance) {
+  return proto.crossme.UpdateFillArgs.toObject(opt_includeInstance, this);
 };
 
 
@@ -1558,12 +1329,14 @@ proto.crossme.InteractResponse.prototype.toObject = function(opt_includeInstance
  * @param {boolean|undefined} includeInstance Whether to include the JSPB
  *     instance for transitional soy proto support:
  *     http://goto/soy-param-migration
- * @param {!proto.crossme.InteractResponse} msg The msg instance to transform.
+ * @param {!proto.crossme.UpdateFillArgs} msg The msg instance to transform.
  * @return {!Object}
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractResponse.toObject = function(includeInstance, msg) {
+proto.crossme.UpdateFillArgs.toObject = function(includeInstance, msg) {
   var f, obj = {
+    gameId: jspb.Message.getFieldWithDefault(msg, 1, ""),
+    nodeId: jspb.Message.getFieldWithDefault(msg, 2, ""),
     fill: (f = msg.getFill()) && fill_pb.Fill.toObject(includeInstance, f)
   };
 
@@ -1578,23 +1351,23 @@ proto.crossme.InteractResponse.toObject = function(includeInstance, msg) {
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
- * @return {!proto.crossme.InteractResponse}
+ * @return {!proto.crossme.UpdateFillArgs}
  */
-proto.crossme.InteractResponse.deserializeBinary = function(bytes) {
+proto.crossme.UpdateFillArgs.deserializeBinary = function(bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.crossme.InteractResponse;
-  return proto.crossme.InteractResponse.deserializeBinaryFromReader(msg, reader);
+  var msg = new proto.crossme.UpdateFillArgs;
+  return proto.crossme.UpdateFillArgs.deserializeBinaryFromReader(msg, reader);
 };
 
 
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
- * @param {!proto.crossme.InteractResponse} msg The message object to deserialize into.
+ * @param {!proto.crossme.UpdateFillArgs} msg The message object to deserialize into.
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
- * @return {!proto.crossme.InteractResponse}
+ * @return {!proto.crossme.UpdateFillArgs}
  */
-proto.crossme.InteractResponse.deserializeBinaryFromReader = function(msg, reader) {
+proto.crossme.UpdateFillArgs.deserializeBinaryFromReader = function(msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
@@ -1602,6 +1375,14 @@ proto.crossme.InteractResponse.deserializeBinaryFromReader = function(msg, reade
     var field = reader.getFieldNumber();
     switch (field) {
     case 1:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setGameId(value);
+      break;
+    case 2:
+      var value = /** @type {string} */ (reader.readString());
+      msg.setNodeId(value);
+      break;
+    case 3:
       var value = new fill_pb.Fill;
       reader.readMessage(value,fill_pb.Fill.deserializeBinaryFromReader);
       msg.setFill(value);
@@ -1619,9 +1400,9 @@ proto.crossme.InteractResponse.deserializeBinaryFromReader = function(msg, reade
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.crossme.InteractResponse.prototype.serializeBinary = function() {
+proto.crossme.UpdateFillArgs.prototype.serializeBinary = function() {
   var writer = new jspb.BinaryWriter();
-  proto.crossme.InteractResponse.serializeBinaryToWriter(this, writer);
+  proto.crossme.UpdateFillArgs.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
 
@@ -1629,16 +1410,30 @@ proto.crossme.InteractResponse.prototype.serializeBinary = function() {
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
- * @param {!proto.crossme.InteractResponse} message
+ * @param {!proto.crossme.UpdateFillArgs} message
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.crossme.InteractResponse.serializeBinaryToWriter = function(message, writer) {
+proto.crossme.UpdateFillArgs.serializeBinaryToWriter = function(message, writer) {
   var f = undefined;
+  f = message.getGameId();
+  if (f.length > 0) {
+    writer.writeString(
+      1,
+      f
+    );
+  }
+  f = message.getNodeId();
+  if (f.length > 0) {
+    writer.writeString(
+      2,
+      f
+    );
+  }
   f = message.getFill();
   if (f != null) {
     writer.writeMessage(
-      1,
+      3,
       f,
       fill_pb.Fill.serializeBinaryToWriter
     );
@@ -1647,22 +1442,52 @@ proto.crossme.InteractResponse.serializeBinaryToWriter = function(message, write
 
 
 /**
- * optional Fill fill = 1;
+ * optional string game_id = 1;
+ * @return {string}
+ */
+proto.crossme.UpdateFillArgs.prototype.getGameId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 1, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.UpdateFillArgs.prototype.setGameId = function(value) {
+  jspb.Message.setProto3StringField(this, 1, value);
+};
+
+
+/**
+ * optional string node_id = 2;
+ * @return {string}
+ */
+proto.crossme.UpdateFillArgs.prototype.getNodeId = function() {
+  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+};
+
+
+/** @param {string} value */
+proto.crossme.UpdateFillArgs.prototype.setNodeId = function(value) {
+  jspb.Message.setProto3StringField(this, 2, value);
+};
+
+
+/**
+ * optional Fill fill = 3;
  * @return {?proto.crossme.Fill}
  */
-proto.crossme.InteractResponse.prototype.getFill = function() {
+proto.crossme.UpdateFillArgs.prototype.getFill = function() {
   return /** @type{?proto.crossme.Fill} */ (
-    jspb.Message.getWrapperField(this, fill_pb.Fill, 1));
+    jspb.Message.getWrapperField(this, fill_pb.Fill, 3));
 };
 
 
 /** @param {?proto.crossme.Fill|undefined} value */
-proto.crossme.InteractResponse.prototype.setFill = function(value) {
-  jspb.Message.setWrapperField(this, 1, value);
+proto.crossme.UpdateFillArgs.prototype.setFill = function(value) {
+  jspb.Message.setWrapperField(this, 3, value);
 };
 
 
-proto.crossme.InteractResponse.prototype.clearFill = function() {
+proto.crossme.UpdateFillArgs.prototype.clearFill = function() {
   this.setFill(undefined);
 };
 
@@ -1671,8 +1496,124 @@ proto.crossme.InteractResponse.prototype.clearFill = function() {
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.crossme.InteractResponse.prototype.hasFill = function() {
-  return jspb.Message.getField(this, 1) != null;
+proto.crossme.UpdateFillArgs.prototype.hasFill = function() {
+  return jspb.Message.getField(this, 3) != null;
+};
+
+
+
+/**
+ * Generated by JsPbCodeGenerator.
+ * @param {Array=} opt_data Optional initial data array, typically from a
+ * server response, or constructed directly in Javascript. The array is used
+ * in place and becomes part of the constructed object. It is not cloned.
+ * If no data is provided, the constructed object will be empty, but still
+ * valid.
+ * @extends {jspb.Message}
+ * @constructor
+ */
+proto.crossme.UpdateFillResponse = function(opt_data) {
+  jspb.Message.initialize(this, opt_data, 0, -1, null, null);
+};
+goog.inherits(proto.crossme.UpdateFillResponse, jspb.Message);
+if (goog.DEBUG && !COMPILED) {
+  proto.crossme.UpdateFillResponse.displayName = 'proto.crossme.UpdateFillResponse';
+}
+
+
+if (jspb.Message.GENERATE_TO_OBJECT) {
+/**
+ * Creates an object representation of this proto suitable for use in Soy templates.
+ * Field names that are reserved in JavaScript and will be renamed to pb_name.
+ * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+ * For the list of reserved names please see:
+ *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+ * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+ *     for transitional soy proto support: http://goto/soy-param-migration
+ * @return {!Object}
+ */
+proto.crossme.UpdateFillResponse.prototype.toObject = function(opt_includeInstance) {
+  return proto.crossme.UpdateFillResponse.toObject(opt_includeInstance, this);
+};
+
+
+/**
+ * Static version of the {@see toObject} method.
+ * @param {boolean|undefined} includeInstance Whether to include the JSPB
+ *     instance for transitional soy proto support:
+ *     http://goto/soy-param-migration
+ * @param {!proto.crossme.UpdateFillResponse} msg The msg instance to transform.
+ * @return {!Object}
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.UpdateFillResponse.toObject = function(includeInstance, msg) {
+  var f, obj = {
+
+  };
+
+  if (includeInstance) {
+    obj.$jspbMessageInstance = msg;
+  }
+  return obj;
+};
+}
+
+
+/**
+ * Deserializes binary data (in protobuf wire format).
+ * @param {jspb.ByteSource} bytes The bytes to deserialize.
+ * @return {!proto.crossme.UpdateFillResponse}
+ */
+proto.crossme.UpdateFillResponse.deserializeBinary = function(bytes) {
+  var reader = new jspb.BinaryReader(bytes);
+  var msg = new proto.crossme.UpdateFillResponse;
+  return proto.crossme.UpdateFillResponse.deserializeBinaryFromReader(msg, reader);
+};
+
+
+/**
+ * Deserializes binary data (in protobuf wire format) from the
+ * given reader into the given message object.
+ * @param {!proto.crossme.UpdateFillResponse} msg The message object to deserialize into.
+ * @param {!jspb.BinaryReader} reader The BinaryReader to use.
+ * @return {!proto.crossme.UpdateFillResponse}
+ */
+proto.crossme.UpdateFillResponse.deserializeBinaryFromReader = function(msg, reader) {
+  while (reader.nextField()) {
+    if (reader.isEndGroup()) {
+      break;
+    }
+    var field = reader.getFieldNumber();
+    switch (field) {
+    default:
+      reader.skipField();
+      break;
+    }
+  }
+  return msg;
+};
+
+
+/**
+ * Serializes the message to binary data (in protobuf wire format).
+ * @return {!Uint8Array}
+ */
+proto.crossme.UpdateFillResponse.prototype.serializeBinary = function() {
+  var writer = new jspb.BinaryWriter();
+  proto.crossme.UpdateFillResponse.serializeBinaryToWriter(this, writer);
+  return writer.getResultBuffer();
+};
+
+
+/**
+ * Serializes the given message to binary data (in protobuf wire
+ * format), writing to the given BinaryWriter.
+ * @param {!proto.crossme.UpdateFillResponse} message
+ * @param {!jspb.BinaryWriter} writer
+ * @suppress {unusedLocalVariables} f is only used for nested messages
+ */
+proto.crossme.UpdateFillResponse.serializeBinaryToWriter = function(message, writer) {
+  var f = undefined;
 };
 
 

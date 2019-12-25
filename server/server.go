@@ -5,8 +5,6 @@ import (
 	"log"
 	"sync"
 
-	"golang.org/x/sync/errgroup"
-
 	"crossme.app/src/crdt"
 	"crossme.app/src/pb"
 	"crossme.app/src/puz"
@@ -17,8 +15,8 @@ import (
 
 func New(repo *repo.Repository) *Server {
 	return &Server{
-		repo:    repo,
-		puzzles: make(map[string]*puzzleState),
+		repo:  repo,
+		games: make(map[string]*gameState),
 	}
 }
 
@@ -29,10 +27,10 @@ type Server struct {
 	repo *repo.Repository
 
 	// Guarded by Mutex
-	puzzles map[string]*puzzleState
+	games map[string]*gameState
 }
 
-type puzzleState struct {
+type gameState struct {
 	sync.Mutex
 
 	// Guarded by Mutex
@@ -92,52 +90,55 @@ func (s *Server) UploadPuzzle(ctx context.Context, in *pb.UploadPuzzleArgs) (*pb
 	}, nil
 }
 
-func (s *Server) getClient(puzzleid, nodeid string) (*puzzleState, *clientState) {
+func (s *Server) getGame(gameid string) *gameState {
 	s.Lock()
-	if s.puzzles == nil {
-		s.puzzles = make(map[string]*puzzleState)
+	defer s.Unlock()
+	if s.games == nil {
+		s.games = make(map[string]*gameState)
 	}
-	puz, ok := s.puzzles[puzzleid]
+	puz, ok := s.games[gameid]
 	if !ok {
-		puz = &puzzleState{
+		puz = &gameState{
 			clients: make(map[string]*clientState),
-			fill: &pb.Fill{
-				PuzzleId: puzzleid,
-			},
+			fill:    &pb.Fill{},
 		}
-		s.puzzles[puzzleid] = puz
+		s.games[gameid] = puz
 	}
-	s.Unlock()
+	return puz
+}
 
-	puz.Lock()
-	defer puz.Unlock()
+func (s *Server) getClient(gameid, nodeid string) (*gameState, *clientState) {
+	game := s.getGame(gameid)
 
-	if client, ok := puz.clients[nodeid]; ok {
+	game.Lock()
+	defer game.Unlock()
+
+	if client, ok := game.clients[nodeid]; ok {
 		close(client.wakeup)
 	}
 	client := &clientState{
 		wakeup: make(chan struct{}, 1),
 	}
-	client.pending = puz.fill
+	client.pending = game.fill
 	client.wakeup <- struct{}{}
-	puz.clients[nodeid] = client
-	return puz, client
+	game.clients[nodeid] = client
+	return game, client
 }
 
 func (s *Server) broadcastFill(ctx context.Context,
-	puzzle *puzzleState,
+	game *gameState,
 	fill *pb.Fill) error {
-	puzzle.Lock()
-	defer puzzle.Unlock()
+	game.Lock()
+	defer game.Unlock()
 
-	if merged, err := crdt.Merge(puzzle.fill, fill); err != nil {
-		puzzle.Unlock()
+	if merged, err := crdt.Merge(game.fill, fill); err != nil {
+		game.Unlock()
 		return err
 	} else {
-		puzzle.fill = merged
+		game.fill = merged
 	}
 
-	for id, client := range puzzle.clients {
+	for id, client := range game.clients {
 		client.Lock()
 		merged, err := crdt.Merge(client.pending, fill)
 		if err != nil {
@@ -154,45 +155,9 @@ func (s *Server) broadcastFill(ctx context.Context,
 	return nil
 }
 
-func (s *Server) streamFromClient(ctx context.Context,
-	stream pb.CrossMe_InteractServer,
-	puzzle *puzzleState,
-	client *clientState) error {
-	events := make(chan *pb.InteractEvent)
-	go func() {
-		defer close(events)
-		for {
-			evt, err := stream.Recv()
-			if err != nil {
-				return
-			}
-			events <- evt
-		}
-	}()
-
-	for {
-		select {
-		case evt := <-events:
-			if evt == nil {
-				return nil
-			}
-
-			change := evt.GetFillChanged()
-			if change == nil || change.Fill == nil {
-				return status.Error(codes.InvalidArgument, "All events after the first must be FillChanged events with a Fill")
-			}
-			if err := s.broadcastFill(ctx, puzzle, change.Fill); err != nil {
-				return err
-			}
-		case <-ctx.Done():
-			return nil
-		}
-	}
-}
-
 func (s *Server) streamToClient(ctx context.Context,
-	stream pb.CrossMe_InteractServer,
-	puzzle *puzzleState,
+	stream pb.CrossMe_SubscribeServer,
+	game *gameState,
 	client *clientState) error {
 	for {
 		select {
@@ -204,33 +169,25 @@ func (s *Server) streamToClient(ctx context.Context,
 			}
 			client.Lock()
 			fill := client.pending
-			client.pending = &pb.Fill{PuzzleId: fill.PuzzleId}
+			client.pending = &pb.Fill{}
 			client.Unlock()
-			if err := stream.Send(&pb.InteractResponse{Fill: fill}); err != nil {
+			if err := stream.Send(&pb.SubscribeEvent{Fill: fill}); err != nil {
 				return err
 			}
 		}
 	}
 }
 
-func (s *Server) Interact(stream pb.CrossMe_InteractServer) error {
-	group, ctx := errgroup.WithContext(stream.Context())
+func (s *Server) UpdateFill(ctx context.Context, in *pb.UpdateFillArgs) (*pb.UpdateFillResponse, error) {
+	game := s.getGame(in.GameId)
 
-	ev, err := stream.Recv()
-	if err != nil {
-		return err
-	}
-	init := ev.GetInitialize()
-	if init == nil {
-		return status.Error(codes.InvalidArgument, "The first event must be an initialize event")
-	}
-	puzzle, client := s.getClient(init.PuzzleId, init.NodeId)
+	return &pb.UpdateFillResponse{}, s.broadcastFill(ctx, game, in.Fill)
+}
 
-	group.Go(func() error {
-		return s.streamFromClient(ctx, stream, puzzle, client)
-	})
-	group.Go(func() error {
-		return s.streamToClient(ctx, stream, puzzle, client)
-	})
-	return group.Wait()
+func (s *Server) Subscribe(in *pb.SubscribeArgs, stream pb.CrossMe_SubscribeServer) error {
+	ctx := stream.Context()
+
+	game, client := s.getClient(in.GameId, in.NodeId)
+
+	return s.streamToClient(ctx, stream, game, client)
 }

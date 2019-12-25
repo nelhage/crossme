@@ -8,10 +8,6 @@ import (
 )
 
 func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
-	if l.PuzzleId != r.PuzzleId {
-		return nil, fmt.Errorf("mismatched Ids: %q != %q", l.PuzzleId, r.PuzzleId)
-	}
-
 	out := *l
 
 	if r.Clock > out.Clock {

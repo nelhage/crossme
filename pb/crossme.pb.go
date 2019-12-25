@@ -258,210 +258,177 @@ func (m *UploadPuzzleResponse) GetPuzzle() *Puzzle {
 	return nil
 }
 
-type InteractEvent struct {
-	// Types that are valid to be assigned to Event:
-	//	*InteractEvent_Initialize_
-	//	*InteractEvent_FillChanged_
-	Event                isInteractEvent_Event `protobuf_oneof:"event"`
-	XXX_NoUnkeyedLiteral struct{}              `json:"-"`
-	XXX_unrecognized     []byte                `json:"-"`
-	XXX_sizecache        int32                 `json:"-"`
-}
-
-func (m *InteractEvent) Reset()         { *m = InteractEvent{} }
-func (m *InteractEvent) String() string { return proto.CompactTextString(m) }
-func (*InteractEvent) ProtoMessage()    {}
-func (*InteractEvent) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cc86cf064ca37a06, []int{6}
-}
-
-func (m *InteractEvent) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_InteractEvent.Unmarshal(m, b)
-}
-func (m *InteractEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_InteractEvent.Marshal(b, m, deterministic)
-}
-func (m *InteractEvent) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InteractEvent.Merge(m, src)
-}
-func (m *InteractEvent) XXX_Size() int {
-	return xxx_messageInfo_InteractEvent.Size(m)
-}
-func (m *InteractEvent) XXX_DiscardUnknown() {
-	xxx_messageInfo_InteractEvent.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_InteractEvent proto.InternalMessageInfo
-
-type isInteractEvent_Event interface {
-	isInteractEvent_Event()
-}
-
-type InteractEvent_Initialize_ struct {
-	Initialize *InteractEvent_Initialize `protobuf:"bytes,1,opt,name=initialize,proto3,oneof"`
-}
-
-type InteractEvent_FillChanged_ struct {
-	FillChanged *InteractEvent_FillChanged `protobuf:"bytes,2,opt,name=fill_changed,json=fillChanged,proto3,oneof"`
-}
-
-func (*InteractEvent_Initialize_) isInteractEvent_Event() {}
-
-func (*InteractEvent_FillChanged_) isInteractEvent_Event() {}
-
-func (m *InteractEvent) GetEvent() isInteractEvent_Event {
-	if m != nil {
-		return m.Event
-	}
-	return nil
-}
-
-func (m *InteractEvent) GetInitialize() *InteractEvent_Initialize {
-	if x, ok := m.GetEvent().(*InteractEvent_Initialize_); ok {
-		return x.Initialize
-	}
-	return nil
-}
-
-func (m *InteractEvent) GetFillChanged() *InteractEvent_FillChanged {
-	if x, ok := m.GetEvent().(*InteractEvent_FillChanged_); ok {
-		return x.FillChanged
-	}
-	return nil
-}
-
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*InteractEvent) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
-		(*InteractEvent_Initialize_)(nil),
-		(*InteractEvent_FillChanged_)(nil),
-	}
-}
-
-type InteractEvent_Initialize struct {
-	PuzzleId             string   `protobuf:"bytes,1,opt,name=puzzle_id,json=puzzleId,proto3" json:"puzzle_id,omitempty"`
+type SubscribeArgs struct {
+	GameId               string   `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
 	NodeId               string   `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *InteractEvent_Initialize) Reset()         { *m = InteractEvent_Initialize{} }
-func (m *InteractEvent_Initialize) String() string { return proto.CompactTextString(m) }
-func (*InteractEvent_Initialize) ProtoMessage()    {}
-func (*InteractEvent_Initialize) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cc86cf064ca37a06, []int{6, 0}
+func (m *SubscribeArgs) Reset()         { *m = SubscribeArgs{} }
+func (m *SubscribeArgs) String() string { return proto.CompactTextString(m) }
+func (*SubscribeArgs) ProtoMessage()    {}
+func (*SubscribeArgs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cc86cf064ca37a06, []int{6}
 }
 
-func (m *InteractEvent_Initialize) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_InteractEvent_Initialize.Unmarshal(m, b)
+func (m *SubscribeArgs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscribeArgs.Unmarshal(m, b)
 }
-func (m *InteractEvent_Initialize) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_InteractEvent_Initialize.Marshal(b, m, deterministic)
+func (m *SubscribeArgs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscribeArgs.Marshal(b, m, deterministic)
 }
-func (m *InteractEvent_Initialize) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InteractEvent_Initialize.Merge(m, src)
+func (m *SubscribeArgs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscribeArgs.Merge(m, src)
 }
-func (m *InteractEvent_Initialize) XXX_Size() int {
-	return xxx_messageInfo_InteractEvent_Initialize.Size(m)
+func (m *SubscribeArgs) XXX_Size() int {
+	return xxx_messageInfo_SubscribeArgs.Size(m)
 }
-func (m *InteractEvent_Initialize) XXX_DiscardUnknown() {
-	xxx_messageInfo_InteractEvent_Initialize.DiscardUnknown(m)
+func (m *SubscribeArgs) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscribeArgs.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_InteractEvent_Initialize proto.InternalMessageInfo
+var xxx_messageInfo_SubscribeArgs proto.InternalMessageInfo
 
-func (m *InteractEvent_Initialize) GetPuzzleId() string {
+func (m *SubscribeArgs) GetGameId() string {
 	if m != nil {
-		return m.PuzzleId
+		return m.GameId
 	}
 	return ""
 }
 
-func (m *InteractEvent_Initialize) GetNodeId() string {
+func (m *SubscribeArgs) GetNodeId() string {
 	if m != nil {
 		return m.NodeId
 	}
 	return ""
 }
 
-type InteractEvent_FillChanged struct {
+type SubscribeEvent struct {
 	Fill                 *Fill    `protobuf:"bytes,1,opt,name=fill,proto3" json:"fill,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
 }
 
-func (m *InteractEvent_FillChanged) Reset()         { *m = InteractEvent_FillChanged{} }
-func (m *InteractEvent_FillChanged) String() string { return proto.CompactTextString(m) }
-func (*InteractEvent_FillChanged) ProtoMessage()    {}
-func (*InteractEvent_FillChanged) Descriptor() ([]byte, []int) {
-	return fileDescriptor_cc86cf064ca37a06, []int{6, 1}
-}
-
-func (m *InteractEvent_FillChanged) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_InteractEvent_FillChanged.Unmarshal(m, b)
-}
-func (m *InteractEvent_FillChanged) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_InteractEvent_FillChanged.Marshal(b, m, deterministic)
-}
-func (m *InteractEvent_FillChanged) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InteractEvent_FillChanged.Merge(m, src)
-}
-func (m *InteractEvent_FillChanged) XXX_Size() int {
-	return xxx_messageInfo_InteractEvent_FillChanged.Size(m)
-}
-func (m *InteractEvent_FillChanged) XXX_DiscardUnknown() {
-	xxx_messageInfo_InteractEvent_FillChanged.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_InteractEvent_FillChanged proto.InternalMessageInfo
-
-func (m *InteractEvent_FillChanged) GetFill() *Fill {
-	if m != nil {
-		return m.Fill
-	}
-	return nil
-}
-
-type InteractResponse struct {
-	Fill                 *Fill    `protobuf:"bytes,1,opt,name=fill,proto3" json:"fill,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *InteractResponse) Reset()         { *m = InteractResponse{} }
-func (m *InteractResponse) String() string { return proto.CompactTextString(m) }
-func (*InteractResponse) ProtoMessage()    {}
-func (*InteractResponse) Descriptor() ([]byte, []int) {
+func (m *SubscribeEvent) Reset()         { *m = SubscribeEvent{} }
+func (m *SubscribeEvent) String() string { return proto.CompactTextString(m) }
+func (*SubscribeEvent) ProtoMessage()    {}
+func (*SubscribeEvent) Descriptor() ([]byte, []int) {
 	return fileDescriptor_cc86cf064ca37a06, []int{7}
 }
 
-func (m *InteractResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_InteractResponse.Unmarshal(m, b)
+func (m *SubscribeEvent) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_SubscribeEvent.Unmarshal(m, b)
 }
-func (m *InteractResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_InteractResponse.Marshal(b, m, deterministic)
+func (m *SubscribeEvent) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_SubscribeEvent.Marshal(b, m, deterministic)
 }
-func (m *InteractResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_InteractResponse.Merge(m, src)
+func (m *SubscribeEvent) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_SubscribeEvent.Merge(m, src)
 }
-func (m *InteractResponse) XXX_Size() int {
-	return xxx_messageInfo_InteractResponse.Size(m)
+func (m *SubscribeEvent) XXX_Size() int {
+	return xxx_messageInfo_SubscribeEvent.Size(m)
 }
-func (m *InteractResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_InteractResponse.DiscardUnknown(m)
+func (m *SubscribeEvent) XXX_DiscardUnknown() {
+	xxx_messageInfo_SubscribeEvent.DiscardUnknown(m)
 }
 
-var xxx_messageInfo_InteractResponse proto.InternalMessageInfo
+var xxx_messageInfo_SubscribeEvent proto.InternalMessageInfo
 
-func (m *InteractResponse) GetFill() *Fill {
+func (m *SubscribeEvent) GetFill() *Fill {
 	if m != nil {
 		return m.Fill
 	}
 	return nil
 }
+
+type UpdateFillArgs struct {
+	GameId               string   `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	NodeId               string   `protobuf:"bytes,2,opt,name=node_id,json=nodeId,proto3" json:"node_id,omitempty"`
+	Fill                 *Fill    `protobuf:"bytes,3,opt,name=fill,proto3" json:"fill,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateFillArgs) Reset()         { *m = UpdateFillArgs{} }
+func (m *UpdateFillArgs) String() string { return proto.CompactTextString(m) }
+func (*UpdateFillArgs) ProtoMessage()    {}
+func (*UpdateFillArgs) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cc86cf064ca37a06, []int{8}
+}
+
+func (m *UpdateFillArgs) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateFillArgs.Unmarshal(m, b)
+}
+func (m *UpdateFillArgs) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateFillArgs.Marshal(b, m, deterministic)
+}
+func (m *UpdateFillArgs) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateFillArgs.Merge(m, src)
+}
+func (m *UpdateFillArgs) XXX_Size() int {
+	return xxx_messageInfo_UpdateFillArgs.Size(m)
+}
+func (m *UpdateFillArgs) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateFillArgs.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateFillArgs proto.InternalMessageInfo
+
+func (m *UpdateFillArgs) GetGameId() string {
+	if m != nil {
+		return m.GameId
+	}
+	return ""
+}
+
+func (m *UpdateFillArgs) GetNodeId() string {
+	if m != nil {
+		return m.NodeId
+	}
+	return ""
+}
+
+func (m *UpdateFillArgs) GetFill() *Fill {
+	if m != nil {
+		return m.Fill
+	}
+	return nil
+}
+
+type UpdateFillResponse struct {
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *UpdateFillResponse) Reset()         { *m = UpdateFillResponse{} }
+func (m *UpdateFillResponse) String() string { return proto.CompactTextString(m) }
+func (*UpdateFillResponse) ProtoMessage()    {}
+func (*UpdateFillResponse) Descriptor() ([]byte, []int) {
+	return fileDescriptor_cc86cf064ca37a06, []int{9}
+}
+
+func (m *UpdateFillResponse) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_UpdateFillResponse.Unmarshal(m, b)
+}
+func (m *UpdateFillResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_UpdateFillResponse.Marshal(b, m, deterministic)
+}
+func (m *UpdateFillResponse) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_UpdateFillResponse.Merge(m, src)
+}
+func (m *UpdateFillResponse) XXX_Size() int {
+	return xxx_messageInfo_UpdateFillResponse.Size(m)
+}
+func (m *UpdateFillResponse) XXX_DiscardUnknown() {
+	xxx_messageInfo_UpdateFillResponse.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_UpdateFillResponse proto.InternalMessageInfo
 
 func init() {
 	proto.RegisterType((*GetPuzzleIndexArgs)(nil), "crossme.GetPuzzleIndexArgs")
@@ -470,45 +437,43 @@ func init() {
 	proto.RegisterType((*GetPuzzleResponse)(nil), "crossme.GetPuzzleResponse")
 	proto.RegisterType((*UploadPuzzleArgs)(nil), "crossme.UploadPuzzleArgs")
 	proto.RegisterType((*UploadPuzzleResponse)(nil), "crossme.UploadPuzzleResponse")
-	proto.RegisterType((*InteractEvent)(nil), "crossme.InteractEvent")
-	proto.RegisterType((*InteractEvent_Initialize)(nil), "crossme.InteractEvent.Initialize")
-	proto.RegisterType((*InteractEvent_FillChanged)(nil), "crossme.InteractEvent.FillChanged")
-	proto.RegisterType((*InteractResponse)(nil), "crossme.InteractResponse")
+	proto.RegisterType((*SubscribeArgs)(nil), "crossme.SubscribeArgs")
+	proto.RegisterType((*SubscribeEvent)(nil), "crossme.SubscribeEvent")
+	proto.RegisterType((*UpdateFillArgs)(nil), "crossme.UpdateFillArgs")
+	proto.RegisterType((*UpdateFillResponse)(nil), "crossme.UpdateFillResponse")
 }
 
 func init() { proto.RegisterFile("crossme.proto", fileDescriptor_cc86cf064ca37a06) }
 
 var fileDescriptor_cc86cf064ca37a06 = []byte{
-	// 457 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x94, 0x53, 0x4f, 0x6f, 0xd3, 0x30,
-	0x14, 0x5f, 0xc2, 0x68, 0xba, 0x97, 0x76, 0x8c, 0xa7, 0x6a, 0x74, 0x9e, 0x10, 0x9d, 0x39, 0xd0,
-	0x53, 0x37, 0x15, 0x71, 0x43, 0x42, 0x4b, 0x05, 0x6d, 0x0e, 0x20, 0x14, 0x89, 0x0b, 0x97, 0xc9,
-	0xab, 0xdd, 0x61, 0xc9, 0x73, 0xa2, 0x24, 0x20, 0xe8, 0x67, 0xe1, 0x3b, 0xf0, 0x15, 0x51, 0x9c,
-	0xd8, 0x4b, 0xd7, 0x4e, 0x88, 0x9b, 0xdf, 0xfb, 0xfd, 0x7b, 0xb1, 0x5f, 0xa0, 0xbf, 0xcc, 0xd3,
-	0xa2, 0xb8, 0x15, 0x93, 0x2c, 0x4f, 0xcb, 0x14, 0x83, 0xa6, 0x24, 0xbd, 0xec, 0xfb, 0x7a, 0xad,
-	0x9a, 0x36, 0x81, 0x95, 0x54, 0xaa, 0x3e, 0xd3, 0x01, 0xe0, 0x5c, 0x94, 0x9f, 0x0d, 0x1c, 0x6b,
-	0x2e, 0x7e, 0x5e, 0xe6, 0x37, 0x05, 0x5d, 0xc0, 0xf1, 0x66, 0x37, 0x11, 0x45, 0x96, 0xea, 0x42,
-	0xe0, 0x04, 0x82, 0xda, 0xab, 0x18, 0x7a, 0xa3, 0x47, 0xe3, 0x70, 0x3a, 0x98, 0xd8, 0xcc, 0x36,
-	0xdd, 0x92, 0xe8, 0x4b, 0x78, 0xea, 0x9c, 0xa2, 0x5f, 0x31, 0xaf, 0xec, 0xf1, 0x10, 0x7c, 0xc9,
-	0x87, 0xde, 0xc8, 0x1b, 0x1f, 0x24, 0xbe, 0xe4, 0xf4, 0x6d, 0x8b, 0xe4, 0x92, 0x5e, 0x41, 0xa7,
-	0x36, 0x31, 0xc4, 0x70, 0xfa, 0xe4, 0x5e, 0x50, 0xd2, 0xc0, 0x34, 0x82, 0xa3, 0x2f, 0x99, 0x4a,
-	0x19, 0xaf, 0xfb, 0x26, 0x81, 0x40, 0x77, 0x25, 0x95, 0xd0, 0xec, 0x56, 0x34, 0x39, 0xae, 0x46,
-	0x84, 0x7d, 0xce, 0x4a, 0x36, 0xf4, 0x47, 0xde, 0xb8, 0x97, 0x98, 0x33, 0x7d, 0x07, 0x83, 0xb6,
-	0xc7, 0xff, 0x0f, 0xf1, 0xdb, 0x87, 0x7e, 0xac, 0x4b, 0x91, 0xb3, 0x65, 0xf9, 0xfe, 0x87, 0xd0,
-	0x25, 0xce, 0x00, 0xa4, 0x96, 0xa5, 0x64, 0x4a, 0xae, 0xad, 0xfc, 0xcc, 0xc9, 0x37, 0xb8, 0x93,
-	0xd8, 0x11, 0x17, 0x7b, 0x49, 0x4b, 0x86, 0x73, 0xe8, 0x55, 0x8f, 0x75, 0xb5, 0xfc, 0xc6, 0xf4,
-	0x8d, 0xe0, 0x66, 0xe6, 0x70, 0x4a, 0x1f, 0xb0, 0xf9, 0x20, 0x95, 0x9a, 0xd5, 0xcc, 0xc5, 0x5e,
-	0x12, 0xae, 0xee, 0x4a, 0x12, 0x01, 0xdc, 0x85, 0xe0, 0x29, 0x1c, 0xd4, 0x73, 0x5f, 0xb9, 0x77,
-	0xe8, 0xd6, 0x8d, 0x98, 0xe3, 0x33, 0x08, 0x74, 0xca, 0x0d, 0xe4, 0x1b, 0xa8, 0x53, 0x95, 0x31,
-	0x27, 0x17, 0x10, 0xb6, 0x12, 0xf0, 0x0c, 0xf6, 0xab, 0x84, 0xe6, 0xd3, 0xfa, 0x6e, 0xa6, 0x8a,
-	0x93, 0x18, 0x28, 0x0a, 0xe0, 0xb1, 0xa8, 0x26, 0xa3, 0x6f, 0xe0, 0xc8, 0x8e, 0xea, 0xee, 0xf6,
-	0xdf, 0xfa, 0xe9, 0x1f, 0x1f, 0x82, 0x59, 0xd5, 0xfe, 0x28, 0xf0, 0x13, 0x1c, 0x6e, 0xee, 0x24,
-	0x9e, 0x3a, 0xc9, 0xf6, 0x0a, 0x93, 0x17, 0x0f, 0x80, 0x2e, 0x7e, 0x0e, 0xfd, 0x8d, 0xcd, 0x44,
-	0xb2, 0xad, 0xb0, 0x1b, 0x4b, 0x76, 0x60, 0xce, 0x68, 0x01, 0xbd, 0xf6, 0xee, 0xe0, 0x89, 0xe3,
-	0xde, 0x5f, 0x4b, 0xf2, 0x7c, 0x27, 0xe4, 0x9c, 0x2e, 0xa1, 0x6b, 0x6f, 0x09, 0x8f, 0x77, 0xbf,
-	0x31, 0x39, 0xd9, 0xea, 0x5b, 0xf9, 0xd8, 0xbb, 0xf0, 0xa2, 0xc1, 0x57, 0xb4, 0x38, 0xcb, 0xb2,
-	0xf3, 0x22, 0x5f, 0x9e, 0x67, 0xd7, 0xd7, 0x1d, 0xf3, 0xb3, 0xbf, 0xfe, 0x1b, 0x00, 0x00, 0xff,
-	0xff, 0x63, 0x62, 0x97, 0xca, 0x20, 0x04, 0x00, 0x00,
+	// 419 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x9c, 0x53, 0x4f, 0xef, 0xd2, 0x40,
+	0x10, 0x4d, 0xfb, 0x23, 0x54, 0x06, 0x5a, 0x75, 0xd3, 0x00, 0x2e, 0x31, 0xe2, 0x7a, 0x90, 0x13,
+	0x18, 0xb8, 0x1a, 0x0d, 0x35, 0x0a, 0x3d, 0x68, 0x4c, 0x0d, 0x17, 0x2f, 0xa6, 0x65, 0x17, 0xd2,
+	0xa4, 0xb4, 0x9b, 0x6e, 0x31, 0xca, 0xa7, 0xf6, 0x23, 0x98, 0x6e, 0xdb, 0xa5, 0xe5, 0xcf, 0x41,
+	0x6f, 0x3b, 0xf3, 0x5e, 0xdf, 0xdb, 0xce, 0xbc, 0x05, 0x73, 0x9b, 0x26, 0x42, 0x1c, 0xd8, 0x94,
+	0xa7, 0x49, 0x96, 0x20, 0xa3, 0x2c, 0x71, 0x8f, 0x1f, 0x4f, 0xa7, 0xa8, 0x6c, 0x63, 0xd8, 0x85,
+	0x51, 0x54, 0x9c, 0x89, 0x0d, 0x68, 0xc5, 0xb2, 0xaf, 0x12, 0x76, 0x63, 0xca, 0x7e, 0x2d, 0xd3,
+	0xbd, 0x20, 0x6b, 0xe8, 0x37, 0xbb, 0x1e, 0x13, 0x3c, 0x89, 0x05, 0x43, 0x53, 0x30, 0x0a, 0x2d,
+	0x31, 0xd4, 0xc6, 0x0f, 0x93, 0xee, 0xdc, 0x9e, 0x56, 0x9e, 0x75, 0x7a, 0x45, 0x22, 0xaf, 0xe0,
+	0xa9, 0x52, 0x72, 0x7e, 0xbb, 0x34, 0x97, 0x47, 0x16, 0xe8, 0x21, 0x1d, 0x6a, 0x63, 0x6d, 0xd2,
+	0xf1, 0xf4, 0x90, 0x92, 0xb7, 0x35, 0x92, 0x72, 0x7a, 0x0d, 0xed, 0x42, 0x44, 0x12, 0xbb, 0xf3,
+	0xc7, 0x17, 0x46, 0x5e, 0x09, 0x13, 0x07, 0x9e, 0x6c, 0x78, 0x94, 0xf8, 0xb4, 0xe8, 0x4b, 0x07,
+	0x0c, 0x8f, 0x76, 0x61, 0xc4, 0x62, 0xff, 0xc0, 0x4a, 0x1f, 0x55, 0x23, 0x04, 0x2d, 0xea, 0x67,
+	0xfe, 0x50, 0x1f, 0x6b, 0x93, 0x9e, 0x27, 0xcf, 0xe4, 0x3d, 0xd8, 0x75, 0x8d, 0x7f, 0xbf, 0xc4,
+	0x12, 0xcc, 0x6f, 0xc7, 0x40, 0x6c, 0xd3, 0x30, 0x28, 0x6e, 0x30, 0x00, 0x63, 0xef, 0x1f, 0xd8,
+	0x0f, 0xf5, 0xa3, 0xed, 0xbc, 0x74, 0x69, 0x0e, 0xc4, 0x09, 0x95, 0x80, 0x5e, 0x00, 0x79, 0xe9,
+	0x52, 0xb2, 0x00, 0x4b, 0x49, 0x7c, 0xfc, 0xc9, 0xe2, 0x0c, 0xbd, 0x84, 0x56, 0xbe, 0xaa, 0xd2,
+	0xdb, 0x54, 0xde, 0x9f, 0xc2, 0x28, 0xf2, 0x24, 0x44, 0x18, 0x58, 0x1b, 0x4e, 0xfd, 0x8c, 0xe5,
+	0xbd, 0xff, 0x33, 0x56, 0x36, 0x0f, 0xf7, 0x6d, 0x6c, 0x40, 0x67, 0x9b, 0x6a, 0x3a, 0xf3, 0x3f,
+	0x3a, 0x18, 0x1f, 0x72, 0xf2, 0x67, 0x86, 0xbe, 0x80, 0xd5, 0x8c, 0x0c, 0x1a, 0x29, 0xa1, 0xeb,
+	0x84, 0xe1, 0x17, 0x77, 0x40, 0x35, 0xf9, 0x15, 0x98, 0x8d, 0xe0, 0x20, 0x7c, 0xfd, 0x45, 0x15,
+	0x28, 0x7c, 0x03, 0x53, 0x42, 0x6b, 0xe8, 0xd5, 0x57, 0x8b, 0x9e, 0x29, 0xee, 0x65, 0x6a, 0xf0,
+	0xf3, 0x9b, 0x90, 0x52, 0x72, 0x00, 0xce, 0x43, 0x40, 0x83, 0x1a, 0xb9, 0xbe, 0x00, 0x3c, 0xba,
+	0x01, 0x28, 0x8d, 0x77, 0xd0, 0x51, 0x4b, 0x46, 0x7d, 0xc5, 0x6c, 0x64, 0x07, 0x0f, 0xae, 0xfb,
+	0x32, 0x10, 0x6f, 0x34, 0xc7, 0xfe, 0x8e, 0x2a, 0xcc, 0xe7, 0x7c, 0x26, 0xd2, 0xed, 0x8c, 0x07,
+	0x41, 0x5b, 0x3e, 0xe6, 0xc5, 0xdf, 0x00, 0x00, 0x00, 0xff, 0xff, 0xc9, 0x40, 0x09, 0xd6, 0x00,
+	0x04, 0x00, 0x00,
 }
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -526,7 +491,8 @@ type CrossMeClient interface {
 	GetPuzzleIndex(ctx context.Context, in *GetPuzzleIndexArgs, opts ...grpc.CallOption) (*GetPuzzleIndexResponse, error)
 	GetPuzzleById(ctx context.Context, in *GetPuzzleByIdArgs, opts ...grpc.CallOption) (*GetPuzzleResponse, error)
 	UploadPuzzle(ctx context.Context, in *UploadPuzzleArgs, opts ...grpc.CallOption) (*UploadPuzzleResponse, error)
-	Interact(ctx context.Context, opts ...grpc.CallOption) (CrossMe_InteractClient, error)
+	UpdateFill(ctx context.Context, in *UpdateFillArgs, opts ...grpc.CallOption) (*UpdateFillResponse, error)
+	Subscribe(ctx context.Context, in *SubscribeArgs, opts ...grpc.CallOption) (CrossMe_SubscribeClient, error)
 }
 
 type crossMeClient struct {
@@ -564,31 +530,41 @@ func (c *crossMeClient) UploadPuzzle(ctx context.Context, in *UploadPuzzleArgs, 
 	return out, nil
 }
 
-func (c *crossMeClient) Interact(ctx context.Context, opts ...grpc.CallOption) (CrossMe_InteractClient, error) {
-	stream, err := c.cc.NewStream(ctx, &_CrossMe_serviceDesc.Streams[0], "/crossme.CrossMe/Interact", opts...)
+func (c *crossMeClient) UpdateFill(ctx context.Context, in *UpdateFillArgs, opts ...grpc.CallOption) (*UpdateFillResponse, error) {
+	out := new(UpdateFillResponse)
+	err := c.cc.Invoke(ctx, "/crossme.CrossMe/UpdateFill", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
-	x := &crossMeInteractClient{stream}
+	return out, nil
+}
+
+func (c *crossMeClient) Subscribe(ctx context.Context, in *SubscribeArgs, opts ...grpc.CallOption) (CrossMe_SubscribeClient, error) {
+	stream, err := c.cc.NewStream(ctx, &_CrossMe_serviceDesc.Streams[0], "/crossme.CrossMe/Subscribe", opts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &crossMeSubscribeClient{stream}
+	if err := x.ClientStream.SendMsg(in); err != nil {
+		return nil, err
+	}
+	if err := x.ClientStream.CloseSend(); err != nil {
+		return nil, err
+	}
 	return x, nil
 }
 
-type CrossMe_InteractClient interface {
-	Send(*InteractEvent) error
-	Recv() (*InteractResponse, error)
+type CrossMe_SubscribeClient interface {
+	Recv() (*SubscribeEvent, error)
 	grpc.ClientStream
 }
 
-type crossMeInteractClient struct {
+type crossMeSubscribeClient struct {
 	grpc.ClientStream
 }
 
-func (x *crossMeInteractClient) Send(m *InteractEvent) error {
-	return x.ClientStream.SendMsg(m)
-}
-
-func (x *crossMeInteractClient) Recv() (*InteractResponse, error) {
-	m := new(InteractResponse)
+func (x *crossMeSubscribeClient) Recv() (*SubscribeEvent, error) {
+	m := new(SubscribeEvent)
 	if err := x.ClientStream.RecvMsg(m); err != nil {
 		return nil, err
 	}
@@ -600,7 +576,8 @@ type CrossMeServer interface {
 	GetPuzzleIndex(context.Context, *GetPuzzleIndexArgs) (*GetPuzzleIndexResponse, error)
 	GetPuzzleById(context.Context, *GetPuzzleByIdArgs) (*GetPuzzleResponse, error)
 	UploadPuzzle(context.Context, *UploadPuzzleArgs) (*UploadPuzzleResponse, error)
-	Interact(CrossMe_InteractServer) error
+	UpdateFill(context.Context, *UpdateFillArgs) (*UpdateFillResponse, error)
+	Subscribe(*SubscribeArgs, CrossMe_SubscribeServer) error
 }
 
 // UnimplementedCrossMeServer can be embedded to have forward compatible implementations.
@@ -616,8 +593,11 @@ func (*UnimplementedCrossMeServer) GetPuzzleById(ctx context.Context, req *GetPu
 func (*UnimplementedCrossMeServer) UploadPuzzle(ctx context.Context, req *UploadPuzzleArgs) (*UploadPuzzleResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UploadPuzzle not implemented")
 }
-func (*UnimplementedCrossMeServer) Interact(srv CrossMe_InteractServer) error {
-	return status.Errorf(codes.Unimplemented, "method Interact not implemented")
+func (*UnimplementedCrossMeServer) UpdateFill(ctx context.Context, req *UpdateFillArgs) (*UpdateFillResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateFill not implemented")
+}
+func (*UnimplementedCrossMeServer) Subscribe(req *SubscribeArgs, srv CrossMe_SubscribeServer) error {
+	return status.Errorf(codes.Unimplemented, "method Subscribe not implemented")
 }
 
 func RegisterCrossMeServer(s *grpc.Server, srv CrossMeServer) {
@@ -678,30 +658,43 @@ func _CrossMe_UploadPuzzle_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
-func _CrossMe_Interact_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(CrossMeServer).Interact(&crossMeInteractServer{stream})
-}
-
-type CrossMe_InteractServer interface {
-	Send(*InteractResponse) error
-	Recv() (*InteractEvent, error)
-	grpc.ServerStream
-}
-
-type crossMeInteractServer struct {
-	grpc.ServerStream
-}
-
-func (x *crossMeInteractServer) Send(m *InteractResponse) error {
-	return x.ServerStream.SendMsg(m)
-}
-
-func (x *crossMeInteractServer) Recv() (*InteractEvent, error) {
-	m := new(InteractEvent)
-	if err := x.ServerStream.RecvMsg(m); err != nil {
+func _CrossMe_UpdateFill_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateFillArgs)
+	if err := dec(in); err != nil {
 		return nil, err
 	}
-	return m, nil
+	if interceptor == nil {
+		return srv.(CrossMeServer).UpdateFill(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: "/crossme.CrossMe/UpdateFill",
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CrossMeServer).UpdateFill(ctx, req.(*UpdateFillArgs))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CrossMe_Subscribe_Handler(srv interface{}, stream grpc.ServerStream) error {
+	m := new(SubscribeArgs)
+	if err := stream.RecvMsg(m); err != nil {
+		return err
+	}
+	return srv.(CrossMeServer).Subscribe(m, &crossMeSubscribeServer{stream})
+}
+
+type CrossMe_SubscribeServer interface {
+	Send(*SubscribeEvent) error
+	grpc.ServerStream
+}
+
+type crossMeSubscribeServer struct {
+	grpc.ServerStream
+}
+
+func (x *crossMeSubscribeServer) Send(m *SubscribeEvent) error {
+	return x.ServerStream.SendMsg(m)
 }
 
 var _CrossMe_serviceDesc = grpc.ServiceDesc{
@@ -720,13 +713,16 @@ var _CrossMe_serviceDesc = grpc.ServiceDesc{
 			MethodName: "UploadPuzzle",
 			Handler:    _CrossMe_UploadPuzzle_Handler,
 		},
+		{
+			MethodName: "UpdateFill",
+			Handler:    _CrossMe_UpdateFill_Handler,
+		},
 	},
 	Streams: []grpc.StreamDesc{
 		{
-			StreamName:    "Interact",
-			Handler:       _CrossMe_Interact_Handler,
+			StreamName:    "Subscribe",
+			Handler:       _CrossMe_Subscribe_Handler,
 			ServerStreams: true,
-			ClientStreams: true,
 		},
 	},
 	Metadata: "crossme.proto",

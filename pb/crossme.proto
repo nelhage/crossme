@@ -31,27 +31,29 @@ message UploadPuzzleResponse {
     crossme.Puzzle puzzle = 1;
 }
 
-message InteractEvent {
-    message Initialize {
-        string puzzle_id = 1;
-        string node_id = 2;
-    }
-    message FillChanged {
-        crossme.Fill fill = 1;
-    }
-    oneof event {
-        Initialize initialize = 1;
-        FillChanged fill_changed = 2;
-    };
+message SubscribeArgs {
+    string game_id = 1;
+    string node_id = 2;
 }
 
-message InteractResponse {
+message SubscribeEvent {
     crossme.Fill fill = 1;
+}
+
+message UpdateFillArgs {
+    string game_id = 1;
+    string node_id = 2;
+    crossme.Fill fill = 3;
+}
+
+message UpdateFillResponse {
 }
 
 service CrossMe {
     rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
     rpc UploadPuzzle(UploadPuzzleArgs) returns (UploadPuzzleResponse);
-    rpc Interact(stream InteractEvent) returns (stream InteractResponse);
+    rpc UpdateFill(UpdateFillArgs) returns (UpdateFillResponse);
+
+    rpc Subscribe(SubscribeArgs) returns (stream SubscribeEvent);
 }

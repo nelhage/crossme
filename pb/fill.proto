@@ -4,7 +4,6 @@ package crossme;
 option go_package = "crossme.app/src/pb";
 
 message Fill {
-    string puzzle_id = 1;
     bool complete = 2;
 
     // Lamport timestamp for this structure
