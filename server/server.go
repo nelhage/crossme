@@ -40,6 +40,7 @@ type gameState struct {
 
 type clientState struct {
 	sync.Mutex
+	nodeid string
 
 	// pending holds the pending fills that have been accumulated
 	// on the server and not yet broadcast to this client
@@ -117,12 +118,21 @@ func (s *Server) getClient(gameid, nodeid string) (*gameState, *clientState) {
 		close(client.wakeup)
 	}
 	client := &clientState{
+		nodeid: nodeid,
 		wakeup: make(chan struct{}, 1),
 	}
 	client.pending = game.fill
 	client.wakeup <- struct{}{}
 	game.clients[nodeid] = client
 	return game, client
+}
+
+func (s *Server) stopSubscription(game *gameState, client *clientState) {
+	game.Lock()
+	defer game.Unlock()
+	if client == game.clients[client.nodeid] {
+		delete(game.clients, client.nodeid)
+	}
 }
 
 func (s *Server) broadcastFill(ctx context.Context,
@@ -188,6 +198,7 @@ func (s *Server) Subscribe(in *pb.SubscribeArgs, stream pb.CrossMe_SubscribeServ
 	ctx := stream.Context()
 
 	game, client := s.getClient(in.GameId, in.NodeId)
+	defer s.stopSubscription(game, client)
 
 	return s.streamToClient(ctx, stream, game, client)
 }
