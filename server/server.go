@@ -34,7 +34,7 @@ type gameState struct {
 	sync.Mutex
 
 	// Guarded by Mutex
-	clients map[string]*clientState
+	clients map[*clientState]struct{}
 	fill    *pb.Fill
 }
 
@@ -100,7 +100,7 @@ func (s *Server) getGame(gameid string) *gameState {
 	puz, ok := s.games[gameid]
 	if !ok {
 		puz = &gameState{
-			clients: make(map[string]*clientState),
+			clients: make(map[*clientState]struct{}),
 			fill:    &pb.Fill{},
 		}
 		s.games[gameid] = puz
@@ -108,31 +108,26 @@ func (s *Server) getGame(gameid string) *gameState {
 	return puz
 }
 
-func (s *Server) getClient(gameid, nodeid string) (*gameState, *clientState) {
+func (s *Server) startSubscription(gameid, nodeid string) (*gameState, *clientState) {
 	game := s.getGame(gameid)
 
 	game.Lock()
 	defer game.Unlock()
 
-	if client, ok := game.clients[nodeid]; ok {
-		close(client.wakeup)
-	}
 	client := &clientState{
 		nodeid: nodeid,
 		wakeup: make(chan struct{}, 1),
 	}
 	client.pending = game.fill
 	client.wakeup <- struct{}{}
-	game.clients[nodeid] = client
+	game.clients[client] = struct{}{}
 	return game, client
 }
 
 func (s *Server) stopSubscription(game *gameState, client *clientState) {
 	game.Lock()
 	defer game.Unlock()
-	if client == game.clients[client.nodeid] {
-		delete(game.clients, client.nodeid)
-	}
+	delete(game.clients, client)
 }
 
 func (s *Server) broadcastFill(ctx context.Context,
@@ -148,11 +143,11 @@ func (s *Server) broadcastFill(ctx context.Context,
 		game.fill = merged
 	}
 
-	for id, client := range game.clients {
+	for client, _ := range game.clients {
 		client.Lock()
 		merged, err := crdt.Merge(client.pending, fill)
 		if err != nil {
-			log.Printf("merge error: client=%q err=%v", id, err)
+			log.Printf("merge error: client=%q err=%v", client.nodeid, err)
 		} else {
 			client.pending = merged
 		}
@@ -197,7 +192,7 @@ func (s *Server) UpdateFill(ctx context.Context, in *pb.UpdateFillArgs) (*pb.Upd
 func (s *Server) Subscribe(in *pb.SubscribeArgs, stream pb.CrossMe_SubscribeServer) error {
 	ctx := stream.Context()
 
-	game, client := s.getClient(in.GameId, in.NodeId)
+	game, client := s.startSubscription(in.GameId, in.NodeId)
 	defer s.stopSubscription(game, client)
 
 	return s.streamToClient(ctx, stream, game, client)
