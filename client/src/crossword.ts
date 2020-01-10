@@ -1,5 +1,6 @@
 import * as Types from "./types";
 import { List } from "immutable";
+import * as FillPb from "./pb/fill_pb";
 
 type Fill = List<Types.FillState | undefined>;
 
@@ -8,6 +9,14 @@ export interface Game {
   readonly puzzle: Readonly<Types.Puzzle>;
   readonly cursor: Readonly<Types.Cursor>;
   readonly fill: Fill;
+
+  readonly clock: number;
+  readonly nodeID: string;
+}
+
+export interface GameUpdate {
+  readonly cursor?: Readonly<Types.CursorUpdate>;
+  readonly fill?: Readonly<FillPb.Fill>;
 }
 
 function packIndex(p: Types.Puzzle, pos: Types.Position): number {
@@ -24,7 +33,20 @@ export function cellAt(p: Types.Puzzle, pos: Types.Position): Types.Cell {
   return p.squares[packIndex(p, pos)];
 }
 
-export function newGame(puzzle: Types.Puzzle): Game {
+const HEX = "012456789abcdef";
+
+function newId(): string {
+  const buf = new Uint8Array(8);
+  window.crypto.getRandomValues(buf);
+  let s = "";
+  buf.forEach(b => {
+    s += HEX[b >> 4];
+    s += HEX[b & 0xf];
+  });
+  return s;
+}
+
+export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
   const by_clue: { [clue: number]: Types.Position } = {};
   puzzle.squares.forEach((sq, idx) => {
     if (!sq.black && sq.number) {
@@ -45,7 +67,9 @@ export function newGame(puzzle: Types.Puzzle): Game {
       direction: Types.Direction.ACROSS,
       pencil: false
     },
-    fill: List()
+    fill: List(),
+    nodeID: nodeID || newId(),
+    clock: 0
   };
 }
 
@@ -56,7 +80,10 @@ export function fillAt(
   return game.fill.get(packIndex(game.puzzle, position));
 }
 
-export function withCursor(g: Game, update: Types.CursorUpdate): Game {
+export function withCursor(
+  g: Game,
+  update: Readonly<Types.CursorUpdate>
+): Game {
   if (update.row && (update.row < 0 || update.row >= g.puzzle.width)) {
     throw new Error(`bad cursor: row=${update.row}`);
   }
@@ -89,7 +116,9 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
       if (ch) {
         array[packIndex(g.puzzle, { row: r, column: c })] = {
           fill: ch,
-          pencil: g.cursor.pencil
+          pencil: g.cursor.pencil,
+          clock: g.clock,
+          owner: g.nodeID
         };
       }
     });
@@ -221,7 +250,9 @@ export function fillSquare(g: Game, text: string): Game {
       ...(state || {}),
       fill: text.replace(/\s/, ""),
       pencil: g.cursor.pencil,
-      checked: undefined
+      checked: undefined,
+      clock: g.clock,
+      owner: g.nodeID
     }))
   );
 }
@@ -481,16 +512,25 @@ export enum Target {
 function eachTarget(
   g: Game,
   target: Target,
-  each: (
+  cb: (
     sq: Readonly<Types.LetterCell>,
     fill: Readonly<Types.FillState>
   ) => Types.FillState
 ): Game {
+  const each = (
+    sq: Readonly<Types.LetterCell>,
+    fill?: Readonly<Types.FillState>
+  ): Readonly<Types.FillState> => {
+    const out = cb(
+      sq,
+      fill || { fill: "", pencil: false, owner: g.nodeID, clock: g.clock }
+    );
+    return Object.assign(out, { owner: g.nodeID, clock: g.clock });
+  };
   if (target === Target.SQUARE) {
     return withFill(g, fills =>
-      fills.update(
-        packIndex(g.puzzle, g.cursor),
-        (state = { fill: "", pencil: false }) => each(selectedSquare(g), state)
+      fills.update(packIndex(g.puzzle, g.cursor), state =>
+        each(selectedSquare(g), state)
       )
     );
   }
@@ -511,7 +551,7 @@ function eachTarget(
       if (sq.black || !want(sq)) {
         return;
       }
-      mut.update(i, (state = { fill: "", pencil: false }) => each(sq, state));
+      mut.update(i, state => each(sq, state));
     });
     return mut.asImmutable();
   });
