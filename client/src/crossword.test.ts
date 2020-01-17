@@ -166,14 +166,16 @@ function formatGame(g: Crossword.Game): string {
 
       if (r === g.cursor.row && c === g.cursor.column) {
         if (g.cursor.direction === Types.Direction.ACROSS) {
-          return ch + ">";
+          ch += ">";
         } else {
-          return ch + "v";
+          ch += "v";
         }
+      } else {
+        ch += " ";
       }
       row.push(ch);
     }
-    rows.push(row.join(""));
+    rows.push(row.join("").trimEnd());
   }
   return rows.join("\n");
 }
@@ -355,6 +357,7 @@ describe("crossword operations", () => {
     it(`${name} [index: ${i}]`, () => {
       const g_before = parseGame(before);
       const g_after = parseGame(after);
+      expect(formatGame(g_before).trim()).toEqual(before.trim());
 
       const xformed = op(g_before);
       expect(formatGame(xformed)).toEqual(formatGame(g_after));
