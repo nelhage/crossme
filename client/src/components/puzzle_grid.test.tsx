@@ -22,14 +22,23 @@ function getCellAt(
   }
   return cell as HTMLDivElement;
 }
+function update(
+  g: Crossword.Game,
+  op: (g: Crossword.Game) => Crossword.GameUpdate
+): Crossword.Game {
+  const update = op(g);
+  return Crossword.withUpdate(g, update);
+}
 
 it("renders a grid", () => {
   const onClickCell = () => null;
   const onInput = () => null;
-  const game = Crossword.selectSquare(Crossword.newGame(ThePuzzle), {
-    row: 1,
-    column: 2
-  });
+  const game = update(Crossword.newGame(ThePuzzle), g =>
+    Crossword.selectSquare(g, {
+      row: 1,
+      column: 2
+    })
+  );
 
   const { container, rerender } = render(
     <PuzzleGrid game={game} onClickCell={onClickCell} onInput={onInput} />
@@ -37,8 +46,8 @@ it("renders a grid", () => {
   const activeCell = getCellAt(container, 1, 2);
   expect(activeCell.className).toContain("selected");
 
-  const newGame = Crossword.swapDirection(
-    Crossword.selectSquare(game, { row: 9, column: 9 })
+  const newGame = update(update(game, g => Crossword.swapDirection(g)), g =>
+    Crossword.selectSquare(g, { row: 9, column: 9 })
   );
 
   rerender(

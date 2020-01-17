@@ -205,7 +205,7 @@ describe("crossword operations", () => {
   const testCases: [
     string,
     string,
-    (g: Crossword.Game) => Crossword.Game,
+    (g: Crossword.Game) => Crossword.GameUpdate,
     string
   ][] = [
     [
@@ -359,7 +359,7 @@ describe("crossword operations", () => {
       const g_after = parseGame(after);
       expect(formatGame(g_before).trim()).toEqual(before.trim());
 
-      const xformed = op(g_before);
+      const xformed = Crossword.withUpdate(g_before, op(g_before));
       expect(formatGame(xformed)).toEqual(formatGame(g_after));
     });
   });

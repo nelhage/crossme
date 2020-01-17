@@ -39,8 +39,11 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.doCheck = this.doCheck.bind(this);
   }
 
-  updateGame(op: (g: Crossword.Game) => Crossword.Game) {
-    this.setState(state => ({ ...state, game: op(state.game) }));
+  updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
+    this.setState(state => ({
+      ...state,
+      game: Crossword.withUpdate(state.game, op(state.game))
+    }));
   }
 
   openRebus() {
@@ -143,11 +146,15 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   doReveal(target: Crossword.Target) {
-    this.updateGame(game => Crossword.revealAnswers(game, target));
+    this.setState(state => {
+      return { ...state, game: Crossword.revealAnswers(state.game, target) };
+    });
   }
 
   doCheck(target: Crossword.Target) {
-    this.updateGame(game => Crossword.checkAnswers(game, target));
+    this.setState(state => {
+      return { ...state, game: Crossword.checkAnswers(state.game, target) };
+    });
   }
 
   selectedClueNumber(): number {

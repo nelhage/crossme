@@ -2,7 +2,7 @@ import * as Types from "./types";
 import { List } from "immutable";
 import * as FillPb from "./pb/fill_pb";
 
-type Fill = List<Types.FillState | undefined>;
+type Fill = List<Readonly<Types.FillState> | undefined>;
 
 export interface Game {
   readonly by_clue: Readonly<{ [clue: number]: Types.Position }>;
@@ -76,7 +76,7 @@ export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
 export function fillAt(
   game: Game,
   position: Types.Position
-): Types.FillState | undefined {
+): Readonly<Types.FillState> | undefined {
   return game.fill.get(packIndex(game.puzzle, position));
 }
 
@@ -126,6 +126,68 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   return withFill(g, () => List(array));
 }
 
+function mergeFill(
+  g: Game,
+  mut: List<Readonly<Types.FillState> | undefined>,
+  fill: FillPb.Fill
+): void {
+  fill.getCellsList().forEach(cell => {
+    const existing: Types.FillState = Object.assign(
+      {},
+      mut.get(cell.getIndex()) || {
+        clock: 0,
+        owner: "",
+        fill: "",
+        pencil: false
+      }
+    );
+    const flags = cell.getFlags();
+    if ((flags & FillPb.Fill.Flags.DID_CHECK) !== 0) {
+      existing.didCheck = true;
+      mut.set(cell.getIndex(), existing);
+    }
+    if ((flags & FillPb.Fill.Flags.DID_REVEAL) !== 0) {
+      existing.didReveal = true;
+      mut.set(cell.getIndex(), existing);
+    }
+    if (
+      existing.clock > cell.getClock() ||
+      (existing.clock === cell.getClock() &&
+        existing.owner > fill.getNodesList()[cell.getOwner()])
+    ) {
+      return;
+    }
+    existing.pencil = (flags & FillPb.Fill.Flags.PENCIL) !== 0;
+    if ((flags & FillPb.Fill.Flags.CHECKED_RIGHT) !== 0) {
+      existing.checked = Types.Checked.RIGHT;
+    } else if ((flags & FillPb.Fill.Flags.CHECKED_WRONG) !== 0) {
+      existing.checked = Types.Checked.WRONG;
+    }
+    existing.fill = cell.getFill();
+    existing.owner = fill.getNodesList()[cell.getOwner()];
+    existing.clock = cell.getClock();
+    mut.set(cell.getIndex(), existing);
+  });
+}
+
+export function withUpdate(g: Game, update: GameUpdate): Game {
+  let out = g;
+  if (update.cursor) {
+    out = withCursor(out, update.cursor);
+  }
+  if (update.fill) {
+    let mut = g.fill.asMutable();
+    const clock = Math.max(g.clock, update.fill.getClock()) + 1;
+    mergeFill(g, mut, update.fill);
+    return {
+      ...out,
+      clock: clock,
+      fill: mut.asImmutable()
+    };
+  }
+  return out;
+}
+
 function withFill(g: Game, update: (fill: Fill) => Fill): Game {
   return {
     ...g,
@@ -148,14 +210,16 @@ function otherDirection(d: Types.Direction): Types.Direction {
     : Types.Direction.ACROSS;
 }
 
-export function swapDirection(g: Game): Game {
-  return withCursor(g, {
-    direction: otherDirection(g.cursor.direction)
-  });
+export function swapDirection(g: Game): GameUpdate {
+  return {
+    cursor: {
+      direction: otherDirection(g.cursor.direction)
+    }
+  };
 }
 
-export function withPencil(g: Game, pencil: boolean): Game {
-  return withCursor(g, { pencil: pencil });
+export function withPencil(_: Game, pencil: boolean): GameUpdate {
+  return { cursor: { pencil: pencil } };
 }
 
 export function selectedSquare(g: Game): Types.LetterCell {
@@ -192,7 +256,12 @@ function find(
   }
 }
 
-export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
+export function move(
+  g: Game,
+  dr: number,
+  dc: number,
+  inword?: boolean
+): GameUpdate {
   const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
 
   const row = g.cursor.row;
@@ -213,48 +282,54 @@ export function move(g: Game, dr: number, dc: number, inword?: boolean): Game {
     return true;
   });
 
-  if (!dst) return g;
-  return withCursor(g, { ...dst, direction });
+  if (!dst) return {};
+  return { cursor: { ...dst, direction } };
 }
 
-export function selectSquare(g: Game, pos: Types.Position): Game {
+export function selectSquare(g: Game, pos: Types.Position): GameUpdate {
   const cell = cellAt(g.puzzle, pos);
   if (!cell || cell.black) {
-    return g;
+    return {};
   }
-  return withCursor(g, pos);
+  return { cursor: pos };
 }
 
 export function selectClue(
   g: Game,
   { number, direction }: Types.SelectClueEvent
-): Game {
+): GameUpdate {
   const pos = g.by_clue[number];
   if (pos) {
-    return withCursor(g, { ...pos, direction });
+    return { cursor: { ...pos, direction } };
   }
-  return g;
+  return {};
 }
 
-export function fillSquare(g: Game, text: string): Game {
-  const key = packIndex(g.puzzle, {
-    row: g.cursor.row,
-    column: g.cursor.column
-  });
+export function fillSquare(
+  g: Game,
+  text: string,
+  at?: Types.Position
+): GameUpdate {
+  const key = packIndex(g.puzzle, at || g.cursor);
   const fill = g.fill.get(key);
   if (fill && fill.checked === Types.Checked.RIGHT) {
-    return g;
+    return {};
   }
-  return withFill(g, fill =>
-    fill.update(key, state => ({
-      ...(state || {}),
-      fill: text.replace(/\s/, ""),
-      pencil: g.cursor.pencil,
-      checked: undefined,
-      clock: g.clock,
-      owner: g.nodeID
-    }))
+  const update = new FillPb.Fill();
+  update.setClock(g.clock + 1);
+  update.addNodes(g.nodeID);
+  const sq = new FillPb.Fill.Cell();
+  sq.setIndex(key);
+  sq.setClock(g.clock);
+  sq.setOwner(0);
+  sq.setFill(text.replace(/\s/, ""));
+  sq.setFlags(
+    g.cursor.pencil ? FillPb.Fill.Flags.PENCIL : FillPb.Fill.Flags.NONE
   );
+  update.addCells(sq);
+  return {
+    fill: update
+  };
 }
 
 function lastBlankInWord(
@@ -341,7 +416,7 @@ function nextClue(
     clue: Types.Clue
   ) => Types.CursorUpdate | undefined,
   reverse?: boolean
-): Game {
+): GameUpdate {
   let direction = g.cursor.direction;
   const firstClue =
     direction === Types.Direction.DOWN
@@ -402,14 +477,14 @@ function nextClue(
   for (let i = 0; i < search.length; i++) {
     const sq = findClue(search[i], pred);
     if (sq) {
-      return withCursor(g, { direction: search[i].direction, ...sq });
+      return { cursor: { direction: search[i].direction, ...sq } };
     }
   }
 
-  return g;
+  return {};
 }
 
-export function nextBlank(g: Game, reverse?: boolean): Game {
+export function nextBlank(g: Game, reverse?: boolean): GameUpdate {
   return nextClue(
     g,
     (direction, clue) => {
@@ -424,15 +499,15 @@ export function nextBlank(g: Game, reverse?: boolean): Game {
   );
 }
 
-export function keypress(g: Game, text: string): Game {
+export function keypress(g: Game, text: string): GameUpdate {
   const oldFill = fillAt(g, g.cursor);
-  const out = fillSquare(g, text);
+  const update = fillSquare(g, text);
   const cursor = g.cursor;
 
   const { dr, dc } = directionToDelta(g.cursor.direction);
 
   if (oldFill && oldFill.fill !== "") {
-    return move(out, dr, dc, true);
+    return { ...update, ...move(g, dr, dc, true) };
   }
 
   const next = find(
@@ -454,35 +529,35 @@ export function keypress(g: Game, text: string): Game {
     }
   );
   if (next && !cellAt(g.puzzle, next).black) {
-    return withCursor(out, next);
+    return { ...update, cursor: next };
   }
   // At end-of-word, try wrapping to the beginning
   // TODO(pref): this.state.profile.settingEndWordBack
-  const first = lastBlankInWord(out, cursor, -dr, -dc);
+  const first = lastBlankInWord(g, cursor, -dr, -dc);
   if (first) {
-    return withCursor(out, first);
+    return { ...update, cursor: first };
   }
 
   // This word is done; let's find the next one
   // TODO(pref): this.state.profile.settingEndWordNext
-  return nextBlank(out);
+  return { ...update, ...nextBlank(g) };
 }
 
-export function deleteKey(g: Game): Game {
-  let out = g;
+export function deleteKey(g: Game): GameUpdate {
   const selected = fillAt(g, g.cursor);
   if (selected && selected.fill !== "") {
-    return fillSquare(out, "");
+    return fillSquare(g, "");
   }
   const { dr, dc } = directionToDelta(g.cursor.direction);
-  out = move(out, -dr, -dc, true);
+  let update = move(g, -dr, -dc, true);
   if (
-    out.cursor.row === g.cursor.row &&
-    out.cursor.column === g.cursor.column
+    !update.cursor ||
+    (update.cursor.row === g.cursor.row &&
+      update.cursor.column === g.cursor.column)
   ) {
     // Start of word, move backwards one clue
-    out = nextClue(
-      out,
+    update = nextClue(
+      g,
       (direction, clue) => {
         const start = g.by_clue[clue.number];
         const { dr, dc } = directionToDelta(direction);
@@ -499,8 +574,8 @@ export function deleteKey(g: Game): Game {
       true
     );
   }
-  out = fillSquare(out, "");
-  return out;
+  const cursor = { ...g.cursor, ...(update.cursor || {}) };
+  return { ...update, ...fillSquare(g, "", cursor) };
 }
 
 export enum Target {

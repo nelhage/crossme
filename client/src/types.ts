@@ -66,13 +66,13 @@ export enum Checked {
 }
 
 export interface FillState {
-  readonly fill: string;
-  readonly pencil: boolean;
+  fill: string;
+  pencil: boolean;
 
-  readonly clock: number;
-  readonly owner: string;
+  clock: number;
+  owner: string;
 
-  readonly checked?: Checked;
-  readonly didCheck?: boolean;
-  readonly didReveal?: boolean;
+  checked?: Checked;
+  didCheck?: boolean;
+  didReveal?: boolean;
 }
