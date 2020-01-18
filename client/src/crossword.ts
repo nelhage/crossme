@@ -14,10 +14,12 @@ export interface Game {
   readonly nodeID: string;
 }
 
-export interface GameUpdate {
-  readonly cursor?: Readonly<Types.CursorUpdate>;
-  readonly fill?: Readonly<FillPb.Fill>;
+interface MutableGameUpdate {
+  cursor?: Readonly<Types.CursorUpdate>;
+  fill?: Readonly<FillPb.Fill>;
 }
+
+export type GameUpdate = Readonly<MutableGameUpdate>;
 
 function packIndex(p: Types.Puzzle, pos: Types.Position): number {
   return pos.row * p.width + pos.column;
@@ -127,7 +129,6 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
 }
 
 function mergeFill(
-  g: Game,
   mut: List<Readonly<Types.FillState> | undefined>,
   fill: FillPb.Fill
 ): void {
@@ -178,7 +179,7 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
   if (update.fill) {
     let mut = g.fill.asMutable();
     const clock = Math.max(g.clock, update.fill.getClock()) + 1;
-    mergeFill(g, mut, update.fill);
+    mergeFill(mut, update.fill);
     return {
       ...out,
       clock: clock,
@@ -320,7 +321,7 @@ export function fillSquare(
   update.addNodes(g.nodeID);
   const sq = new FillPb.Fill.Cell();
   sq.setIndex(key);
-  sq.setClock(g.clock);
+  sq.setClock(g.clock + 1);
   sq.setOwner(0);
   sq.setFill(text.replace(/\s/, ""));
   sq.setFlags(
@@ -588,26 +589,17 @@ function eachTarget(
   g: Game,
   target: Target,
   cb: (
+    idx: number,
     sq: Readonly<Types.LetterCell>,
     fill: Readonly<Types.FillState>
-  ) => Types.FillState
-): Game {
-  const each = (
-    sq: Readonly<Types.LetterCell>,
-    fill?: Readonly<Types.FillState>
-  ): Readonly<Types.FillState> => {
-    const out = cb(
-      sq,
-      fill || { fill: "", pencil: false, owner: g.nodeID, clock: g.clock }
-    );
-    return Object.assign(out, { owner: g.nodeID, clock: g.clock });
-  };
+  ) => void
+): void {
   if (target === Target.SQUARE) {
-    return withFill(g, fills =>
-      fills.update(packIndex(g.puzzle, g.cursor), state =>
-        each(selectedSquare(g), state)
-      )
-    );
+    const fill = fillAt(g, g.cursor);
+    if (fill) {
+      cb(packIndex(g.puzzle, g.cursor), selectedSquare(g), fill);
+    }
+    return;
   }
   const active = selectedSquare(g);
   const want: (sq: Types.LetterCell) => boolean =
@@ -620,44 +612,68 @@ function eachTarget(
             return sq.clueDown === active.clueDown;
           }
         };
-  return withFill(g, fills => {
-    const mut = fills.asMutable();
-    g.puzzle.squares.forEach((sq, i) => {
-      if (sq.black || !want(sq)) {
-        return;
-      }
-      mut.update(i, state => each(sq, state));
-    });
-    return mut.asImmutable();
-  });
-}
-
-export function checkAnswers(g: Game, target: Target): Game {
-  return eachTarget(g, target, (sq, fill) => {
-    if (fill && fill.fill !== "") {
-      return {
-        ...fill,
-        didCheck: true,
-        checked:
-          fill.fill === sq.fill ? Types.Checked.RIGHT : Types.Checked.WRONG
-      };
+  g.puzzle.squares.forEach((sq, i) => {
+    if (sq.black || !want(sq)) {
+      return;
     }
-    return fill;
+    const fill = g.fill.get(i);
+    if (fill) {
+      cb(i, sq, fill);
+    }
   });
 }
 
-export function revealAnswers(g: Game, target: Target): Game {
-  return eachTarget(g, target, (sq, fill) => {
-    const out = {
-      ...fill,
-      checked: Types.Checked.RIGHT,
-      fill: sq.fill
-    };
-    if (fill && fill.fill === sq.fill) {
-      out.didCheck = true;
+export function checkAnswers(g: Game, target: Target): GameUpdate {
+  const newfill = new FillPb.Fill();
+  newfill.setClock(g.clock + 1);
+  newfill.addNodes(g.nodeID);
+  const update: MutableGameUpdate = { fill: newfill };
+
+  eachTarget(g, target, (idx, sq, fill) => {
+    if (!fill || fill.fill === "") {
+      return;
+    }
+    const newsq = new FillPb.Fill.Cell();
+    newsq.setIndex(idx);
+    newsq.setFill(fill.fill);
+    newsq.setClock(g.clock + 1);
+    newsq.setOwner(0);
+    let flags: number = FillPb.Fill.Flags.DID_CHECK;
+    if (fill.fill === sq.fill) {
+      flags |= FillPb.Fill.Flags.CHECKED_RIGHT;
     } else {
-      out.didReveal = true;
+      flags |= FillPb.Fill.Flags.CHECKED_WRONG;
+      if (!update.cursor) {
+        const pos = unpackIndex(g.puzzle, idx);
+        update.cursor = pos;
+      }
     }
-    return out;
+    newsq.setFlags(flags);
+    newfill.addCells(newsq);
   });
+  return update;
+}
+
+export function revealAnswers(g: Game, target: Target): GameUpdate {
+  const newfill = new FillPb.Fill();
+  newfill.setClock(g.clock + 1);
+  newfill.addNodes(g.nodeID);
+  const update: GameUpdate = { fill: newfill };
+
+  eachTarget(g, target, (idx, sq, fill) => {
+    const newsq = new FillPb.Fill.Cell();
+    newsq.setIndex(idx);
+    newsq.setFill(sq.fill);
+    newsq.setClock(g.clock + 1);
+    newsq.setOwner(0);
+    let flags: number = FillPb.Fill.Flags.DID_REVEAL;
+    if (fill.fill === sq.fill) {
+      flags |= FillPb.Fill.Flags.CHECKED_RIGHT;
+    } else {
+      flags |= FillPb.Fill.Flags.CHECKED_WRONG;
+    }
+    newsq.setFlags(flags);
+    newfill.addCells(newsq);
+  });
+  return update;
 }

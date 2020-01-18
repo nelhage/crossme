@@ -146,15 +146,11 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   doReveal(target: Crossword.Target) {
-    this.setState(state => {
-      return { ...state, game: Crossword.revealAnswers(state.game, target) };
-    });
+    this.updateGame(game => Crossword.revealAnswers(game, target));
   }
 
   doCheck(target: Crossword.Target) {
-    this.setState(state => {
-      return { ...state, game: Crossword.checkAnswers(state.game, target) };
-    });
+    this.updateGame(game => Crossword.checkAnswers(game, target));
   }
 
   selectedClueNumber(): number {
