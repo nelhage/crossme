@@ -1,10 +1,7 @@
 package repo
 
 import (
-	"crypto/rand"
 	"database/sql"
-	"encoding/hex"
-	"fmt"
 	"time"
 
 	"crossme.app/src/pb"
@@ -52,14 +49,7 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 		return "", nil
 	}
 
-	// Generate a random ID
-	var idbytes [8]byte
-	if _, err := rand.Read(idbytes[:]); err != nil {
-		return "", fmt.Errorf("Generating id: %v", err)
-	}
-	id = hex.EncodeToString(idbytes[:])
-
-	puz.Metadata.Id = id
+	puz.Metadata.Id = NewId()
 
 	if _, err := tx.NamedExec(sql_insert_puz_file,
 		&insert_puz_file_args{
@@ -76,12 +66,48 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 		&insert_puzzle_args{
 			Proto:   protobytes,
 			Title:   puz.Title,
-			Id:      id,
+			Id:      puz.Metadata.Id,
 			Sha256:  sql.NullString{Valid: true, String: puz.Metadata.Sha256},
 			Date:    puz.Metadata.Date,
 			Created: puz.Metadata.Created.String(),
 		}); err != nil {
 		return "", err
 	}
-	return id, tx.Commit()
+	return puz.Metadata.Id, tx.Commit()
+}
+
+func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
+	now := time.Now()
+	game := pb.Game{
+		Id:       NewId(),
+		PuzzleId: puzzle_id,
+		Fill:     &pb.Fill{},
+		Created: &timestamp.Timestamp{
+			Seconds: now.Unix(),
+			Nanos:   int32(now.Nanosecond()),
+		},
+	}
+
+	protobytes, err := proto.Marshal(&game)
+	if err != nil {
+		return nil, err
+	}
+
+	tx, err := r.db.Beginx()
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	if _, err := tx.NamedExec(sql_insert_game,
+		&insert_game_args{
+			Proto:    protobytes,
+			Id:       game.Id,
+			PuzzleId: game.Created.String(),
+		}); err != nil {
+		return nil, err
+	}
+
+	return &game, tx.Commit()
+
 }

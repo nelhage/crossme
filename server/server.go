@@ -13,6 +13,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+var _ pb.CrossMeServer = &Server{}
+
 func New(repo *repo.Repository) *Server {
 	return &Server{
 		repo:  repo,
@@ -73,6 +75,34 @@ func (s *Server) GetPuzzleById(ctx context.Context, in *pb.GetPuzzleByIdArgs) (*
 		Puzzle: puz,
 	}
 	return resp, nil
+}
+
+func (s *Server) NewGame(ctx context.Context, in *pb.NewGameArgs) (*pb.NewGameResponse, error) {
+	game, err := s.repo.NewGame(in.PuzzleId)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.NewGameResponse{
+		Game: game,
+	}, nil
+}
+
+func (s *Server) GetGameById(ctx context.Context, in *pb.GetGameByIdArgs) (*pb.GetGameResponse, error) {
+	game, err := s.repo.GameById(in.Id)
+	if err != nil {
+		if err == repo.ErrNoSuchGame {
+			err = status.Error(codes.NotFound, "no such game")
+		}
+		return nil, err
+	}
+	puz, err := s.repo.PuzzleById(game.PuzzleId)
+	if err != nil {
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+	return &pb.GetGameResponse{
+		Game:   game,
+		Puzzle: puz,
+	}, nil
 }
 
 func (s *Server) UploadPuzzle(ctx context.Context, in *pb.UploadPuzzleArgs) (*pb.UploadPuzzleResponse, error) {

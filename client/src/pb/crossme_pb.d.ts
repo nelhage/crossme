@@ -2,6 +2,7 @@ import * as jspb from "google-protobuf"
 
 import * as puzzle_pb from './puzzle_pb';
 import * as fill_pb from './fill_pb';
+import * as game_pb from './game_pb';
 
 export class GetPuzzleIndexArgs extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -71,6 +72,88 @@ export class GetPuzzleResponse extends jspb.Message {
 
 export namespace GetPuzzleResponse {
   export type AsObject = {
+    puzzle?: puzzle_pb.Puzzle.AsObject,
+  }
+}
+
+export class NewGameArgs extends jspb.Message {
+  getPuzzleId(): string;
+  setPuzzleId(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewGameArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: NewGameArgs): NewGameArgs.AsObject;
+  static serializeBinaryToWriter(message: NewGameArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewGameArgs;
+  static deserializeBinaryFromReader(message: NewGameArgs, reader: jspb.BinaryReader): NewGameArgs;
+}
+
+export namespace NewGameArgs {
+  export type AsObject = {
+    puzzleId: string,
+  }
+}
+
+export class NewGameResponse extends jspb.Message {
+  getGame(): game_pb.Game | undefined;
+  setGame(value?: game_pb.Game): void;
+  hasGame(): boolean;
+  clearGame(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): NewGameResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: NewGameResponse): NewGameResponse.AsObject;
+  static serializeBinaryToWriter(message: NewGameResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): NewGameResponse;
+  static deserializeBinaryFromReader(message: NewGameResponse, reader: jspb.BinaryReader): NewGameResponse;
+}
+
+export namespace NewGameResponse {
+  export type AsObject = {
+    game?: game_pb.Game.AsObject,
+  }
+}
+
+export class GetGameByIdArgs extends jspb.Message {
+  getId(): string;
+  setId(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetGameByIdArgs.AsObject;
+  static toObject(includeInstance: boolean, msg: GetGameByIdArgs): GetGameByIdArgs.AsObject;
+  static serializeBinaryToWriter(message: GetGameByIdArgs, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetGameByIdArgs;
+  static deserializeBinaryFromReader(message: GetGameByIdArgs, reader: jspb.BinaryReader): GetGameByIdArgs;
+}
+
+export namespace GetGameByIdArgs {
+  export type AsObject = {
+    id: string,
+  }
+}
+
+export class GetGameResponse extends jspb.Message {
+  getGame(): game_pb.Game | undefined;
+  setGame(value?: game_pb.Game): void;
+  hasGame(): boolean;
+  clearGame(): void;
+
+  getPuzzle(): puzzle_pb.Puzzle | undefined;
+  setPuzzle(value?: puzzle_pb.Puzzle): void;
+  hasPuzzle(): boolean;
+  clearPuzzle(): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): GetGameResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: GetGameResponse): GetGameResponse.AsObject;
+  static serializeBinaryToWriter(message: GetGameResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): GetGameResponse;
+  static deserializeBinaryFromReader(message: GetGameResponse, reader: jspb.BinaryReader): GetGameResponse;
+}
+
+export namespace GetGameResponse {
+  export type AsObject = {
+    game?: game_pb.Game.AsObject,
     puzzle?: puzzle_pb.Puzzle.AsObject,
   }
 }

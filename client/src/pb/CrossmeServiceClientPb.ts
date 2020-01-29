@@ -11,12 +11,17 @@ import * as grpcWeb from 'grpc-web';
 
 import * as puzzle_pb from './puzzle_pb';
 import * as fill_pb from './fill_pb';
+import * as game_pb from './game_pb';
 
 import {
+  GetGameByIdArgs,
+  GetGameResponse,
   GetPuzzleByIdArgs,
   GetPuzzleIndexArgs,
   GetPuzzleIndexResponse,
   GetPuzzleResponse,
+  NewGameArgs,
+  NewGameResponse,
   SubscribeArgs,
   SubscribeEvent,
   UpdateFillArgs,
@@ -84,6 +89,50 @@ export class CrossMeClient {
       request,
       metadata || {},
       this.methodInfoGetPuzzleById,
+      callback);
+  }
+
+  methodInfoNewGame = new grpcWeb.AbstractClientBase.MethodInfo(
+    NewGameResponse,
+    (request: NewGameArgs) => {
+      return request.serializeBinary();
+    },
+    NewGameResponse.deserializeBinary
+  );
+
+  newGame(
+    request: NewGameArgs,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: NewGameResponse) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/crossme.CrossMe/NewGame',
+      request,
+      metadata || {},
+      this.methodInfoNewGame,
+      callback);
+  }
+
+  methodInfoGetGameById = new grpcWeb.AbstractClientBase.MethodInfo(
+    GetGameResponse,
+    (request: GetGameByIdArgs) => {
+      return request.serializeBinary();
+    },
+    GetGameResponse.deserializeBinary
+  );
+
+  getGameById(
+    request: GetGameByIdArgs,
+    metadata: grpcWeb.Metadata | null,
+    callback: (err: grpcWeb.Error,
+               response: GetGameResponse) => void) {
+    return this.client_.rpcCall(
+      this.hostname_ +
+        '/crossme.CrossMe/GetGameById',
+      request,
+      metadata || {},
+      this.methodInfoGetGameById,
       callback);
   }
 

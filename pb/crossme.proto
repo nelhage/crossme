@@ -3,6 +3,7 @@ package crossme;
 
 import "puzzle.proto";
 import "fill.proto";
+import "game.proto";
 
 option go_package = "crossme.app/src/pb";
 
@@ -20,6 +21,23 @@ message GetPuzzleByIdArgs {
 
 message GetPuzzleResponse {
     crossme.Puzzle puzzle = 1;
+}
+
+message NewGameArgs {
+    string puzzle_id = 1;
+}
+
+message NewGameResponse {
+    crossme.Game game = 1;
+}
+
+message GetGameByIdArgs {
+    string id = 1;
+}
+
+message GetGameResponse {
+    crossme.Game game = 1;
+    crossme.Puzzle puzzle = 2;
 }
 
 message UploadPuzzleArgs {
@@ -52,6 +70,10 @@ message UpdateFillResponse {
 service CrossMe {
     rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
+
+    rpc NewGame(NewGameArgs) returns (NewGameResponse);
+    rpc GetGameById(GetGameByIdArgs) returns (GetGameResponse);
+
     rpc UploadPuzzle(UploadPuzzleArgs) returns (UploadPuzzleResponse);
     rpc UpdateFill(UpdateFillArgs) returns (UpdateFillResponse);
 

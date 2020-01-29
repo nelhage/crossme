@@ -1,0 +1,15 @@
+syntax = "proto3";
+package crossme;
+
+import "fill.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "crossme.app/src/pb";
+
+message Game {
+    string id = 1;
+    string puzzle_id = 2;
+    crossme.Fill fill = 3;
+
+    google.protobuf.Timestamp created = 4;
+}

@@ -18,6 +18,13 @@ CREATE TABLE IF NOT EXISTS puzzles (
 
 CREATE INDEX IF NOT EXISTS puzzles__date ON puzzles (meta__date);
 
+CREATE TABLE IF NOT EXISTS games (
+  proto blob not null,
+  id string not null unique primary key,
+  puzzle_id string not null,
+  created text not null
+);
+
 CREATE TABLE IF NOT EXISTS puz_files (
   sha256 text unique primary key,
   file blob
@@ -71,4 +78,26 @@ WHERE meta__sha256 = :sha256
 
 type query_id_by_hash_args struct {
 	Sha256 string `db:"sha256"`
+}
+
+const sql_insert_game = `
+INSERT INTO games (proto, id, puzzle_id, created)
+VALUES (:proto, :id, :puzzle_id, :created)
+`
+
+type insert_game_args struct {
+	Proto    []byte `db:"proto"`
+	Id       string `db:"id"`
+	PuzzleId string `db:"puzle_id"`
+	Created  string `db:"created"`
+}
+
+const sql_query_game_by_id = `
+SELECT proto
+FROM games
+WHERE id = :id
+`
+
+type query_game_by_id_args struct {
+	Id string `db:"id"`
 }

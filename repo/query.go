@@ -10,6 +10,7 @@ import (
 
 var (
 	ErrNoSuchPuzzle = errors.New("no such puzzle")
+	ErrNoSuchGame   = errors.New("no such game")
 )
 
 func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {
@@ -40,6 +41,23 @@ func (r *Repository) PuzzleById(id string) (*pb.Puzzle, error) {
 		return nil, err
 	}
 	var out pb.Puzzle
+	if err := proto.Unmarshal(data, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (r *Repository) GameById(id string) (*pb.Game, error) {
+	var data []byte
+	if err := namedGet(r.db, &data, sql_query_game_by_id, query_game_by_id_args{
+		Id: id,
+	}); err != nil {
+		if err == sql.ErrNoRows {
+			err = ErrNoSuchGame
+		}
+		return nil, err
+	}
+	var out pb.Game
 	if err := proto.Unmarshal(data, &out); err != nil {
 		return nil, err
 	}
