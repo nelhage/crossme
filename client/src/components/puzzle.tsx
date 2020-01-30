@@ -13,6 +13,7 @@ import { Sidebar } from "./sidebar";
 
 export interface PuzzleProps {
   puzzle: Types.Puzzle;
+  gameId?: string;
 }
 
 export interface PuzzleState {
@@ -61,6 +62,10 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   keyDown(e: KeyboardEvent) {
+    if (!this.props.gameId) {
+      return;
+    }
+
     const target = e.target;
     if (target instanceof HTMLElement) {
       if (target.nodeName === "INPUT" && target.classList.contains("fill")) {
@@ -187,30 +192,39 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
   render() {
     const sel = Crossword.selectedSquare(this.state.game);
+    const playing = this.props.gameId ? true : undefined;
     return (
       <div id="puzzle">
         <Metadata puzzle={this.props.puzzle} solved={false} />
-        <CurrentClue clue={this.selectedClue()} direction={this.direction()} />
+        {playing && (
+          <CurrentClue
+            clue={this.selectedClue()}
+            direction={this.direction()}
+          />
+        )}
         <PuzzleGrid
           ref={this.grid}
           game={this.state.game}
           onClickCell={this.onClickCell}
           onInput={this.onInput}
+          showCursor={playing}
         />
         <ClueBox
           puzzle={this.props.puzzle}
-          down_clue={sel.clueDown}
-          across_clue={sel.clueAcross}
+          down_clue={playing && sel.clueDown}
+          across_clue={playing && sel.clueAcross}
           direction={this.direction()}
           onSelect={this.onSelectClue}
         />
-        <Sidebar
-          openRebus={this.openRebus}
-          pencil={this.state.game.cursor.pencil}
-          setPencil={this.setPencil}
-          doReveal={this.doReveal}
-          doCheck={this.doCheck}
-        />
+        {playing && (
+          <Sidebar
+            openRebus={this.openRebus}
+            pencil={this.state.game.cursor.pencil}
+            setPencil={this.setPencil}
+            doReveal={this.doReveal}
+            doCheck={this.doCheck}
+          />
+        )}
       </div>
     );
   }

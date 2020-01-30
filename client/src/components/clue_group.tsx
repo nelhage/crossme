@@ -7,7 +7,7 @@ import { Clue } from "./clue";
 export interface ClueGroupProps {
   active: boolean;
   direction: Types.Direction;
-  selected: number;
+  selected?: number;
   clues: Types.Clue[];
 
   onSelect: (evt: Types.SelectClueEvent) => void;

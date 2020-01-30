@@ -5,8 +5,8 @@ import { ClueGroup } from "./clue_group";
 
 export interface ClueBoxProps {
   puzzle: Puzzle;
-  across_clue: number;
-  down_clue: number;
+  across_clue?: number;
+  down_clue?: number;
   direction: Direction;
 
   onSelect: (evt: SelectClueEvent) => any;

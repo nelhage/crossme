@@ -7,6 +7,7 @@ import { PuzzleCell, PuzzleCellProps, InWord } from "./puzzle_cell";
 
 export interface PuzzleGridProps {
   game: Crossword.Game;
+  showCursor?: boolean;
 
   onClickCell: (arg: Types.Position) => void;
   onInput: (arg: string) => void;
@@ -30,6 +31,9 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   }
 
   onClick(evt: React.MouseEvent<HTMLDivElement>) {
+    if (!this.props.showCursor) {
+      return;
+    }
     const target = evt.currentTarget as HTMLDivElement;
     (window as any).clickTarget = target;
     const row = parseInt(target.dataset.row as string, 10);
@@ -38,6 +42,9 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
   }
 
   onInput(e: React.FormEvent<HTMLInputElement>) {
+    if (!this.props.showCursor) {
+      return;
+    }
     const target = e.target as HTMLInputElement;
     const fill = target.value.toUpperCase();
     this.props.onInput(fill);
@@ -73,7 +80,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           row: r,
           column: c
         };
-        if (!cell.black) {
+        if (this.props.showCursor && !cell.black) {
           if (
             r === this.props.game.cursor.row &&
             c === this.props.game.cursor.column
