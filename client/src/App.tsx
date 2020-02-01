@@ -4,7 +4,8 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  useParams
+  useParams,
+  useLocation
 } from "react-router-dom";
 
 import "./App.css";
@@ -12,13 +13,20 @@ import "./App.css";
 import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
 
 import { ClientContext } from "./rpc";
-import { PuzzleContainer } from "./components/puzzle_container";
+import { PreviewContainer } from "./components/preview_container";
+import { GameContainer } from "./components/game_container";
 import { HomePage } from "./components/home_page";
 import { Header } from "./components/header";
 
-const RoutePuzzle: React.FC = () => {
+const RoutePreview: React.FC = () => {
   const { puzzleId } = useParams<{ puzzleId: string }>();
-  return <PuzzleContainer puzzleId={puzzleId} />;
+  return <PreviewContainer puzzleId={puzzleId} />;
+};
+
+const RouteGame: React.FC = () => {
+  const { gameId } = useParams<{ gameId: string }>();
+  const loc = useLocation();
+  return <GameContainer gameId={gameId} puzzleId={loc.state.puzzleId} />;
 };
 
 const App: React.FC = () => {
@@ -37,8 +45,12 @@ const App: React.FC = () => {
               <HomePage />
             </Route>
 
-            <Route path="/puzzle/:puzzleId">
-              <RoutePuzzle />
+            <Route path="/preview/:puzzleId">
+              <RoutePreview />
+            </Route>
+
+            <Route path="/game/:gameId">
+              <RouteGame />
             </Route>
           </Switch>
         </div>

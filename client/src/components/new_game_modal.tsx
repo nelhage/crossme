@@ -46,11 +46,29 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       setSelectedId(value.value);
     }
   };
-  const newGame = () => {
+  const preview = () => {
     if (selectedId) {
-      history.push(`/puzzle/${selectedId}`);
+      history.push(`/preview/${selectedId}`);
       onClose();
     }
+  };
+  const newGame = () => {
+    if (!selectedId) {
+      return;
+    }
+    const args = new Pb.NewGameArgs();
+    args.setPuzzleId(selectedId);
+    client.newGame(args, null, (err, resp) => {
+      if (err !== null) {
+        console.log("unable to create new game: ", err);
+        return;
+      }
+      const game = resp.getGame();
+      if (game) {
+        history.push(`/game/${game.getId()}`, { puzzleId: selectedId });
+        onClose();
+      }
+    });
   };
   return (
     <Modal show={show} onHide={onClose}>
@@ -68,10 +86,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
               </Form.Row>
               <Form.Row className="mb-3">
                 <ButtonGroup>
-                  <Button
-                    variant="secondary"
-                    /*onClick={this.doPreview.bind(this)}*/
-                  >
+                  <Button variant="secondary" onClick={preview}>
                     Preview
                   </Button>
                   <Button variant="primary" onClick={newGame}>

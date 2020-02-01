@@ -4,13 +4,13 @@ import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
 
 import * as Pb from "../pb/crossme_pb";
-import { useClient } from "../rpc";
+import { useClient, proto2Puzzle } from "../rpc";
 
-export interface PuzzleContainerProps {
+export interface PreviewContainerProps {
   puzzleId: string;
 }
 
-export const PuzzleContainer: React.FC<PuzzleContainerProps> = ({
+export const PreviewContainer: React.FC<PreviewContainerProps> = ({
   puzzleId
 }) => {
   const [puzzle, setPuzzle] = useState(null as null | Types.Puzzle);
@@ -27,24 +27,7 @@ export const PuzzleContainer: React.FC<PuzzleContainerProps> = ({
       if (!proto) {
         return;
       }
-      const puz: Types.Puzzle = {
-        title: proto.getTitle(),
-        author: proto.getAuthor(),
-        copyright: proto.getCopyright(),
-        note: proto.getNote(),
-        width: proto.getWidth(),
-        height: proto.getHeight(),
-        squares: proto.getSquaresList().map(sq => {
-          const conv = sq.toObject();
-          if (conv.number === 0) {
-            delete conv.number;
-          }
-          return conv;
-        }),
-        across_clues: proto.getAcrossCluesList().map(c => c.toObject()),
-        down_clues: proto.getDownCluesList().map(c => c.toObject())
-      };
-      setPuzzle(puz);
+      setPuzzle(proto2Puzzle(proto));
     });
   }, [client, puzzleId]);
   if (puzzle) {
