@@ -103,7 +103,8 @@ func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
 		&insert_game_args{
 			Proto:    protobytes,
 			Id:       game.Id,
-			PuzzleId: game.Created.String(),
+			PuzzleId: puzzle_id,
+			Created:  game.Created.String(),
 		}); err != nil {
 		return nil, err
 	}

@@ -88,7 +88,7 @@ VALUES (:proto, :id, :puzzle_id, :created)
 type insert_game_args struct {
 	Proto    []byte `db:"proto"`
 	Id       string `db:"id"`
-	PuzzleId string `db:"puzle_id"`
+	PuzzleId string `db:"puzzle_id"`
 	Created  string `db:"created"`
 }
 
