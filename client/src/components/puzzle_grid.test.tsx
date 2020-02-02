@@ -41,7 +41,12 @@ it("renders a grid", () => {
   );
 
   const { container, rerender } = render(
-    <PuzzleGrid game={game} onClickCell={onClickCell} onInput={onInput} />
+    <PuzzleGrid
+      showCursor={true}
+      game={game}
+      onClickCell={onClickCell}
+      onInput={onInput}
+    />
   );
   const activeCell = getCellAt(container, 1, 2);
   expect(activeCell.className).toContain("selected");
@@ -51,7 +56,12 @@ it("renders a grid", () => {
   );
 
   rerender(
-    <PuzzleGrid game={newGame} onClickCell={onClickCell} onInput={onInput} />
+    <PuzzleGrid
+      showCursor={true}
+      game={newGame}
+      onClickCell={onClickCell}
+      onInput={onInput}
+    />
   );
 
   expect(activeCell.className).not.toContain("selected");
