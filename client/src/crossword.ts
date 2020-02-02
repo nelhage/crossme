@@ -535,7 +535,10 @@ export function keypress(g: Game, text: string): GameUpdate {
   // At end-of-word, try wrapping to the beginning
   // TODO(pref): this.state.profile.settingEndWordBack
   const first = lastBlankInWord(g, cursor, -dr, -dc);
-  if (first) {
+  if (
+    first &&
+    !(first.column === g.cursor.column && first.row === g.cursor.row)
+  ) {
     return { ...update, cursor: first };
   }
 

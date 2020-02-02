@@ -263,6 +263,24 @@ describe("crossword operations", () => {
 `
     ],
     [
+      "insert at end of word",
+      `
+# A B .>#
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.keypress(g, "C"),
+      `
+# A B C #
+.>. . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
       "overwrite at end of word",
       `
 # A B C>#
