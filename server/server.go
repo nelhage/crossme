@@ -37,7 +37,7 @@ type gameState struct {
 
 	// Guarded by Mutex
 	clients map[*clientState]struct{}
-	fill    *pb.Fill
+	game    *pb.Game
 }
 
 type clientState struct {
@@ -121,7 +121,7 @@ func (s *Server) UploadPuzzle(ctx context.Context, in *pb.UploadPuzzleArgs) (*pb
 	}, nil
 }
 
-func (s *Server) getGame(gameid string) *gameState {
+func (s *Server) getGame(gameid string) (*gameState, error) {
 	s.Lock()
 	defer s.Unlock()
 	if s.games == nil {
@@ -129,17 +129,24 @@ func (s *Server) getGame(gameid string) *gameState {
 	}
 	puz, ok := s.games[gameid]
 	if !ok {
+		game, err := s.repo.GameById(gameid)
+		if err != nil {
+			return nil, err
+		}
 		puz = &gameState{
 			clients: make(map[*clientState]struct{}),
-			fill:    &pb.Fill{},
+			game:    game,
 		}
 		s.games[gameid] = puz
 	}
-	return puz
+	return puz, nil
 }
 
-func (s *Server) startSubscription(gameid, nodeid string) (*gameState, *clientState) {
-	game := s.getGame(gameid)
+func (s *Server) startSubscription(gameid, nodeid string) (*gameState, *clientState, error) {
+	game, err := s.getGame(gameid)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	game.Lock()
 	defer game.Unlock()
@@ -148,10 +155,10 @@ func (s *Server) startSubscription(gameid, nodeid string) (*gameState, *clientSt
 		nodeid: nodeid,
 		wakeup: make(chan struct{}, 1),
 	}
-	client.pending = game.fill
+	client.pending = game.game.Fill
 	client.wakeup <- struct{}{}
 	game.clients[client] = struct{}{}
-	return game, client
+	return game, client, nil
 }
 
 func (s *Server) stopSubscription(game *gameState, client *clientState) {
@@ -166,11 +173,12 @@ func (s *Server) broadcastFill(ctx context.Context,
 	game.Lock()
 	defer game.Unlock()
 
-	if merged, err := crdt.Merge(game.fill, fill); err != nil {
+	if merged, err := crdt.Merge(game.game.Fill, fill); err != nil {
 		game.Unlock()
 		return err
 	} else {
-		game.fill = merged
+		game.game.Fill = merged
+		s.repo.UpdateGame(game.game)
 	}
 
 	for client, _ := range game.clients {
@@ -214,7 +222,13 @@ func (s *Server) streamToClient(ctx context.Context,
 }
 
 func (s *Server) UpdateFill(ctx context.Context, in *pb.UpdateFillArgs) (*pb.UpdateFillResponse, error) {
-	game := s.getGame(in.GameId)
+	game, err := s.getGame(in.GameId)
+	if err != nil {
+		if err == repo.ErrNoSuchGame {
+			err = status.Error(codes.NotFound, "no such game")
+		}
+		return nil, err
+	}
 
 	return &pb.UpdateFillResponse{}, s.broadcastFill(ctx, game, in.Fill)
 }
@@ -222,7 +236,13 @@ func (s *Server) UpdateFill(ctx context.Context, in *pb.UpdateFillArgs) (*pb.Upd
 func (s *Server) Subscribe(in *pb.SubscribeArgs, stream pb.CrossMe_SubscribeServer) error {
 	ctx := stream.Context()
 
-	game, client := s.startSubscription(in.GameId, in.NodeId)
+	game, client, err := s.startSubscription(in.GameId, in.NodeId)
+	if err != nil {
+		if err == repo.ErrNoSuchGame {
+			err = status.Error(codes.NotFound, "no such game")
+		}
+		return err
+	}
 	defer s.stopSubscription(game, client)
 
 	return s.streamToClient(ctx, stream, game, client)
