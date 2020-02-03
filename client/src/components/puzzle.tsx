@@ -2,9 +2,13 @@ import React from "react";
 
 import "./style/puzzle.css";
 
+import * as grpcWeb from "grpc-web";
+
 import * as Types from "../types";
 import * as Crossword from "../crossword";
+import * as Pb from "../pb/crossme_pb";
 
+import { ClientContext } from "../rpc";
 import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
 import { CurrentClue } from "./current_clue";
@@ -21,6 +25,10 @@ export interface PuzzleState {
 }
 
 export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
+  static contextType = ClientContext;
+  context!: React.ContextType<typeof ClientContext>;
+
+  subscription?: grpcWeb.ClientReadableStream<Pb.SubscribeEvent>;
   grid: React.RefObject<PuzzleGrid>;
 
   constructor(props: PuzzleProps) {
@@ -41,10 +49,24 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
-    this.setState(state => ({
-      ...state,
-      game: Crossword.withUpdate(state.game, op(state.game))
-    }));
+    this.setState(state => {
+      const update = op(state.game);
+      if (update.fill && this.props.gameId) {
+        const args = new Pb.UpdateFillArgs();
+        args.setGameId(this.props.gameId);
+        args.setNodeId(this.state.game.nodeID);
+        args.setFill(update.fill);
+        this.context.updateFill(args, null, (err, _) => {
+          if (err) {
+            console.log("Error updating fill: %j", err);
+          }
+        });
+      }
+      return {
+        ...state,
+        game: Crossword.withUpdate(state.game, update)
+      };
+    });
   }
 
   openRebus() {
@@ -182,12 +204,48 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     throw new Error("illegal clue");
   }
 
+  startSubscription() {
+    if (!this.props.gameId) {
+      return;
+    }
+    const client = this.context;
+    const args = new Pb.SubscribeArgs();
+    args.setGameId(this.props.gameId);
+    args.setNodeId(this.state.game.nodeID);
+    this.subscription = client.subscribe(args);
+    this.subscription.on("data", (ev: Pb.SubscribeEvent) => {
+      const fill = ev.getFill();
+      if (!fill) {
+        return;
+      }
+      this.setState(state => ({
+        ...state,
+        game: Crossword.withUpdate(state.game, { fill })
+      }));
+    });
+    this.subscription.on("error", (err: grpcWeb.Error) => {
+      console.log("subscription errored: %j", err);
+    });
+    this.subscription.on("end", () => {
+      console.log("subscription ended");
+      this.subscription = undefined;
+      setTimeout(() => this.startSubscription(), 0);
+    });
+  }
+
+  stopSubscription() {
+    if (this.subscription) {
+    }
+  }
+
   componentDidMount() {
     window.addEventListener("keydown", this.keyDown);
+    this.startSubscription();
   }
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.keyDown);
+    this.startSubscription();
   }
 
   render() {
