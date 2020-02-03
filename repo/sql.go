@@ -101,3 +101,14 @@ WHERE id = :id
 type query_game_by_id_args struct {
 	Id string `db:"id"`
 }
+
+const sql_update_game = `
+UPDATE games
+SET proto = :proto
+WHERE id = :id
+`
+
+type update_game_args struct {
+	Id    string `db:"id"`
+	Proto []byte `db:"proto"`
+}

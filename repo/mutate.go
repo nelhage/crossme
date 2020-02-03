@@ -112,3 +112,15 @@ func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
 	return &game, tx.Commit()
 
 }
+
+func (r *Repository) UpdateGame(game *pb.Game) error {
+	protobytes, err := proto.Marshal(game)
+	if err != nil {
+		return err
+	}
+	_, err = r.db.NamedExec(sql_update_game, &update_game_args{
+		Id:    game.Id,
+		Proto: protobytes,
+	})
+	return err
+}
