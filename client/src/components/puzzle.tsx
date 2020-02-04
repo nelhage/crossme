@@ -227,7 +227,6 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       console.log("subscription errored: %j", err);
     });
     this.subscription.on("end", () => {
-      console.log("subscription ended");
       this.subscription = undefined;
       setTimeout(() => this.startSubscription(), 0);
     });
@@ -235,6 +234,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
   stopSubscription() {
     if (this.subscription) {
+      this.subscription.cancel();
     }
   }
 
@@ -245,7 +245,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
   componentWillUnmount() {
     window.removeEventListener("keydown", this.keyDown);
-    this.startSubscription();
+    this.stopSubscription();
   }
 
   render() {
