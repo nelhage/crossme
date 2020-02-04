@@ -14,7 +14,12 @@ export function useClient(): CrossMeClient {
 }
 
 export function proto2Puzzle(proto: Puzzle): Types.Puzzle {
+  const meta = proto.getMetadata();
+  if (!meta) {
+    throw new Error("expected metadata");
+  }
   return {
+    id: meta.getId(),
     title: proto.getTitle(),
     author: proto.getAuthor(),
     copyright: proto.getCopyright(),

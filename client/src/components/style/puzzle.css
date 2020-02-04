@@ -26,16 +26,14 @@
     float: right;
 }
 
-#details .preview {
-    background-color: #88f;
-    font-size: 24px;
-    line-height: 30px;
-}
-
 #theclue {
     font-size: 125%;
     margin: 0px 0px 10px 0px;
     vertical-align: middle;
+}
+
+.preview button {
+    margin: 5px 0px;
 }
 
 #theclue>span {

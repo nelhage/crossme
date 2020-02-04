@@ -130,6 +130,7 @@ function parseGame(template: string): Crossword.Game {
   const [across_clues, down_clues] = computeNumbering({ width, height }, grid);
 
   const puzzle: Types.Puzzle = {
+    id: "testtest",
     title: "Test Puzzle",
     author: "Test Author",
     copyright: "Test Copyright",

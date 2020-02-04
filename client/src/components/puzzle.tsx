@@ -18,6 +18,7 @@ import { Sidebar } from "./sidebar";
 export interface PuzzleProps {
   puzzle: Types.Puzzle;
   gameId?: string;
+  startGame?: () => void;
 }
 
 export interface PuzzleState {
@@ -253,7 +254,12 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     const playing = this.props.gameId ? true : undefined;
     return (
       <div id="puzzle">
-        <Metadata puzzle={this.props.puzzle} solved={false} />
+        <Metadata
+          puzzle={this.props.puzzle}
+          solved={false}
+          preview={!playing}
+          startGame={this.props.startGame}
+        />
         {playing && (
           <CurrentClue
             clue={this.selectedClue()}

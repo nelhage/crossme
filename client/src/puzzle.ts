@@ -1,6 +1,7 @@
 import { Puzzle } from "./types";
 
 const puzzle: Puzzle = Object.freeze({
+  id: "testtest",
   title:
     'February 27, 2019  - "Ancient Capitals" - Anna Gundlach, edited by Ben Tausig',
   author: "Anna Gundlach",

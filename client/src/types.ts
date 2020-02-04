@@ -19,6 +19,7 @@ export interface Clue {
 }
 
 export interface Puzzle {
+  id: string;
   title: string;
   author: string;
   copyright: string;

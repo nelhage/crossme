@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 
+import { useHistory } from "react-router";
+
 import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
 
@@ -30,8 +32,32 @@ export const PreviewContainer: React.FC<PreviewContainerProps> = ({
       setPuzzle(proto2Puzzle(proto));
     });
   }, [client, puzzleId]);
+  const history = useHistory();
+
+  const startGame = () => {
+    if (!puzzle) {
+      return;
+    }
+    const args = new Pb.NewGameArgs();
+    args.setPuzzleId(puzzle.id);
+    client.newGame(args, null, (err, resp) => {
+      if (err !== null) {
+        console.log("unable to create new game: ", err);
+        return;
+      }
+      const game = resp.getGame();
+      if (game) {
+        history.push(`/game/${game.getId()}`, {
+          puzzleId: puzzle.id
+        });
+      }
+    });
+  };
+
   if (puzzle) {
-    return <PuzzleComponent puzzle={puzzle} key={puzzleId} />;
+    return (
+      <PuzzleComponent puzzle={puzzle} key={puzzleId} startGame={startGame} />
+    );
   } else {
     return null;
   }
