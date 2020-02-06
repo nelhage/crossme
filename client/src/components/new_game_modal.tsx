@@ -7,14 +7,68 @@ import Button from "react-bootstrap/Button";
 import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 import { useHistory } from "react-router";
+import { History } from "history";
 
 import { PuzzleIndex } from "../pb/puzzle_pb";
 import * as Pb from "../pb/crossme_pb";
+import { CrossMeClient } from "../pb/CrossmeServiceClientPb";
 import { useClient } from "../rpc";
 
 export interface NewGameModalProps {
   show: boolean;
   onClose: () => void;
+}
+
+function readFile(f: File): Promise<Uint8Array> {
+  return new Promise((resolve, reject) => {
+    const fr = new FileReader();
+    fr.onerror = () => {
+      reject(fr.error);
+    };
+    fr.onload = () => {
+      resolve(new Uint8Array(fr.result as ArrayBuffer));
+    };
+    fr.readAsArrayBuffer(f);
+  });
+}
+
+async function uploadFiles(
+  client: CrossMeClient,
+  history: History,
+  files: FileList
+) {
+  if (files.length === 0) {
+    return;
+  }
+  let resp: null | Pb.UploadPuzzleResponse = null;
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    const buf = await readFile(file);
+    resp = await new Promise((resolve, reject) => {
+      const args = new Pb.UploadPuzzleArgs();
+      args.setFilename(file.name);
+      args.setData(buf);
+      client.uploadPuzzle(args, null, (err, resp) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(resp);
+      });
+    });
+  }
+  if (!resp) {
+    return;
+  }
+  const puz = resp.getPuzzle();
+  if (!puz) {
+    return;
+  }
+  const meta = puz.getMetadata();
+  if (!meta) {
+    return;
+  }
+  history.push(`/preview/${meta.getId()}`);
 }
 
 export const NewGameModal: React.FC<NewGameModalProps> = ({
@@ -70,6 +124,19 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
       }
     });
   };
+
+  const files = React.createRef<HTMLInputElement>();
+  const handleUpload = () => {
+    if (!files.current) {
+      return;
+    }
+    const fileList = files.current.files;
+    if (!fileList) {
+      return;
+    }
+
+    uploadFiles(client, history, fileList).then(onClose);
+  };
   return (
     <Modal show={show} onHide={onClose}>
       <Modal.Header>
@@ -107,12 +174,12 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
             <input
               id="puzfile"
               type="file"
+              accept=".puz"
               className="mx-3"
-              /*ref={(c) => { this.puzzleFiles = c; }}*/ multiple
+              ref={files}
+              multiple
             />
-            <Button
-              variant="primary" /*onClick={this.handleUpload.bind(this)}*/
-            >
+            <Button variant="primary" onClick={handleUpload}>
               Upload
             </Button>
           </div>
