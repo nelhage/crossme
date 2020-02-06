@@ -55,12 +55,15 @@ func TestSubscribeSimple(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	ts, _ := makeServerWithPuzzle(t, "nyt_weekday_with_notes")
+	ts, puz := makeServerWithPuzzle(t, "nyt_weekday_with_notes")
 	cl1 := ts.Dial()
 	cl2 := ts.Dial()
 
+	g, err := cl1.NewGame(ctx, &pb.NewGameArgs{PuzzleId: puz.Metadata.Id})
+	must(t, "NewGame", err)
+
 	sub, err := cl1.Subscribe(ctx, &pb.SubscribeArgs{
-		GameId: "game1",
+		GameId: g.Game.Id,
 		NodeId: "node1",
 	})
 	must(t, "Subscribe", err)
@@ -86,7 +89,7 @@ func TestSubscribeSimple(t *testing.T) {
 	}
 
 	_, err = cl2.UpdateFill(ctx, &pb.UpdateFillArgs{
-		GameId: "game1",
+		GameId: g.Game.Id,
 		Fill:   fill,
 	})
 	must(t, "UpdateFill", err)
