@@ -43,6 +43,7 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 		Sha256: hash,
 	})
 	if err == nil {
+		puz.Metadata.Id = id
 		return id, nil
 	}
 	if err != nil && err != sql.ErrNoRows {
