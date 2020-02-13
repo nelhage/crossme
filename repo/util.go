@@ -6,7 +6,9 @@ import (
 	"database/sql"
 	"encoding/hex"
 	"fmt"
+	"time"
 
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -43,4 +45,9 @@ func NewId() string {
 		panic(fmt.Errorf("Generating id: %v", err))
 	}
 	return hex.EncodeToString(idbytes[:])
+}
+
+func formatTimestamp(proto *timestamp.Timestamp) string {
+	t := time.Unix(proto.Seconds, int64(proto.Nanos))
+	return t.Format(time.RFC3339)
 }

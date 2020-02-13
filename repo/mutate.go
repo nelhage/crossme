@@ -70,7 +70,7 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 			Id:      puz.Metadata.Id,
 			Sha256:  sql.NullString{Valid: true, String: puz.Metadata.Sha256},
 			Date:    puz.Metadata.Date,
-			Created: puz.Metadata.Created.String(),
+			Created: formatTimestamp(puz.Metadata.Created),
 		}); err != nil {
 		return "", err
 	}
@@ -105,7 +105,7 @@ func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
 			Proto:    protobytes,
 			Id:       game.Id,
 			PuzzleId: puzzle_id,
-			Created:  game.Created.String(),
+			Created:  formatTimestamp(game.Created),
 		}); err != nil {
 		return nil, err
 	}
