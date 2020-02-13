@@ -248,7 +248,6 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     });
     this.subscription.on("end", () => {
       this.reconnectDelay = Math.max(100, this.reconnectDelay);
-      console.log("subscription ended");
       this.reconnect();
     });
   }
