@@ -30,6 +30,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   context!: React.ContextType<typeof ClientContext>;
 
   subscription?: grpcWeb.ClientReadableStream<Pb.SubscribeEvent>;
+  timeoutId?: number;
+  reconnectDelay: number = 0;
+
   grid: React.RefObject<PuzzleGrid>;
 
   constructor(props: PuzzleProps) {
@@ -205,6 +208,13 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     throw new Error("illegal clue");
   }
 
+  reconnect() {
+    this.stopSubscription();
+    this.timeoutId = window.setTimeout(() => {
+      this.startSubscription();
+    }, this.reconnectDelay);
+  }
+
   startSubscription() {
     if (!this.props.gameId) {
       return;
@@ -215,6 +225,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     args.setNodeId(this.state.game.nodeID);
     this.subscription = client.subscribe(args);
     this.subscription.on("data", (ev: Pb.SubscribeEvent) => {
+      this.reconnectDelay = 0;
       const fill = ev.getFill();
       if (!fill) {
         return;
@@ -225,17 +236,31 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       }));
     });
     this.subscription.on("error", (err: grpcWeb.Error) => {
-      console.log("subscription errored: %j", err);
+      this.reconnectDelay = Math.max(this.reconnectDelay, 100);
+      this.reconnectDelay *= 1.5;
+      this.reconnectDelay = Math.min(this.reconnectDelay, 30 * 1000);
+      console.log(
+        "subscription errored: %s. Reconnecting in %fs",
+        err.message,
+        this.reconnectDelay / 1000
+      );
+      this.reconnect();
     });
     this.subscription.on("end", () => {
-      this.subscription = undefined;
-      setTimeout(() => this.startSubscription(), 0);
+      this.reconnectDelay = Math.max(100, this.reconnectDelay);
+      console.log("subscription ended");
+      this.reconnect();
     });
   }
 
   stopSubscription() {
     if (this.subscription) {
       this.subscription.cancel();
+      this.subscription = undefined;
+    }
+    if (this.timeoutId) {
+      window.clearTimeout(this.timeoutId);
+      this.timeoutId = undefined;
     }
   }
 
