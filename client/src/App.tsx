@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo, useState } from "react";
 
 import {
   BrowserRouter as Router,
@@ -13,6 +13,7 @@ import "./App.css";
 import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
 
 import { ClientContext } from "./rpc";
+import { CurrentUser } from "./user";
 import { PreviewContainer } from "./components/preview_container";
 import { GameContainer } from "./components/game_container";
 import { HomePage } from "./components/home_page";
@@ -31,31 +32,34 @@ const RouteGame: React.FC = () => {
 };
 
 const App: React.FC = () => {
-  const client = React.useMemo(
+  const client = useMemo(
     () => new CrossMeClient(window.location.origin + "/api", null, null),
     []
   );
+  const [user, setUser] = useState<null | gapi.auth2.GoogleUser>(null);
 
   return (
     <ClientContext.Provider value={client}>
-      <Router>
-        <div className="App">
-          <Header />
-          <Switch>
-            <Route exact path="/">
-              <HomePage />
-            </Route>
+      <CurrentUser.Provider value={user}>
+        <Router>
+          <div className="App">
+            <Header setUser={setUser} />
+            <Switch>
+              <Route exact path="/">
+                <HomePage />
+              </Route>
 
-            <Route path="/preview/:puzzleId">
-              <RoutePreview />
-            </Route>
+              <Route path="/preview/:puzzleId">
+                <RoutePreview />
+              </Route>
 
-            <Route path="/game/:gameId">
-              <RouteGame />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
+              <Route path="/game/:gameId">
+                <RouteGame />
+              </Route>
+            </Switch>
+          </div>
+        </Router>
+      </CurrentUser.Provider>
     </ClientContext.Provider>
   );
 };
