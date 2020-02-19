@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 
 import Nav from "react-bootstrap/Nav";
 
@@ -20,8 +20,7 @@ export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
     setUser(googleUser);
   };
 
-  useEffect(() => {
-    console.log("rendering google signin button");
+  const renderButton = () => {
     gapi.load("auth2", () => {
       gapi.auth2
         .init({
@@ -41,6 +40,17 @@ export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
           });
         });
     });
+  };
+
+  useEffect(() => {
+    if (window.gapi) {
+      renderButton();
+    } else {
+      window.addEventListener("crossme.gapi.loaded", renderButton);
+      return () => {
+        window.removeEventListener("crossme.gapi.loaded", renderButton);
+      };
+    }
   });
 
   return (
