@@ -5,12 +5,14 @@ import { Puzzle } from "./pb/puzzle_pb";
 
 import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
 
-export const ClientContext = React.createContext<CrossMeClient>(
-  (null as unknown) as CrossMeClient
-);
+export const ClientContext = React.createContext<null | CrossMeClient>(null);
 
 export function useClient(): CrossMeClient {
-  return useContext(ClientContext);
+  const client = useContext(ClientContext);
+  if (!client) {
+    throw new Error("useClient called without a client in context");
+  }
+  return client;
 }
 
 export function proto2Puzzle(proto: Puzzle): Types.Puzzle {

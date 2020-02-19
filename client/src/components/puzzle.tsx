@@ -7,6 +7,7 @@ import * as grpcWeb from "grpc-web";
 import * as Types from "../types";
 import * as Crossword from "../crossword";
 import * as Pb from "../pb/crossme_pb";
+import { CrossMeClient } from "../pb/CrossmeServiceClientPb";
 
 import { ClientContext } from "../rpc";
 import { Metadata } from "./metadata";
@@ -28,6 +29,13 @@ export interface PuzzleState {
 export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   static contextType = ClientContext;
   context!: React.ContextType<typeof ClientContext>;
+
+  client(): CrossMeClient {
+    if (!this.context) {
+      throw new Error("PuzzleComponent without client!");
+    }
+    return this.context;
+  }
 
   subscription?: grpcWeb.ClientReadableStream<Pb.SubscribeEvent>;
   timeoutId?: number;
@@ -60,7 +68,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         args.setGameId(this.props.gameId);
         args.setNodeId(this.state.game.nodeID);
         args.setFill(update.fill);
-        this.context.updateFill(args, null, (err, _) => {
+        this.client().updateFill(args, null, (err, _) => {
           if (err) {
             console.log("Error updating fill: %j", err);
           }
@@ -219,11 +227,10 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     if (!this.props.gameId) {
       return;
     }
-    const client = this.context;
     const args = new Pb.SubscribeArgs();
     args.setGameId(this.props.gameId);
     args.setNodeId(this.state.game.nodeID);
-    this.subscription = client.subscribe(args);
+    this.subscription = this.client().subscribe(args);
     this.subscription.on("data", (ev: Pb.SubscribeEvent) => {
       this.reconnectDelay = 0;
       const fill = ev.getFill();
