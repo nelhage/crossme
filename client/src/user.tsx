@@ -1,9 +1,19 @@
 import React, { useContext } from "react";
 
-export const CurrentUser = React.createContext<null | gapi.auth2.GoogleUser>(
-  null
-);
+export interface GoogleSession {
+  type: "google";
+  user: gapi.auth2.GoogleUser;
+}
 
-export function useCurrentUser(): null | gapi.auth2.GoogleUser {
+export interface AnonymousSession {
+  type: "anonymous";
+  user_id: string;
+}
+
+export type Session = GoogleSession | AnonymousSession;
+
+export const CurrentUser = React.createContext<null | Session>(null);
+
+export function useCurrentUser(): null | Session {
   return useContext(CurrentUser);
 }

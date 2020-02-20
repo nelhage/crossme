@@ -13,7 +13,7 @@ import "./App.css";
 import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
 
 import { ClientContext } from "./rpc";
-import { CurrentUser } from "./user";
+import { CurrentUser, Session } from "./user";
 import { PreviewContainer } from "./components/preview_container";
 import { GameContainer } from "./components/game_container";
 import { HomePage } from "./components/home_page";
@@ -36,7 +36,7 @@ const App: React.FC = () => {
     () => new CrossMeClient(window.location.origin + "/api", null, null),
     []
   );
-  const [user, setUser] = useState<null | gapi.auth2.GoogleUser>(null);
+  const [user, setUser] = useState<null | Session>(null);
 
   return (
     <ClientContext.Provider value={client}>

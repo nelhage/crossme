@@ -2,14 +2,14 @@ import React, { useEffect } from "react";
 
 import Nav from "react-bootstrap/Nav";
 
-import { useCurrentUser } from "../user";
+import { Session, useCurrentUser } from "../user";
 
 const CLIENT_ID =
   "226414555417-lu10riueco1dueh39t32dlvtffp0d0kf.apps.googleusercontent.com";
 const LOGIN_ID = "btn-login-with-google";
 
 export interface LoginButtonProps {
-  setUser: (user: null | gapi.auth2.GoogleUser) => void;
+  setUser: (user: null | Session) => void;
 }
 
 export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
@@ -17,7 +17,10 @@ export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
   const onSignIn = (googleUser: gapi.auth2.GoogleUser) => {
     console.log("logged in: %o", googleUser);
     console.log("profile: %o", googleUser.getBasicProfile());
-    setUser(googleUser);
+    setUser({
+      type: "google",
+      user: googleUser
+    });
   };
 
   const renderButton = () => {
