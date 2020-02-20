@@ -2,7 +2,9 @@ import React, { useContext } from "react";
 
 export interface GoogleSession {
   type: "google";
-  user: gapi.auth2.GoogleUser;
+  user_id: string;
+  name: string;
+  auth: gapi.auth2.AuthResponse;
 }
 
 export interface AnonymousSession {

@@ -15,11 +15,12 @@ export interface LoginButtonProps {
 export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
   // const user = useCurrentUser();
   const onSignIn = (googleUser: gapi.auth2.GoogleUser) => {
-    console.log("logged in: %o", googleUser);
-    console.log("profile: %o", googleUser.getBasicProfile());
+    const profile = googleUser.getBasicProfile();
     setUser({
       type: "google",
-      user: googleUser
+      user_id: googleUser.getId(),
+      name: profile.getName(),
+      auth: googleUser.getAuthResponse()
     });
   };
 
