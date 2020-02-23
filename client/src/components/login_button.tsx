@@ -13,9 +13,12 @@ export interface LoginButtonProps {
 }
 
 export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
-  // const user = useCurrentUser();
+  const user = useCurrentUser();
   const onSignIn = (googleUser: gapi.auth2.GoogleUser) => {
     const profile = googleUser.getBasicProfile();
+    if (user && user.type === "google" && user.user_id === googleUser.getId()) {
+      return;
+    }
     setUser({
       type: "google",
       user_id: googleUser.getId(),
@@ -55,7 +58,7 @@ export const LoginButton: React.FC<LoginButtonProps> = ({ setUser }) => {
         window.removeEventListener("crossme.gapi.loaded", renderButton);
       };
     }
-  });
+  }, []);
 
   return (
     <Nav.Item>
