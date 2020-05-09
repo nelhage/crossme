@@ -15,8 +15,8 @@ class Home extends React.Component {
         <h2>Welcome to CrossMe!</h2>
 
         <p>CrossMe is an online collaborative crossword-puzzle solver,
-        written in <a href="http://www.meteor.com/">Meteor</a> by{' '}
-        <a href="https://nelhage.com/">Nelson Elhage</a>.
+        written in <a href="http://www.meteor.com/">Meteor</a> by
+        {' '}<a href="https://nelhage.com/">Nelson Elhage</a>.
         </p>
 
         <p>To get started, just click &quot;New Game&quot; above, select a puzzle
