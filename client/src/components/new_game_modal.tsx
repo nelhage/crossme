@@ -168,7 +168,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
         <hr />
 
         <Form>
-          <div>
+          <div className="form-group">
             Or upload new{" "}
             <a href="https://code.google.com/p/puz/wiki/FileFormat">.puz</a>:
             <input
@@ -179,6 +179,8 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
               ref={files}
               multiple
             />
+          </div>
+          <div className="form-group">
             <Button variant="primary" onClick={handleUpload}>
               Upload
             </Button>
