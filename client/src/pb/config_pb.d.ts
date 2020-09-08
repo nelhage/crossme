@@ -1,8 +1,10 @@
-import * as jspb from "google-protobuf"
+import * as jspb from 'google-protobuf'
+
+
 
 export class Config extends jspb.Message {
   getSchemaVersion(): number;
-  setSchemaVersion(value: number): void;
+  setSchemaVersion(value: number): Config;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Config.AsObject;

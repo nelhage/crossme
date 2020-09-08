@@ -51,7 +51,7 @@ func makeServer(t *testing.T) *TestServer {
 	if err != nil {
 		t.Fatalf("open repo: %v", err)
 	}
-	pb.RegisterCrossMeServer(srv.grpc, &Server{repo: srv.repo})
+	pb.RegisterCrossMeService(srv.grpc, pb.NewCrossMeService(&Server{repo: srv.repo}))
 	go func() {
 		if err := srv.grpc.Serve(srv.listener); err != nil {
 			t.Fatal("grpc.Serve: ", err)

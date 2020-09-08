@@ -30,7 +30,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterCrossMeServer(grpcServer, srv)
+	pb.RegisterCrossMeService(grpcServer, pb.NewCrossMeService(srv))
 
 	if err := grpcServer.Serve(lis); err != nil {
 		log.Fatal("grpc.Serve: ", err)

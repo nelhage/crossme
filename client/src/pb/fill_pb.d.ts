@@ -1,20 +1,22 @@
-import * as jspb from "google-protobuf"
+import * as jspb from 'google-protobuf'
+
+
 
 export class Fill extends jspb.Message {
   getComplete(): boolean;
-  setComplete(value: boolean): void;
+  setComplete(value: boolean): Fill;
 
   getClock(): number;
-  setClock(value: number): void;
+  setClock(value: number): Fill;
 
   getNodesList(): Array<string>;
-  setNodesList(value: Array<string>): void;
-  clearNodesList(): void;
-  addNodes(value: string, index?: number): void;
+  setNodesList(value: Array<string>): Fill;
+  clearNodesList(): Fill;
+  addNodes(value: string, index?: number): Fill;
 
   getCellsList(): Array<Fill.Cell>;
-  setCellsList(value: Array<Fill.Cell>): void;
-  clearCellsList(): void;
+  setCellsList(value: Array<Fill.Cell>): Fill;
+  clearCellsList(): Fill;
   addCells(value?: Fill.Cell, index?: number): Fill.Cell;
 
   serializeBinary(): Uint8Array;
@@ -35,19 +37,19 @@ export namespace Fill {
 
   export class Cell extends jspb.Message {
     getIndex(): number;
-    setIndex(value: number): void;
+    setIndex(value: number): Cell;
 
     getClock(): number;
-    setClock(value: number): void;
+    setClock(value: number): Cell;
 
     getOwner(): number;
-    setOwner(value: number): void;
+    setOwner(value: number): Cell;
 
     getFill(): string;
-    setFill(value: string): void;
+    setFill(value: string): Cell;
 
     getFlags(): number;
-    setFlags(value: number): void;
+    setFlags(value: number): Cell;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Cell.AsObject;

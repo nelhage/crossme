@@ -1,45 +1,46 @@
-import * as jspb from "google-protobuf"
+import * as jspb from 'google-protobuf'
 
 import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
 
+
 export class Puzzle extends jspb.Message {
   getTitle(): string;
-  setTitle(value: string): void;
+  setTitle(value: string): Puzzle;
 
   getAuthor(): string;
-  setAuthor(value: string): void;
+  setAuthor(value: string): Puzzle;
 
   getCopyright(): string;
-  setCopyright(value: string): void;
+  setCopyright(value: string): Puzzle;
 
   getNote(): string;
-  setNote(value: string): void;
+  setNote(value: string): Puzzle;
 
   getWidth(): number;
-  setWidth(value: number): void;
+  setWidth(value: number): Puzzle;
 
   getHeight(): number;
-  setHeight(value: number): void;
+  setHeight(value: number): Puzzle;
 
   getSquaresList(): Array<Puzzle.Cell>;
-  setSquaresList(value: Array<Puzzle.Cell>): void;
-  clearSquaresList(): void;
+  setSquaresList(value: Array<Puzzle.Cell>): Puzzle;
+  clearSquaresList(): Puzzle;
   addSquares(value?: Puzzle.Cell, index?: number): Puzzle.Cell;
 
   getAcrossCluesList(): Array<Puzzle.Clue>;
-  setAcrossCluesList(value: Array<Puzzle.Clue>): void;
-  clearAcrossCluesList(): void;
+  setAcrossCluesList(value: Array<Puzzle.Clue>): Puzzle;
+  clearAcrossCluesList(): Puzzle;
   addAcrossClues(value?: Puzzle.Clue, index?: number): Puzzle.Clue;
 
   getDownCluesList(): Array<Puzzle.Clue>;
-  setDownCluesList(value: Array<Puzzle.Clue>): void;
-  clearDownCluesList(): void;
+  setDownCluesList(value: Array<Puzzle.Clue>): Puzzle;
+  clearDownCluesList(): Puzzle;
   addDownClues(value?: Puzzle.Clue, index?: number): Puzzle.Clue;
 
   getMetadata(): Puzzle.Meta | undefined;
-  setMetadata(value?: Puzzle.Meta): void;
+  setMetadata(value?: Puzzle.Meta): Puzzle;
   hasMetadata(): boolean;
-  clearMetadata(): void;
+  clearMetadata(): Puzzle;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): Puzzle.AsObject;
@@ -65,22 +66,22 @@ export namespace Puzzle {
 
   export class Cell extends jspb.Message {
     getNumber(): number;
-    setNumber(value: number): void;
+    setNumber(value: number): Cell;
 
     getBlack(): boolean;
-    setBlack(value: boolean): void;
+    setBlack(value: boolean): Cell;
 
     getCircled(): boolean;
-    setCircled(value: boolean): void;
+    setCircled(value: boolean): Cell;
 
     getFill(): string;
-    setFill(value: string): void;
+    setFill(value: string): Cell;
 
     getClueAcross(): number;
-    setClueAcross(value: number): void;
+    setClueAcross(value: number): Cell;
 
     getClueDown(): number;
-    setClueDown(value: number): void;
+    setClueDown(value: number): Cell;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Cell.AsObject;
@@ -104,10 +105,10 @@ export namespace Puzzle {
 
   export class Clue extends jspb.Message {
     getNumber(): number;
-    setNumber(value: number): void;
+    setNumber(value: number): Clue;
 
     getText(): string;
-    setText(value: string): void;
+    setText(value: string): Clue;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Clue.AsObject;
@@ -127,18 +128,18 @@ export namespace Puzzle {
 
   export class Meta extends jspb.Message {
     getCreated(): google_protobuf_timestamp_pb.Timestamp | undefined;
-    setCreated(value?: google_protobuf_timestamp_pb.Timestamp): void;
+    setCreated(value?: google_protobuf_timestamp_pb.Timestamp): Meta;
     hasCreated(): boolean;
-    clearCreated(): void;
+    clearCreated(): Meta;
 
     getSha256(): string;
-    setSha256(value: string): void;
+    setSha256(value: string): Meta;
 
     getId(): string;
-    setId(value: string): void;
+    setId(value: string): Meta;
 
     getDate(): string;
-    setDate(value: string): void;
+    setDate(value: string): Meta;
 
     serializeBinary(): Uint8Array;
     toObject(includeInstance?: boolean): Meta.AsObject;
@@ -161,13 +162,13 @@ export namespace Puzzle {
 
 export class PuzzleIndex extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): PuzzleIndex;
 
   getTitle(): string;
-  setTitle(value: string): void;
+  setTitle(value: string): PuzzleIndex;
 
   getDate(): string;
-  setDate(value: string): void;
+  setDate(value: string): PuzzleIndex;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): PuzzleIndex.AsObject;

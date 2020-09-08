@@ -1,8 +1,9 @@
-import * as jspb from "google-protobuf"
+import * as jspb from 'google-protobuf'
 
 import * as puzzle_pb from './puzzle_pb';
 import * as fill_pb from './fill_pb';
 import * as game_pb from './game_pb';
+
 
 export class GetPuzzleIndexArgs extends jspb.Message {
   serializeBinary(): Uint8Array;
@@ -20,8 +21,8 @@ export namespace GetPuzzleIndexArgs {
 
 export class GetPuzzleIndexResponse extends jspb.Message {
   getPuzzlesList(): Array<puzzle_pb.PuzzleIndex>;
-  setPuzzlesList(value: Array<puzzle_pb.PuzzleIndex>): void;
-  clearPuzzlesList(): void;
+  setPuzzlesList(value: Array<puzzle_pb.PuzzleIndex>): GetPuzzleIndexResponse;
+  clearPuzzlesList(): GetPuzzleIndexResponse;
   addPuzzles(value?: puzzle_pb.PuzzleIndex, index?: number): puzzle_pb.PuzzleIndex;
 
   serializeBinary(): Uint8Array;
@@ -40,7 +41,7 @@ export namespace GetPuzzleIndexResponse {
 
 export class GetPuzzleByIdArgs extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): GetPuzzleByIdArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPuzzleByIdArgs.AsObject;
@@ -58,9 +59,9 @@ export namespace GetPuzzleByIdArgs {
 
 export class GetPuzzleResponse extends jspb.Message {
   getPuzzle(): puzzle_pb.Puzzle | undefined;
-  setPuzzle(value?: puzzle_pb.Puzzle): void;
+  setPuzzle(value?: puzzle_pb.Puzzle): GetPuzzleResponse;
   hasPuzzle(): boolean;
-  clearPuzzle(): void;
+  clearPuzzle(): GetPuzzleResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetPuzzleResponse.AsObject;
@@ -78,7 +79,7 @@ export namespace GetPuzzleResponse {
 
 export class NewGameArgs extends jspb.Message {
   getPuzzleId(): string;
-  setPuzzleId(value: string): void;
+  setPuzzleId(value: string): NewGameArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): NewGameArgs.AsObject;
@@ -96,9 +97,9 @@ export namespace NewGameArgs {
 
 export class NewGameResponse extends jspb.Message {
   getGame(): game_pb.Game | undefined;
-  setGame(value?: game_pb.Game): void;
+  setGame(value?: game_pb.Game): NewGameResponse;
   hasGame(): boolean;
-  clearGame(): void;
+  clearGame(): NewGameResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): NewGameResponse.AsObject;
@@ -116,7 +117,7 @@ export namespace NewGameResponse {
 
 export class GetGameByIdArgs extends jspb.Message {
   getId(): string;
-  setId(value: string): void;
+  setId(value: string): GetGameByIdArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetGameByIdArgs.AsObject;
@@ -134,14 +135,14 @@ export namespace GetGameByIdArgs {
 
 export class GetGameResponse extends jspb.Message {
   getGame(): game_pb.Game | undefined;
-  setGame(value?: game_pb.Game): void;
+  setGame(value?: game_pb.Game): GetGameResponse;
   hasGame(): boolean;
-  clearGame(): void;
+  clearGame(): GetGameResponse;
 
   getPuzzle(): puzzle_pb.Puzzle | undefined;
-  setPuzzle(value?: puzzle_pb.Puzzle): void;
+  setPuzzle(value?: puzzle_pb.Puzzle): GetGameResponse;
   hasPuzzle(): boolean;
-  clearPuzzle(): void;
+  clearPuzzle(): GetGameResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): GetGameResponse.AsObject;
@@ -160,12 +161,12 @@ export namespace GetGameResponse {
 
 export class UploadPuzzleArgs extends jspb.Message {
   getFilename(): string;
-  setFilename(value: string): void;
+  setFilename(value: string): UploadPuzzleArgs;
 
   getData(): Uint8Array | string;
   getData_asU8(): Uint8Array;
   getData_asB64(): string;
-  setData(value: Uint8Array | string): void;
+  setData(value: Uint8Array | string): UploadPuzzleArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UploadPuzzleArgs.AsObject;
@@ -184,9 +185,9 @@ export namespace UploadPuzzleArgs {
 
 export class UploadPuzzleResponse extends jspb.Message {
   getPuzzle(): puzzle_pb.Puzzle | undefined;
-  setPuzzle(value?: puzzle_pb.Puzzle): void;
+  setPuzzle(value?: puzzle_pb.Puzzle): UploadPuzzleResponse;
   hasPuzzle(): boolean;
-  clearPuzzle(): void;
+  clearPuzzle(): UploadPuzzleResponse;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UploadPuzzleResponse.AsObject;
@@ -204,10 +205,10 @@ export namespace UploadPuzzleResponse {
 
 export class SubscribeArgs extends jspb.Message {
   getGameId(): string;
-  setGameId(value: string): void;
+  setGameId(value: string): SubscribeArgs;
 
   getNodeId(): string;
-  setNodeId(value: string): void;
+  setNodeId(value: string): SubscribeArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SubscribeArgs.AsObject;
@@ -226,9 +227,9 @@ export namespace SubscribeArgs {
 
 export class SubscribeEvent extends jspb.Message {
   getFill(): fill_pb.Fill | undefined;
-  setFill(value?: fill_pb.Fill): void;
+  setFill(value?: fill_pb.Fill): SubscribeEvent;
   hasFill(): boolean;
-  clearFill(): void;
+  clearFill(): SubscribeEvent;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SubscribeEvent.AsObject;
@@ -246,15 +247,15 @@ export namespace SubscribeEvent {
 
 export class UpdateFillArgs extends jspb.Message {
   getGameId(): string;
-  setGameId(value: string): void;
+  setGameId(value: string): UpdateFillArgs;
 
   getNodeId(): string;
-  setNodeId(value: string): void;
+  setNodeId(value: string): UpdateFillArgs;
 
   getFill(): fill_pb.Fill | undefined;
-  setFill(value?: fill_pb.Fill): void;
+  setFill(value?: fill_pb.Fill): UpdateFillArgs;
   hasFill(): boolean;
-  clearFill(): void;
+  clearFill(): UpdateFillArgs;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): UpdateFillArgs.AsObject;

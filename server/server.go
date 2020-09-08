@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-var _ pb.CrossMeServer = &Server{}
+var _ pb.UnstableCrossMeService = &Server{}
 
 func New(repo *repo.Repository) *Server {
 	return &Server{
