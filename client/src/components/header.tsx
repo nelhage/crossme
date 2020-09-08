@@ -3,16 +3,11 @@ import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
-import { Session } from "../user";
-
 import { NewGame } from "./new_game";
-import { LoginButton } from "./login_button";
 
-export interface HeaderProps {
-  setUser: (user: null | Session) => void;
-}
+export interface HeaderProps {}
 
-export const Header: React.FC<HeaderProps> = ({ setUser }) => {
+export const Header: React.FC<HeaderProps> = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="md">
       <Navbar.Brand href="/">CrossMe</Navbar.Brand>
@@ -24,9 +19,6 @@ export const Header: React.FC<HeaderProps> = ({ setUser }) => {
             title="Recent Games"
             id="recent-games-dropdown"
           ></NavDropdown>
-        </Nav>
-        <Nav>
-          <LoginButton setUser={setUser} />
         </Nav>
       </Navbar.Collapse>
     </Navbar>
