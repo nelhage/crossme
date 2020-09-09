@@ -64,14 +64,7 @@ function computeNumbering(
 function parseGame(template: string): Crossword.Game {
   template = template.trim();
   const lines = template.split("\n");
-  const wrongLen = lines.find(
-    l => l.length !== lines.length * 2 && l.length !== lines.length * 2 - 1
-  );
-  if (wrongLen) {
-    throw new Error(`bad line length: '${wrongLen}'`);
-  }
   const height = lines.length;
-  const width = Math.ceil(lines[0].length / 2);
 
   const grid: Types.Cell[] = [];
   const fill: (string | undefined)[][] = [];
@@ -92,6 +85,17 @@ function parseGame(template: string): Crossword.Game {
       } else {
         throw new Error(`bad fill char: '${ch}'`);
       }
+      if (line[i + 1] === "(") {
+        let sq = grid[grid.length - 1];
+        if (sq.black) {
+          throw new Error("Attemping to set fill of a black square");
+        }
+        if (line[i + 3] !== ")") {
+          throw new Error("Expected matching paren");
+        }
+        sq.fill = line[i + 2];
+        i += 3;
+      }
       fills.push(fill);
 
       switch (line[i + 1]) {
@@ -108,7 +112,7 @@ function parseGame(template: string): Crossword.Game {
           }
           cursor = {
             row: r,
-            column: Math.floor(i / 2),
+            column: fills.length - 1,
             direction:
               line[i + 1] === ">"
                 ? Types.Direction.ACROSS
@@ -121,6 +125,12 @@ function parseGame(template: string): Crossword.Game {
       }
     }
     fill.push(fills);
+  });
+  const width = fill[0].length;
+  fill.forEach((line, i) => {
+    if (line.length !== width) {
+      throw new Error(`Row ${i} bad width: ${line.length}`);
+    }
   });
 
   if (!cursor) {
@@ -370,13 +380,69 @@ describe("crossword operations", () => {
 . . D . .
 # . .v. #
 `
+    ],
+    [
+      "Reveal word",
+      `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.revealAnswers(g, Crossword.Target.WORD),
+      `
+# X>X X #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "Reveal square",
+      `
+# A .>C #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
+      `
+# A X>C #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
+    ],
+    [
+      "Reveal square overwrite",
+      `
+# A B(X)>C #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      g => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
+      `
+# A X>C #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`
     ]
   ];
   testCases.forEach(([name, before, op, after], i) => {
     it(`${name} [index: ${i}]`, () => {
       const g_before = parseGame(before);
       const g_after = parseGame(after);
-      expect(formatGame(g_before).trim()).toEqual(before.trim());
+      expect(formatGame(g_before).trim()).toEqual(
+        before.replace(/\(.\)/g, "").trim()
+      );
 
       const xformed = Crossword.withUpdate(g_before, op(g_before));
       expect(formatGame(xformed)).toEqual(formatGame(g_after));

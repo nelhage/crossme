@@ -594,14 +594,12 @@ function eachTarget(
   cb: (
     idx: number,
     sq: Readonly<Types.LetterCell>,
-    fill: Readonly<Types.FillState>
+    fill?: Readonly<Types.FillState>
   ) => void
 ): void {
   if (target === Target.SQUARE) {
     const fill = fillAt(g, g.cursor);
-    if (fill) {
-      cb(packIndex(g.puzzle, g.cursor), selectedSquare(g), fill);
-    }
+    cb(packIndex(g.puzzle, g.cursor), selectedSquare(g), fill);
     return;
   }
   const active = selectedSquare(g);
@@ -620,9 +618,7 @@ function eachTarget(
       return;
     }
     const fill = g.fill.get(i);
-    if (fill) {
-      cb(i, sq, fill);
-    }
+    cb(i, sq, fill);
   });
 }
 
@@ -670,7 +666,7 @@ export function revealAnswers(g: Game, target: Target): GameUpdate {
     newsq.setClock(g.clock + 1);
     newsq.setOwner(0);
     let flags: number = FillPb.Fill.Flags.DID_REVEAL;
-    if (fill.fill === sq.fill) {
+    if (fill && fill.fill === sq.fill) {
       flags |= FillPb.Fill.Flags.CHECKED_RIGHT;
     } else {
       flags |= FillPb.Fill.Flags.CHECKED_WRONG;
