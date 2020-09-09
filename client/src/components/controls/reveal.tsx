@@ -9,9 +9,9 @@ export interface RevealProps {
   doReveal: (target: Crossword.Target) => void;
 }
 
-export const Reveal: React.FC<RevealProps> = props => {
+export const Reveal: React.FC<RevealProps> = ({ doReveal }) => {
   return (
-    <DropdownButton title="Reveal" id="dReveal" onSelect={props.doReveal}>
+    <DropdownButton title="Reveal" id="dReveal" onSelect={doReveal as any}>
       <Dropdown.Item active={false} eventKey={Crossword.Target.SQUARE}>
         Square
       </Dropdown.Item>

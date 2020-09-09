@@ -230,8 +230,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     const args = new Pb.SubscribeArgs();
     args.setGameId(this.props.gameId);
     args.setNodeId(this.state.game.nodeID);
-    this.subscription = this.client().subscribe(args);
-    this.subscription.on("data", (ev: Pb.SubscribeEvent) => {
+    const sub = this.client().subscribe(args);
+    this.subscription = sub;
+    sub.on("data", (ev: Pb.SubscribeEvent) => {
       this.reconnectDelay = 0;
       const fill = ev.getFill();
       if (!fill) {
@@ -242,7 +243,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         game: Crossword.withUpdate(state.game, { fill })
       }));
     });
-    this.subscription.on("error", (err: grpcWeb.Error) => {
+    sub.on("error", (err: grpcWeb.Error) => {
       this.reconnectDelay = Math.max(this.reconnectDelay, 100);
       this.reconnectDelay *= 1.5;
       this.reconnectDelay = Math.min(this.reconnectDelay, 30 * 1000);
@@ -253,7 +254,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       );
       this.reconnect();
     });
-    this.subscription.on("end", () => {
+    sub.on("end", () => {
       this.reconnectDelay = Math.max(100, this.reconnectDelay);
       this.reconnect();
     });

@@ -9,9 +9,9 @@ export interface CheckProps {
   doCheck: (target: Crossword.Target) => void;
 }
 
-export const Check: React.FC<CheckProps> = props => {
+export const Check: React.FC<CheckProps> = ({ doCheck }) => {
   return (
-    <DropdownButton title="Check" id="dCheck" onSelect={props.doCheck}>
+    <DropdownButton title="Check" id="dCheck" onSelect={doCheck as any}>
       <Dropdown.Item active={false} eventKey={Crossword.Target.SQUARE}>
         Square
       </Dropdown.Item>

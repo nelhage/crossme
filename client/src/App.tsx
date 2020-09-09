@@ -23,9 +23,13 @@ const RoutePreview: React.FC = () => {
   return <PreviewContainer puzzleId={puzzleId} />;
 };
 
+interface LocationState {
+  puzzleId?: string;
+}
+
 const RouteGame: React.FC = () => {
   const { gameId } = useParams<{ gameId: string }>();
-  const loc = useLocation();
+  const loc = useLocation<LocationState>();
   const state = loc.state;
   return <GameContainer gameId={gameId} puzzleId={state && state.puzzleId} />;
 };

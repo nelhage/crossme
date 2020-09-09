@@ -139,7 +139,7 @@ export const NewGameModal: React.FC<NewGameModalProps> = ({
   };
   return (
     <Modal show={show} onHide={onClose}>
-      <Modal.Header>
+      <Modal.Header translate="yes">
         <Modal.Title>Start a new game...</Modal.Title>
       </Modal.Header>
       <Modal.Body>
