@@ -4,15 +4,16 @@ import "database/sql"
 
 const sql_init = `
 CREATE TABLE IF NOT EXISTS config (
+  id int primary key not null,
   proto blob not null
 );
 
 CREATE TABLE IF NOT EXISTS puzzles (
   proto blob not null,
   title text not null,
-  meta__sha256 text null unique,
-  meta__id text unique not null primary key,
-  meta__date text not null,
+  meta__sha256 char(64) null unique,
+  meta__id varchar(64) unique not null primary key,
+  meta__date varchar(10) not null,
   meta__created text not null
 );
 
@@ -20,13 +21,13 @@ CREATE INDEX IF NOT EXISTS puzzles__date ON puzzles (meta__date);
 
 CREATE TABLE IF NOT EXISTS games (
   proto blob not null,
-  id string not null unique primary key,
-  puzzle_id string not null,
+  id varchar(64) not null unique primary key,
+  puzzle_id varchar(64) not null,
   created text not null
 );
 
 CREATE TABLE IF NOT EXISTS puz_files (
-  sha256 text unique primary key,
+  sha256 varchar(64) unique primary key,
   file blob
 );
 `

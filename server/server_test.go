@@ -3,9 +3,12 @@ package server
 import (
 	"context"
 	"io/ioutil"
+	"log"
 	"net"
 	"testing"
 	"time"
+
+	mysqltest "github.com/lestrrat-go/test-mysqld"
 
 	"crossme.app/src/pb"
 	"crossme.app/src/repo"
@@ -19,6 +22,7 @@ const bufSize = 1024 * 1024
 type TestServer struct {
 	t        *testing.T
 	listener *bufconn.Listener
+	mysqld   *mysqltest.TestMysqld
 	repo     *repo.Repository
 	grpc     *grpc.Server
 }
@@ -26,6 +30,7 @@ type TestServer struct {
 func (ts *TestServer) Stop() {
 	ts.grpc.Stop()
 	ts.repo.Close()
+	ts.mysqld.Stop()
 }
 
 func (ts *TestServer) dialer(string, time.Duration) (net.Conn, error) {
@@ -47,14 +52,19 @@ func makeServer(t *testing.T) *TestServer {
 	srv.t = t
 	srv.listener = bufconn.Listen(bufSize)
 	srv.grpc = grpc.NewServer()
-	srv.repo, err = repo.Open(":memory:")
+	srv.mysqld, err = mysqltest.NewMysqld(nil)
+	if err != nil {
+		t.Fatalf("Failed to start mysqld: %s", err)
+	}
+
+	srv.repo, err = repo.Open(srv.mysqld.DSN())
 	if err != nil {
 		t.Fatalf("open repo: %v", err)
 	}
 	pb.RegisterCrossMeService(srv.grpc, pb.NewCrossMeService(&Server{repo: srv.repo}))
 	go func() {
 		if err := srv.grpc.Serve(srv.listener); err != nil {
-			t.Fatal("grpc.Serve: ", err)
+			log.Fatal("grpc.Serve: ", err)
 		}
 	}()
 

@@ -14,7 +14,7 @@ func (r *Repository) FlushConfig() error {
 	if err != nil {
 		return err
 	}
-	_, err = r.db.Exec("INSERT OR REPLACE INTO config (proto) VALUES(?)", data)
+	_, err = r.db.Exec("REPLACE INTO config (id, proto) VALUES(0, ?)", data)
 	return err
 }
 

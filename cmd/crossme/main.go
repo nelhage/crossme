@@ -14,7 +14,7 @@ import (
 func main() {
 	var (
 		bind = flag.String("bind", "localhost:4000", "bind address")
-		db   = flag.String("db", ":memory:", "Database file")
+		db   = flag.String("db", "/crossme:", "MySQL DSN")
 	)
 	flag.Parse()
 

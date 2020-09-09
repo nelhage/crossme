@@ -11,7 +11,7 @@ import (
 
 func main() {
 	var (
-		db = flag.String("db", ":memory:", "sqlite database path")
+		db = flag.String("db", "/crossme:", "MySQL DSN")
 	)
 	flag.Parse()
 

@@ -16,7 +16,11 @@ tmux neww -t crossme:1 -k -c "$crossme" -n envoy
 tmux send -t crossme:envoy 'docker run --rm --network=host -v "$(pwd):/crossme"  envoyproxy/envoy-dev:latest /usr/local/bin/envoy -c /crossme/client/envoy.yaml' C-m
 
 tmux neww -t crossme:2 -k -c "$crossme" -n golang
-tmux send -t crossme:golang 'mkdir -p bin && go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db crossme.db' C-m
+tmux send -t crossme:golang 'mkdir -p bin && go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db root@/crossme' C-m
 
-tmux neww -t crossme:3 -c "$crossme"
+tmux neww -t crossme:3 -k -c "$crossme" -n maria
+tmux send -t crossme:golang 'mkdir -p mysql; docker run --rm --name crossme-maria --network=host -v $(pwd)/maria:/var/lib/mysql -e
+ MYSQL_ALLOW_EMPTY_PASSWORD=yes mariadb:10' C-m
+
+tmux neww -t crossme:4 -c "$crossme"
 exec tmux a -dt crossme

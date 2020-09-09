@@ -2,16 +2,24 @@ package repo
 
 import (
 	"io/ioutil"
-	"os"
+	"log"
 	"path"
 	"sort"
 	"testing"
+
+	mysqltest "github.com/lestrrat-go/test-mysqld"
 
 	"crossme.app/src/puz"
 )
 
 func TestOpenEmpty(t *testing.T) {
-	repo, err := Open(":memory:")
+	t.Parallel()
+	mysqld, err := mysqltest.NewMysqld(nil)
+	if err != nil {
+		t.Fatalf("Failed to start mysqld: %s", err)
+	}
+	defer mysqld.Stop()
+	repo, err := Open(mysqld.DSN())
 	if err != nil {
 		t.Fatalf("open: %v", err)
 	}
@@ -25,13 +33,14 @@ func TestOpenEmpty(t *testing.T) {
 }
 
 func TestRoundTripConfig(t *testing.T) {
-	f, err := ioutil.TempFile("", "crossme*.sql")
+	t.Parallel()
+	mysqld, err := mysqltest.NewMysqld(nil)
 	if err != nil {
-		t.Fatalf("tempfile: %v", err)
+		log.Fatalf("Failed to start mysqld: %s", err)
 	}
-	defer os.Remove(f.Name())
+	defer mysqld.Stop()
 
-	repo, err := Open(f.Name())
+	repo, err := Open(mysqld.DSN())
 	if err != nil {
 		t.Fatalf("open: %v", err)
 	}
@@ -44,7 +53,7 @@ func TestRoundTripConfig(t *testing.T) {
 		t.Fatal("FlushConfig", err)
 	}
 
-	r2, err := Open(f.Name())
+	r2, err := Open(mysqld.DSN())
 	if err != nil {
 		t.Fatal("reopen", err)
 	}
@@ -57,7 +66,13 @@ func TestRoundTripConfig(t *testing.T) {
 const TestdataPath = "../puz/testdata"
 
 func TestInsertQuery(t *testing.T) {
-	repo, err := Open(":memory:")
+	t.Parallel()
+	mysqld, err := mysqltest.NewMysqld(nil)
+	if err != nil {
+		log.Fatalf("Failed to start mysqld: %s", err)
+	}
+	defer mysqld.Stop()
+	repo, err := Open(mysqld.DSN())
 	if err != nil {
 		t.Fatalf("open: %v", err)
 	}
