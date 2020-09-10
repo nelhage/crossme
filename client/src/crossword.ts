@@ -35,7 +35,7 @@ export function cellAt(p: Types.Puzzle, pos: Types.Position): Types.Cell {
   return p.squares[packIndex(p, pos)];
 }
 
-const HEX = "012456789abcdef";
+const HEX = "0123456789abcdef";
 
 function newId(): string {
   const buf = new Uint8Array(8);
