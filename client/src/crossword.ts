@@ -4,15 +4,18 @@ import * as FillPb from "./pb/fill_pb";
 
 type Fill = List<Readonly<Types.FillState> | undefined>;
 
-export interface Game {
-  readonly by_clue: Readonly<{ [clue: number]: Types.Position }>;
-  readonly puzzle: Readonly<Types.Puzzle>;
-  readonly cursor: Readonly<Types.Cursor>;
-  readonly fill: Fill;
+export interface MutableGame {
+  by_clue: Readonly<{ [clue: number]: Types.Position }>;
+  puzzle: Readonly<Types.Puzzle>;
+  cursor: Readonly<Types.Cursor>;
+  fill: Fill;
 
-  readonly clock: number;
-  readonly nodeID: string;
+  nextError?: number;
+  clock: number;
+  nodeID: string;
 }
+
+export type Game = Readonly<MutableGame>;
 
 interface MutableGameUpdate {
   cursor?: Readonly<Types.CursorUpdate>;
@@ -69,6 +72,7 @@ export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
       direction: Types.Direction.ACROSS,
       pencil: false
     },
+    nextError: idx,
     fill: List(),
     nodeID: nodeID || newId(),
     clock: 0
@@ -103,6 +107,39 @@ export function withCursor(
       ...update
     }
   };
+}
+
+function errorAt(g: Game, i: number): boolean {
+  const sq = g.puzzle.squares[i];
+  if (sq.black) {
+    return false;
+  }
+  const fill = g.fill.get(i);
+  if (!fill || fill.fill !== sq.fill) {
+    return true;
+  }
+
+  return false;
+}
+
+function check(g: MutableGame): MutableGame {
+  if (g.nextError === undefined) {
+    return g;
+  }
+  for (let i = g.nextError; i < g.puzzle.squares.length; i++) {
+    if (errorAt(g, i)) {
+      g.nextError = i;
+      return g;
+    }
+  }
+  for (let i = 0; i < g.nextError; i++) {
+    if (errorAt(g, i)) {
+      g.nextError = i;
+      return g;
+    }
+  }
+  g.nextError = undefined;
+  return g;
 }
 
 export function withFills(g: Game, fill: (string | undefined)[][]): Game {
@@ -180,20 +217,20 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
     let mut = g.fill.asMutable();
     const clock = Math.max(g.clock, update.fill.getClock()) + 1;
     mergeFill(mut, update.fill);
-    return {
+    return check({
       ...out,
       clock: clock,
       fill: mut.asImmutable()
-    };
+    });
   }
   return out;
 }
 
 function withFill(g: Game, update: (fill: Fill) => Fill): Game {
-  return {
+  return check({
     ...g,
     fill: update(g.fill)
-  };
+  });
 }
 
 function directionToDelta(
@@ -665,12 +702,8 @@ export function revealAnswers(g: Game, target: Target): GameUpdate {
     newsq.setFill(sq.fill);
     newsq.setClock(g.clock + 1);
     newsq.setOwner(0);
-    let flags: number = FillPb.Fill.Flags.DID_REVEAL;
-    if (fill && fill.fill === sq.fill) {
-      flags |= FillPb.Fill.Flags.CHECKED_RIGHT;
-    } else {
-      flags |= FillPb.Fill.Flags.CHECKED_WRONG;
-    }
+    let flags: number =
+      FillPb.Fill.Flags.DID_REVEAL | FillPb.Fill.Flags.CHECKED_RIGHT;
     newsq.setFlags(flags);
     newfill.addCells(newsq);
   });
