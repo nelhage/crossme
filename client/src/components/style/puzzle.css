@@ -76,6 +76,7 @@
 #puzzleinput {
     width: 0;
     height: 0;
+    padding: 0;
     border: none;
     position: fixed;
     z-index: -1;
