@@ -62,7 +62,10 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
     this.setState(state => {
-      const update = op(state.game);
+      let update = op(state.game);
+      if (state.game.nextError === undefined) {
+        update = { ...update, fill: undefined };
+      }
       const game = Crossword.withUpdate(state.game, update);
       if (update.fill && this.props.gameId) {
         if (game.nextError === undefined) {
