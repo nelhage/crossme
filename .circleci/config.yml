@@ -19,6 +19,8 @@ jobs:
       - run: cd client && npm run prettier -- --check
       - run: cd client && npm run lint
       - run: cd client && npm run test
+      - run: sudo apt-get update
+      - run: sudo apt-get -y install mariadb-10.3
       - run: |
           set -e
           curl -Lo /tmp/go.tgz https://dl.google.com/go/go1.13.5.linux-amd64.tar.gz
