@@ -18,5 +18,5 @@ jobs:
       with:
         go-version: ${{ matrix.go }}
     - run: sudo apt-get update
-    - run: sudo apt-get -y install mariadb-server-core-10.3
+    - run: sudo apt-get -y install mariadb-server
     - run: go test ./...
