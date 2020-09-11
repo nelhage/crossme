@@ -51,8 +51,9 @@ it("renders a grid", () => {
   const activeCell = getCellAt(container, 1, 2);
   expect(activeCell.className).toContain("selected");
 
-  const newGame = update(update(game, g => Crossword.swapDirection(g)), g =>
-    Crossword.selectSquare(g, { row: 9, column: 9 })
+  const newGame = update(
+    update(game, g => Crossword.swapDirection(g)),
+    g => Crossword.selectSquare(g, { row: 9, column: 9 })
   );
 
   rerender(
