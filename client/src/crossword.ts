@@ -213,7 +213,7 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
   if (update.cursor) {
     out = withCursor(out, update.cursor);
   }
-  if (update.fill) {
+  if (update.fill && g.nextError !== undefined) {
     let mut = g.fill.asMutable();
     const clock = Math.max(g.clock, update.fill.getClock()) + 1;
     mergeFill(mut, update.fill);
@@ -227,6 +227,9 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
 }
 
 function withFill(g: Game, update: (fill: Fill) => Fill): Game {
+  if (g.nextError === undefined) {
+    return g;
+  }
   return check({
     ...g,
     fill: update(g.fill)

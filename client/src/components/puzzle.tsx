@@ -292,7 +292,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       <div id="puzzle">
         <Metadata
           puzzle={this.props.puzzle}
-          solved={false}
+          solved={this.state.game.nextError === undefined}
           preview={!playing}
           startGame={this.props.startGame}
         />
