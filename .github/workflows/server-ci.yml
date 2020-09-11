@@ -1,0 +1,22 @@
+name: Client CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        go-version: ['^1.14']
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Go ${{ matrix.go-version }}
+      uses: actions/setup-go@v2
+      with:
+        go-version: ${{ matrix.go }}
+    - run: sudo apt-get update
+    - run: sudo apt-get -y install mariadb-server-core-10.3
+    - run: go test ./...
