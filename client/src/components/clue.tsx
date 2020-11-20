@@ -21,9 +21,10 @@ function scrollIntoView(node: null | HTMLElement) {
   const nodeRect = node.getBoundingClientRect();
   const parentNode = node.parentNode as HTMLElement;
   const parentRect = parentNode.getBoundingClientRect();
-  if (nodeRect.bottom < parentRect.top || nodeRect.top > parentRect.bottom) {
-    parentNode.scrollTop = node.offsetTop - parentNode.offsetTop;
+  if (nodeRect.top >= parentRect.top && nodeRect.bottom <= parentRect.bottom) {
+    return;
   }
+  parentNode.scrollTop = node.offsetTop - parentNode.offsetTop;
 }
 
 export const Clue: React.FC<ClueProps> = React.memo(props => {
