@@ -7,7 +7,7 @@
     "core-js": "^2.5.2",
     "iconv": "^2.3.2",
     "meteor-node-stubs": "^0.2.11",
-    "moment": "^2.23.0",
+    "moment": "^2.29.4",
     "react": "^15.6.2",
     "react-addons-create-fragment": "^15.6.0",
     "react-addons-css-transition-group": "^15.6.0",
