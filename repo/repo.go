@@ -7,8 +7,7 @@ import (
 	"github.com/golang/protobuf/proto"
 
 	"crossme.app/src/pb"
-	"github.com/go-sql-driver/mysql"
-	_ "github.com/go-sql-driver/mysql"
+	_ "github.com/mattn/go-sqlite3"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -18,14 +17,7 @@ type Repository struct {
 }
 
 func Open(dsn string) (*Repository, error) {
-	if cfg, err := mysql.ParseDSN(dsn); err != nil {
-		return nil, err
-	} else {
-		cfg.MultiStatements = true
-		dsn = cfg.FormatDSN()
-	}
-
-	sql, err := sqlx.Open("mysql", dsn)
+	sql, err := sqlx.Open("sqlite3", dsn)
 	if err != nil {
 		return nil, err
 	}
