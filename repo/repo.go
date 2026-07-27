@@ -3,12 +3,14 @@ package repo
 import (
 	"database/sql"
 	"fmt"
+	"net/url"
+	"strings"
 
 	"github.com/golang/protobuf/proto"
 
 	"crossme.app/src/pb"
-	_ "github.com/mattn/go-sqlite3"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Repository struct {
@@ -17,6 +19,23 @@ type Repository struct {
 }
 
 func Open(dsn string) (*Repository, error) {
+	bits := strings.SplitN(dsn, "?", 2)
+	var q url.Values
+	if len(bits) > 1 {
+		var err error
+		q, err = url.ParseQuery(bits[1])
+		if err != nil {
+			return nil, fmt.Errorf("Parsing DSN %q: %w", dsn, err)
+		}
+	} else {
+		q = make(url.Values)
+	}
+
+	q.Set("_journal", "wal")
+	q.Set("_busy_timeout", "5000")
+
+	dsn = bits[0] + "?" + q.Encode()
+
 	sql, err := sqlx.Open("sqlite3", dsn)
 	if err != nil {
 		return nil, err
