@@ -5,7 +5,6 @@ import { useNavigate } from "react-router";
 import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
 
-import * as Pb from "../pb/crossme_pb";
 import { useClient, proto2Puzzle } from "../rpc";
 
 export interface PreviewContainerProps {
@@ -16,19 +15,16 @@ export const PreviewContainer = ({ puzzleId }: PreviewContainerProps) => {
   const [puzzle, setPuzzle] = useState<null | Types.Puzzle>(null);
   const client = useClient();
   useEffect(() => {
-    const args = new Pb.GetPuzzleByIdArgs();
-    args.setId(puzzleId);
-    client.getPuzzleById(args, null, (err, resp) => {
-      if (err !== null) {
+    client.getPuzzleById({ id: puzzleId }).then(
+      (resp) => {
+        if (resp.puzzle) {
+          setPuzzle(proto2Puzzle(resp.puzzle));
+        }
+      },
+      (err) => {
         console.log("error loading puzzle: ", err);
-        return;
       }
-      const proto = resp.getPuzzle();
-      if (!proto) {
-        return;
-      }
-      setPuzzle(proto2Puzzle(proto));
-    });
+    );
   }, [client, puzzleId]);
   const navigate = useNavigate();
 
@@ -36,18 +32,16 @@ export const PreviewContainer = ({ puzzleId }: PreviewContainerProps) => {
     if (!puzzle) {
       return;
     }
-    const args = new Pb.NewGameArgs();
-    args.setPuzzleId(puzzle.id);
-    client.newGame(args, null, (err, resp) => {
-      if (err !== null) {
+    client.newGame({ puzzleId: puzzle.id }).then(
+      (resp) => {
+        if (resp.game) {
+          navigate(`/game/${resp.game.id}`, { state: { puzzleId: puzzle.id } });
+        }
+      },
+      (err) => {
         console.log("unable to create new game: ", err);
-        return;
       }
-      const game = resp.getGame();
-      if (game) {
-        navigate(`/game/${game.getId()}`, { state: { puzzleId: puzzle.id } });
-      }
-    });
+    );
   };
 
   if (puzzle) {

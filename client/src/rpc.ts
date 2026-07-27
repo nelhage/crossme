@@ -1,9 +1,12 @@
 import { createContext, useContext } from "react";
 
-import * as Types from "./types";
-import { Puzzle } from "./pb/puzzle_pb";
+import type { Client } from "@connectrpc/connect";
 
-import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
+import * as Types from "./types";
+import { CrossMe } from "./pb/crossme_pb";
+import type { Puzzle, Puzzle_Cell } from "./pb/puzzle_pb";
+
+export type CrossMeClient = Client<typeof CrossMe>;
 
 export const ClientContext = createContext<null | CrossMeClient>(null);
 
@@ -15,26 +18,46 @@ export function useClient(): CrossMeClient {
   return client;
 }
 
+function proto2Cell(sq: Puzzle_Cell): Types.Cell {
+  if (sq.black) {
+    return { black: true };
+  }
+  const cell: Types.LetterCell = {
+    black: false,
+    fill: sq.fill,
+    circled: sq.circled,
+    clueAcross: sq.clueAcross,
+    clueDown: sq.clueDown,
+  };
+  // A square with no clue number comes back as 0; the client models
+  // "no number" as the field being absent.
+  if (sq.number !== 0) {
+    cell.number = sq.number;
+  }
+  return cell;
+}
+
 export function proto2Puzzle(proto: Puzzle): Types.Puzzle {
-  const meta = proto.getMetadata();
+  const meta = proto.metadata;
   if (!meta) {
     throw new Error("expected metadata");
   }
   return {
-    id: meta.getId(),
-    title: proto.getTitle(),
-    author: proto.getAuthor(),
-    copyright: proto.getCopyright(),
-    note: proto.getNote(),
-    width: proto.getWidth(),
-    height: proto.getHeight(),
-    squares: proto.getSquaresList().map((sq) => {
-      // A square with no clue number comes back as 0; the client models
-      // "no number" as the field being absent.
-      const { number, ...rest } = sq.toObject();
-      return number === 0 ? rest : { ...rest, number };
-    }),
-    across_clues: proto.getAcrossCluesList().map((c) => c.toObject()),
-    down_clues: proto.getDownCluesList().map((c) => c.toObject()),
+    id: meta.id,
+    title: proto.title,
+    author: proto.author,
+    copyright: proto.copyright,
+    note: proto.note,
+    width: proto.width,
+    height: proto.height,
+    squares: proto.squares.map(proto2Cell),
+    across_clues: proto.acrossClues.map((c) => ({
+      number: c.number,
+      text: c.text,
+    })),
+    down_clues: proto.downClues.map((c) => ({
+      number: c.number,
+      text: c.text,
+    })),
   };
 }

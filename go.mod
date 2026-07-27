@@ -1,19 +1,16 @@
 module crossme.app/src
 
-go 1.21
+go 1.25.0
 
 require (
-	github.com/golang/protobuf v1.4.2
+	connectrpc.com/connect v1.20.0
+	github.com/golang/protobuf v1.5.0
 	github.com/jmoiron/sqlx v1.2.0
 	github.com/kylelemons/godebug v1.1.0
 	github.com/mattn/go-sqlite3 v1.14.48
-	golang.org/x/text v0.3.3
-	google.golang.org/grpc v1.32.0
-	google.golang.org/protobuf v1.25.0
+	golang.org/x/net v0.57.0
+	golang.org/x/text v0.40.0
+	google.golang.org/protobuf v1.36.11
 )
 
-require (
-	golang.org/x/net v0.0.0-20200904194848-62affa334b73 // indirect
-	golang.org/x/sys v0.0.0-20200908134130-d2e65c121b96 // indirect
-	google.golang.org/genproto v0.0.0-20200904004341-0bd0a958aa1d // indirect
-)
+require google.golang.org/appengine v1.4.0 // indirect

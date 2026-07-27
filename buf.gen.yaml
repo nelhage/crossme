@@ -1,0 +1,19 @@
+version: v2
+plugins:
+  # Go messages and Connect handlers/clients. Install with:
+  #   go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+  #   go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
+  - local: protoc-gen-go
+    out: pb
+    opt: paths=source_relative
+  - local: protoc-gen-connect-go
+    out: pb
+    opt: paths=source_relative
+
+  # TypeScript messages and service descriptors, which @connectrpc/connect
+  # turns into a client. Installed by `npm ci` in client/.
+  - local: client/node_modules/.bin/protoc-gen-es
+    out: client/src/pb
+    opt:
+      - target=ts
+      - import_extension=none

@@ -1,25 +1,17 @@
 #!/bin/bash
 #
-# Regenerates the Go and TypeScript/JavaScript protobuf bindings. Needs the
-# following on $PATH, in addition to protoc itself:
+# Regenerates the Go and TypeScript protobuf/Connect bindings. Needs `buf`
+# (https://buf.build/docs/installation) plus the following plugins on $PATH:
 #
-#   protoc-gen-go, protoc-gen-go-grpc
-#       https://grpc.io/docs/languages/go/quickstart/
-#   protoc-gen-js
-#       https://github.com/protocolbuffers/protobuf-javascript/releases
-#       Keep in step with the `google-protobuf` version in client/package.json.
-#   protoc-gen-grpc-web
-#       https://github.com/grpc/grpc-web/releases
-#       Keep in step with the `grpc-web` version in client/package.json; the
-#       generated stubs are not compatible across its major versions.
+#   protoc-gen-go
+#       go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+#   protoc-gen-connect-go
+#       go install connectrpc.com/connect/cmd/protoc-gen-connect-go@latest
 #
+# protoc-gen-es comes from client/node_modules, so run `npm ci` in client/
+# first. Keep it in step with the `@bufbuild/protobuf` version there.
+#
+# See buf.gen.yaml for where each plugin's output lands.
 set -eu
 cd "$(dirname "$0")/.."
-protoc -Ipb \
-       --go_opt=paths=source_relative \
-       --go_out=pb \
-       --go-grpc_opt=paths=source_relative \
-       --go-grpc_out=pb \
-       --js_out=import_style=commonjs:client/src/pb/ \
-       --grpc-web_out=import_style=typescript,mode=grpcwebtext:client/src/pb/ \
-       pb/*.proto
+exec buf generate

@@ -8,10 +8,9 @@ import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 import { NavigateFunction, useNavigate } from "react-router";
 
-import { PuzzleIndex } from "../pb/puzzle_pb";
-import * as Pb from "../pb/crossme_pb";
-import { CrossMeClient } from "../pb/CrossmeServiceClientPb";
-import { useClient } from "../rpc";
+import type { PuzzleIndex } from "../pb/puzzle_pb";
+import type { UploadPuzzleResponse } from "../pb/crossme_pb";
+import { useClient, type CrossMeClient } from "../rpc";
 
 export interface NewGameModalProps {
   show: boolean;
@@ -44,34 +43,16 @@ async function uploadFiles(
   if (files.length === 0) {
     return;
   }
-  let resp: null | Pb.UploadPuzzleResponse = null;
+  let resp: null | UploadPuzzleResponse = null;
   for (const file of files) {
     const buf = await readFile(file);
-    resp = await new Promise((resolve, reject) => {
-      const args = new Pb.UploadPuzzleArgs();
-      args.setFilename(file.name);
-      args.setData(buf);
-      client.uploadPuzzle(args, null, (err, resp) => {
-        if (err) {
-          reject(err);
-          return;
-        }
-        resolve(resp);
-      });
-    });
+    resp = await client.uploadPuzzle({ filename: file.name, data: buf });
   }
-  if (!resp) {
-    return;
-  }
-  const puz = resp.getPuzzle();
-  if (!puz) {
-    return;
-  }
-  const meta = puz.getMetadata();
+  const meta = resp?.puzzle?.metadata;
   if (!meta) {
     return;
   }
-  navigate(`/preview/${meta.getId()}`);
+  navigate(`/preview/${meta.id}`);
 }
 
 export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
@@ -79,19 +60,19 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
   const [selectedId, setSelectedId] = useState<null | string>(null);
   const client = useClient();
   useEffect(() => {
-    const args = new Pb.GetPuzzleIndexArgs();
-    client.getPuzzleIndex(args, null, (err, resp) => {
-      if (err !== null) {
+    client.getPuzzleIndex({}).then(
+      (resp) => {
+        setIndex(resp.puzzles);
+      },
+      (err) => {
         console.log("unable to load puzzle index: ", err);
-        return;
       }
-      setIndex(resp.getPuzzlesList());
-    });
+    );
   }, [client]);
   const navigate = useNavigate();
   const puzzles: PuzzleOption[] = index.map((puz) => ({
-    value: puz.getId(),
-    label: puz.getTitle(),
+    value: puz.id,
+    label: puz.title,
   }));
   const selectGame = (option: SingleValue<PuzzleOption>) => {
     if (option) {
@@ -108,19 +89,19 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
     if (!selectedId) {
       return;
     }
-    const args = new Pb.NewGameArgs();
-    args.setPuzzleId(selectedId);
-    client.newGame(args, null, (err, resp) => {
-      if (err !== null) {
+    client.newGame({ puzzleId: selectedId }).then(
+      (resp) => {
+        if (resp.game) {
+          navigate(`/game/${resp.game.id}`, {
+            state: { puzzleId: selectedId },
+          });
+          onClose();
+        }
+      },
+      (err) => {
         console.log("unable to create new game: ", err);
-        return;
       }
-      const game = resp.getGame();
-      if (game) {
-        navigate(`/game/${game.getId()}`, { state: { puzzleId: selectedId } });
-        onClose();
-      }
-    });
+    );
   };
 
   const files = useRef<HTMLInputElement>(null);

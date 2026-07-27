@@ -1,47 +1,51 @@
-import { Fill } from "../pb/fill_pb";
+import { create } from "@bufbuild/protobuf";
+
+import {
+  Fill,
+  FillSchema,
+  Fill_Cell,
+  Fill_CellSchema,
+  Fill_Flags,
+} from "../pb/fill_pb";
 
 export function merge(l: Fill, r: Fill): Fill {
-  const out = new Fill();
-  if (l.getClock() > r.getClock()) {
-    out.setClock(l.getClock());
-  } else {
-    out.setClock(r.getClock());
-  }
-
-  out.setComplete(l.getComplete() || r.getComplete());
+  const out = create(FillSchema, {
+    clock: l.clock > r.clock ? l.clock : r.clock,
+    complete: l.complete || r.complete,
+  });
 
   const nodemap: { [id: string]: number } = {};
-  l.getNodesList().forEach((node) => {
-    out.addNodes(node);
+  l.nodes.forEach((node) => {
+    out.nodes.push(node);
     nodemap[node] = 0;
   });
-  r.getNodesList().forEach((node) => {
+  r.nodes.forEach((node) => {
     if (!(node in nodemap)) {
-      out.addNodes(node);
+      out.nodes.push(node);
       nodemap[node] = 0;
     }
   });
-  out.getNodesList().sort();
-  out.getNodesList().forEach((node, i) => {
+  out.nodes.sort();
+  out.nodes.forEach((node, i) => {
     nodemap[node] = i;
   });
 
   let li: number = 0,
     ri: number = 0;
 
-  const lcells = l.getCellsList();
-  const rcells = r.getCellsList();
+  const lcells = l.cells;
+  const rcells = r.cells;
   while (li < lcells.length || ri < rcells.length) {
     if (
       ri === rcells.length ||
-      (li < lcells.length && lcells[li].getIndex() < rcells[ri].getIndex())
+      (li < lcells.length && lcells[li].index < rcells[ri].index)
     ) {
-      out.addCells(lcells[li]);
+      out.cells.push(lcells[li]);
       li++;
       continue;
     }
-    if (li === lcells.length || lcells[li].getIndex() > rcells[ri].getIndex()) {
-      out.addCells(rcells[ri]);
+    if (li === lcells.length || lcells[li].index > rcells[ri].index) {
+      out.cells.push(rcells[ri]);
       ri++;
       continue;
     }
@@ -51,67 +55,56 @@ export function merge(l: Fill, r: Fill): Fill {
     li++;
     ri++;
 
-    if (
-      lc.getOwner() >= l.getNodesList().length ||
-      rc.getOwner() >= r.getNodesList().length
-    ) {
+    if (lc.owner >= l.nodes.length || rc.owner >= r.nodes.length) {
       throw new Error("node index out of range");
     }
-    if (lc.getIndex() !== rc.getIndex()) {
+    if (lc.index !== rc.index) {
       throw new Error("cell list out of order!");
     }
 
-    const oc = new Fill.Cell();
+    const oc = create(Fill_CellSchema, {
+      flags:
+        (lc.flags | rc.flags) & (Fill_Flags.DID_CHECK | Fill_Flags.DID_REVEAL),
+    });
 
-    oc.setFlags(
-      (lc.getFlags() | rc.getFlags()) &
-        (Fill.Flags.DID_CHECK | Fill.Flags.DID_REVEAL)
-    );
-
-    let win: Fill.Cell | null;
-    if (l.getComplete() !== r.getComplete()) {
-      if (l.getComplete()) {
+    let win: Fill_Cell;
+    if (l.complete !== r.complete) {
+      if (l.complete) {
         win = lc;
       } else {
         win = rc;
       }
     } else if (
-      (lc.getFlags() & Fill.Flags.CHECKED_RIGHT) !==
-      (rc.getFlags() & Fill.Flags.CHECKED_RIGHT)
+      (lc.flags & Fill_Flags.CHECKED_RIGHT) !==
+      (rc.flags & Fill_Flags.CHECKED_RIGHT)
     ) {
-      if ((lc.getFlags() & Fill.Flags.CHECKED_RIGHT) != 0) {
+      if ((lc.flags & Fill_Flags.CHECKED_RIGHT) != 0) {
         win = lc;
       } else {
         win = rc;
       }
-    } else if (lc.getClock() > rc.getClock()) {
+    } else if (lc.clock > rc.clock) {
       win = lc;
-    } else if (rc.getClock() > lc.getClock()) {
+    } else if (rc.clock > lc.clock) {
       win = rc;
-    } else if (
-      l.getNodesList()[lc.getOwner()] > r.getNodesList()[rc.getOwner()]
-    ) {
+    } else if (l.nodes[lc.owner] > r.nodes[rc.owner]) {
       win = lc;
     } else {
       win = rc;
     }
 
-    oc.setIndex(win.getIndex());
-    oc.setClock(win.getClock());
+    oc.index = win.index;
+    oc.clock = win.clock;
     if (win === lc) {
-      oc.setOwner(nodemap[l.getNodesList()[win.getOwner()]]);
+      oc.owner = nodemap[l.nodes[win.owner]];
     } else {
-      oc.setOwner(nodemap[r.getNodesList()[win.getOwner()]]);
+      oc.owner = nodemap[r.nodes[win.owner]];
     }
-    oc.setFill(win.getFill());
-    oc.setFlags(
-      oc.getFlags() |
-        (win.getFlags() &
-          (Fill.Flags.CHECKED_RIGHT |
-            Fill.Flags.CHECKED_WRONG |
-            Fill.Flags.PENCIL))
-    );
-    out.addCells(oc);
+    oc.fill = win.fill;
+    oc.flags |=
+      win.flags &
+      (Fill_Flags.CHECKED_RIGHT | Fill_Flags.CHECKED_WRONG | Fill_Flags.PENCIL);
+    out.cells.push(oc);
   }
 
   return out;

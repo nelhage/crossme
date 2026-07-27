@@ -2,14 +2,12 @@ import React from "react";
 
 import "./style/puzzle.css";
 
-import * as grpcWeb from "grpc-web";
+import { ConnectError } from "@connectrpc/connect";
 
 import * as Types from "../types";
 import * as Crossword from "../crossword";
-import * as Pb from "../pb/crossme_pb";
-import { CrossMeClient } from "../pb/CrossmeServiceClientPb";
 
-import { ClientContext } from "../rpc";
+import { ClientContext, type CrossMeClient } from "../rpc";
 import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
 import { CurrentClue } from "./current_clue";
@@ -37,7 +35,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     return this.context;
   }
 
-  subscription?: grpcWeb.ClientReadableStream<Pb.SubscribeEvent>;
+  subscription?: AbortController;
   timeoutId?: number;
   reconnectDelay: number = 0;
 
@@ -69,17 +67,17 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       const game = Crossword.withUpdate(state.game, update);
       if (update.fill && this.props.gameId) {
         if (game.nextError === undefined) {
-          update.fill.setComplete(true);
+          update.fill.complete = true;
         }
-        const args = new Pb.UpdateFillArgs();
-        args.setGameId(this.props.gameId);
-        args.setNodeId(this.state.game.nodeID);
-        args.setFill(update.fill);
-        this.client().updateFill(args, null, (err) => {
-          if (err) {
+        this.client()
+          .updateFill({
+            gameId: this.props.gameId,
+            nodeId: this.state.game.nodeID,
+            fill: update.fill,
+          })
+          .catch((err) => {
             console.log("Error updating fill: %j", err);
-          }
-        });
+          });
       }
       return {
         ...state,
@@ -232,45 +230,55 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   startSubscription() {
-    if (!this.props.gameId) {
+    const gameId = this.props.gameId;
+    if (!gameId) {
       return;
     }
-    const args = new Pb.SubscribeArgs();
-    args.setGameId(this.props.gameId);
-    args.setNodeId(this.state.game.nodeID);
-    const sub = this.client().subscribe(args);
+    const sub = new AbortController();
     this.subscription = sub;
-    sub.on("data", (ev: Pb.SubscribeEvent) => {
-      this.reconnectDelay = 0;
-      const fill = ev.getFill();
-      if (!fill) {
+    void this.runSubscription(gameId, sub);
+  }
+
+  // Reads the server-streaming Subscribe RPC until it fails or the server
+  // closes it, then schedules a reconnect (unless we cancelled it ourselves).
+  async runSubscription(gameId: string, sub: AbortController) {
+    try {
+      for await (const ev of this.client().subscribe(
+        { gameId, nodeId: this.state.game.nodeID },
+        { signal: sub.signal }
+      )) {
+        this.reconnectDelay = 0;
+        const fill = ev.fill;
+        if (!fill) {
+          continue;
+        }
+        this.setState((state) => ({
+          ...state,
+          game: Crossword.withUpdate(state.game, { fill }),
+        }));
+      }
+      this.reconnectDelay = Math.max(100, this.reconnectDelay);
+    } catch (e) {
+      if (sub.signal.aborted) {
         return;
       }
-      this.setState((state) => ({
-        ...state,
-        game: Crossword.withUpdate(state.game, { fill }),
-      }));
-    });
-    sub.on("error", (err: grpcWeb.RpcError) => {
       this.reconnectDelay = Math.max(this.reconnectDelay, 100);
       this.reconnectDelay *= 1.5;
       this.reconnectDelay = Math.min(this.reconnectDelay, 30 * 1000);
       console.log(
         "subscription errored: %s. Reconnecting in %fs",
-        err.message,
+        ConnectError.from(e).message,
         this.reconnectDelay / 1000
       );
+    }
+    if (!sub.signal.aborted) {
       this.reconnect();
-    });
-    sub.on("end", () => {
-      this.reconnectDelay = Math.max(100, this.reconnectDelay);
-      this.reconnect();
-    });
+    }
   }
 
   stopSubscription() {
     if (this.subscription) {
-      this.subscription.cancel();
+      this.subscription.abort();
       this.subscription = undefined;
     }
     if (this.timeoutId) {

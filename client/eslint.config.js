@@ -6,7 +6,7 @@ import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
 export default defineConfig([
-  // Generated protobuf / gRPC-web stubs.
+  // Generated protobuf / Connect stubs.
   globalIgnores(["dist", "src/pb"]),
   {
     files: ["**/*.{ts,tsx}"],

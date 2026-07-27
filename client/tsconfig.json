@@ -25,11 +25,5 @@
 
     "types": ["vite/client", "node", "vitest/globals"]
   },
-  "include": [
-    "src",
-    "vite.config.ts",
-    "vite-plugin-protobuf-cjs.ts",
-    "eslint.config.js"
-  ],
-  "exclude": ["src/pb/*.js"]
+  "include": ["src", "vite.config.ts", "eslint.config.js"]
 }

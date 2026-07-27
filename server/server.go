@@ -2,18 +2,19 @@ package server
 
 import (
 	"context"
+	"errors"
 	"log"
 	"sync"
 
+	"connectrpc.com/connect"
 	"crossme.app/src/crdt"
 	"crossme.app/src/pb"
+	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/puz"
 	"crossme.app/src/repo"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
-var _ pb.UnstableCrossMeService = &Server{}
+var _ pbconnect.CrossMeHandler = &Server{}
 
 func New(repo *repo.Repository) *Server {
 	return &Server{
@@ -54,71 +55,70 @@ type clientState struct {
 	wakeup chan struct{}
 }
 
-func (s *Server) GetPuzzleIndex(ctx context.Context, in *pb.GetPuzzleIndexArgs) (*pb.GetPuzzleIndexResponse, error) {
+func (s *Server) GetPuzzleIndex(ctx context.Context, req *connect.Request[pb.GetPuzzleIndexArgs]) (*connect.Response[pb.GetPuzzleIndexResponse], error) {
 	index, err := s.repo.PuzzleIndex()
 	if err != nil {
 		return nil, err
 	}
-	return &pb.GetPuzzleIndexResponse{
+	return connect.NewResponse(&pb.GetPuzzleIndexResponse{
 		Puzzles: index,
-	}, nil
+	}), nil
 }
 
-func (s *Server) GetPuzzleById(ctx context.Context, in *pb.GetPuzzleByIdArgs) (*pb.GetPuzzleResponse, error) {
-	puz, err := s.repo.PuzzleById(in.Id)
+func (s *Server) GetPuzzleById(ctx context.Context, req *connect.Request[pb.GetPuzzleByIdArgs]) (*connect.Response[pb.GetPuzzleResponse], error) {
+	puz, err := s.repo.PuzzleById(req.Msg.Id)
 	if err == repo.ErrNoSuchPuzzle {
-		return nil, status.Error(codes.NotFound, "no such puzzle")
+		return nil, connect.NewError(connect.CodeNotFound, errors.New("no such puzzle"))
 	} else if err != nil {
 		return nil, err
 	}
-	resp := &pb.GetPuzzleResponse{
+	return connect.NewResponse(&pb.GetPuzzleResponse{
 		Puzzle: puz,
-	}
-	return resp, nil
+	}), nil
 }
 
-func (s *Server) NewGame(ctx context.Context, in *pb.NewGameArgs) (*pb.NewGameResponse, error) {
-	game, err := s.repo.NewGame(in.PuzzleId)
+func (s *Server) NewGame(ctx context.Context, req *connect.Request[pb.NewGameArgs]) (*connect.Response[pb.NewGameResponse], error) {
+	game, err := s.repo.NewGame(req.Msg.PuzzleId)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return &pb.NewGameResponse{
+	return connect.NewResponse(&pb.NewGameResponse{
 		Game: game,
-	}, nil
+	}), nil
 }
 
-func (s *Server) GetGameById(ctx context.Context, in *pb.GetGameByIdArgs) (*pb.GetGameResponse, error) {
-	game, err := s.repo.GameById(in.Id)
+func (s *Server) GetGameById(ctx context.Context, req *connect.Request[pb.GetGameByIdArgs]) (*connect.Response[pb.GetGameResponse], error) {
+	game, err := s.repo.GameById(req.Msg.Id)
 	if err != nil {
 		if err == repo.ErrNoSuchGame {
-			err = status.Error(codes.NotFound, "no such game")
+			err = connect.NewError(connect.CodeNotFound, errors.New("no such game"))
 		}
 		return nil, err
 	}
 	puz, err := s.repo.PuzzleById(game.PuzzleId)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return &pb.GetGameResponse{
+	return connect.NewResponse(&pb.GetGameResponse{
 		Game:   game,
 		Puzzle: puz,
-	}, nil
+	}), nil
 }
 
-func (s *Server) UploadPuzzle(ctx context.Context, in *pb.UploadPuzzleArgs) (*pb.UploadPuzzleResponse, error) {
-	puzfile, err := puz.FromBytes(in.Data)
+func (s *Server) UploadPuzzle(ctx context.Context, req *connect.Request[pb.UploadPuzzleArgs]) (*connect.Response[pb.UploadPuzzleResponse], error) {
+	puzfile, err := puz.FromBytes(req.Msg.Data)
 	if err != nil {
-		return nil, status.Error(codes.InvalidArgument, err.Error())
+		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}
 	proto := repo.Puz2Proto(puzfile)
 
-	_, err = s.repo.InsertPuzzle(proto, in.Data)
+	_, err = s.repo.InsertPuzzle(proto, req.Msg.Data)
 	if err != nil {
-		return nil, status.Error(codes.Internal, err.Error())
+		return nil, connect.NewError(connect.CodeInternal, err)
 	}
-	return &pb.UploadPuzzleResponse{
+	return connect.NewResponse(&pb.UploadPuzzleResponse{
 		Puzzle: proto,
-	}, nil
+	}), nil
 }
 
 func (s *Server) getGame(gameid string) (*gameState, error) {
@@ -199,7 +199,7 @@ func (s *Server) broadcastFill(ctx context.Context,
 }
 
 func (s *Server) streamToClient(ctx context.Context,
-	stream pb.CrossMe_SubscribeServer,
+	stream *connect.ServerStream[pb.SubscribeEvent],
 	game *gameState,
 	client *clientState) error {
 	for {
@@ -221,25 +221,26 @@ func (s *Server) streamToClient(ctx context.Context,
 	}
 }
 
-func (s *Server) UpdateFill(ctx context.Context, in *pb.UpdateFillArgs) (*pb.UpdateFillResponse, error) {
-	game, err := s.getGame(in.GameId)
+func (s *Server) UpdateFill(ctx context.Context, req *connect.Request[pb.UpdateFillArgs]) (*connect.Response[pb.UpdateFillResponse], error) {
+	game, err := s.getGame(req.Msg.GameId)
 	if err != nil {
 		if err == repo.ErrNoSuchGame {
-			err = status.Error(codes.NotFound, "no such game")
+			err = connect.NewError(connect.CodeNotFound, errors.New("no such game"))
 		}
 		return nil, err
 	}
 
-	return &pb.UpdateFillResponse{}, s.broadcastFill(ctx, game, in.Fill)
+	if err := s.broadcastFill(ctx, game, req.Msg.Fill); err != nil {
+		return nil, err
+	}
+	return connect.NewResponse(&pb.UpdateFillResponse{}), nil
 }
 
-func (s *Server) Subscribe(in *pb.SubscribeArgs, stream pb.CrossMe_SubscribeServer) error {
-	ctx := stream.Context()
-
-	game, client, err := s.startSubscription(in.GameId, in.NodeId)
+func (s *Server) Subscribe(ctx context.Context, req *connect.Request[pb.SubscribeArgs], stream *connect.ServerStream[pb.SubscribeEvent]) error {
+	game, client, err := s.startSubscription(req.Msg.GameId, req.Msg.NodeId)
 	if err != nil {
 		if err == repo.ErrNoSuchGame {
-			err = status.Error(codes.NotFound, "no such game")
+			err = connect.NewError(connect.CodeNotFound, errors.New("no such game"))
 		}
 		return err
 	}

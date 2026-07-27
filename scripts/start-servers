@@ -12,11 +12,8 @@ tmux new-session -s crossme -d -c "$crossme"
 tmux neww -t crossme:0 -k -c "$crossme/client" -n react
 tmux send -t crossme:react 'npm run dev' C-m
 
-tmux neww -t crossme:1 -k -c "$crossme" -n envoy
-tmux send -t crossme:envoy 'envoy -c proxy/envoy.yaml' C-m
-
-tmux neww -t crossme:2 -k -c "$crossme" -n golang
+tmux neww -t crossme:1 -k -c "$crossme" -n golang
 tmux send -t crossme:golang 'mkdir -p bin && go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db data/crossme.db' C-m
 
-tmux neww -t crossme:4 -c "$crossme"
+tmux neww -t crossme:2 -c "$crossme"
 exec tmux a -dt crossme

@@ -8,7 +8,10 @@ import {
   useParams,
 } from "react-router";
 
-import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
+import { createClient } from "@connectrpc/connect";
+import { createConnectTransport } from "@connectrpc/connect-web";
+
+import { CrossMe } from "./pb/crossme_pb";
 
 import { ClientContext } from "./rpc";
 import { PreviewContainer } from "./components/preview_container";
@@ -51,7 +54,11 @@ const router = createBrowserRouter([
 
 const App = () => {
   const client = useMemo(
-    () => new CrossMeClient(window.location.origin + "/api", null, null),
+    () =>
+      createClient(
+        CrossMe,
+        createConnectTransport({ baseUrl: window.location.origin + "/api" })
+      ),
     []
   );
   return (

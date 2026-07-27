@@ -3,61 +3,43 @@ package server
 import (
 	"context"
 	"io/ioutil"
-	"log"
-	"net"
+	"net/http"
+	"net/http/httptest"
 	"testing"
-	"time"
 
+	"connectrpc.com/connect"
 	"crossme.app/src/pb"
+	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
-
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/test/bufconn"
 )
 
-const bufSize = 1024 * 1024
-
 type TestServer struct {
-	t        *testing.T
-	listener *bufconn.Listener
-	repo     *repo.Repository
-	grpc     *grpc.Server
+	t    *testing.T
+	http *httptest.Server
+	repo *repo.Repository
 }
 
 func (ts *TestServer) Stop() {
-	ts.grpc.Stop()
+	ts.http.Close()
 	ts.repo.Close()
 }
 
-func (ts *TestServer) dialer(string, time.Duration) (net.Conn, error) {
-	return ts.listener.Dial()
-}
-
-func (ts *TestServer) Dial() pb.CrossMeClient {
-	ctx := context.Background()
-	conn, err := grpc.DialContext(ctx, "bufnet", grpc.WithDialer(ts.dialer), grpc.WithInsecure())
-	if err != nil {
-		ts.t.Fatalf("Failed to dial bufnet: %v", err)
-	}
-	return pb.NewCrossMeClient(conn)
+func (ts *TestServer) Dial() pbconnect.CrossMeClient {
+	return pbconnect.NewCrossMeClient(ts.http.Client(), ts.http.URL)
 }
 
 func makeServer(t *testing.T) *TestServer {
 	var srv TestServer
 	var err error
 	srv.t = t
-	srv.listener = bufconn.Listen(bufSize)
-	srv.grpc = grpc.NewServer()
 	srv.repo, err = repo.Open(":memory:")
 	if err != nil {
 		t.Fatalf("open repo: %v", err)
 	}
-	pb.RegisterCrossMeService(srv.grpc, pb.NewCrossMeService(&Server{repo: srv.repo}))
-	go func() {
-		if err := srv.grpc.Serve(srv.listener); err != nil {
-			log.Fatal("grpc.Serve: ", err)
-		}
-	}()
+
+	mux := http.NewServeMux()
+	mux.Handle(pbconnect.NewCrossMeHandler(&Server{repo: srv.repo}))
+	srv.http = httptest.NewServer(mux)
 
 	return &srv
 }
@@ -69,12 +51,12 @@ func TestTestServer(t *testing.T) {
 	defer srv.Stop()
 	client := srv.Dial()
 
-	index, err := client.GetPuzzleIndex(ctx, &pb.GetPuzzleIndexArgs{})
+	index, err := client.GetPuzzleIndex(ctx, connect.NewRequest(&pb.GetPuzzleIndexArgs{}))
 	if err != nil {
 		t.Fatalf("GetIndex: %v", err)
 	}
-	if len(index.Puzzles) != 0 {
-		t.Fatalf("Server has puzzles: %d", len(index.Puzzles))
+	if len(index.Msg.Puzzles) != 0 {
+		t.Fatalf("Server has puzzles: %d", len(index.Msg.Puzzles))
 	}
 }
 
@@ -86,7 +68,7 @@ func TestUploadPuzzle(t *testing.T) {
 
 	client := srv.Dial()
 
-	if _, err := client.UploadPuzzle(ctx, &pb.UploadPuzzleArgs{Data: []byte{}}); err == nil {
+	if _, err := client.UploadPuzzle(ctx, connect.NewRequest(&pb.UploadPuzzleArgs{Data: []byte{}})); err == nil {
 		t.Fatalf("UploadPuzzle('') succeeded!")
 	}
 
@@ -95,13 +77,13 @@ func TestUploadPuzzle(t *testing.T) {
 		panic("ReadFile")
 	}
 
-	resp, err := client.UploadPuzzle(ctx, &pb.UploadPuzzleArgs{
+	resp, err := client.UploadPuzzle(ctx, connect.NewRequest(&pb.UploadPuzzleArgs{
 		Filename: "nyt_weekday_with_notes.puz",
-		Data:     bytes})
+		Data:     bytes}))
 	if err != nil {
 		t.Fatalf("Upload failed: %v", err)
 	}
-	if resp.Puzzle.Metadata == nil {
+	if resp.Msg.Puzzle.Metadata == nil {
 		t.Fatalf("expected uploaded puzzle to have metadata!")
 	}
 

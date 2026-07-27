@@ -8,6 +8,7 @@ import (
 	"testing"
 	"time"
 
+	"connectrpc.com/connect"
 	"crossme.app/src/pb"
 	"github.com/kylelemons/godebug/diff"
 )
@@ -41,14 +42,14 @@ func makeServerWithPuzzle(t *testing.T, name string) (*TestServer, *pb.Puzzle) {
 		t.Fatalf("ReadFile(%q): %v", path, err)
 	}
 	resp, err := ts.Dial().UploadPuzzle(context.Background(),
-		&pb.UploadPuzzleArgs{
+		connect.NewRequest(&pb.UploadPuzzleArgs{
 			Filename: path,
 			Data:     bytes,
-		})
+		}))
 	if err != nil {
 		t.Fatalf("Upload(%q): %v", path, err)
 	}
-	return ts, resp.Puzzle
+	return ts, resp.Msg.Puzzle
 }
 
 func TestSubscribeSimple(t *testing.T) {
@@ -59,19 +60,21 @@ func TestSubscribeSimple(t *testing.T) {
 	cl1 := ts.Dial()
 	cl2 := ts.Dial()
 
-	g, err := cl1.NewGame(ctx, &pb.NewGameArgs{PuzzleId: puz.Metadata.Id})
+	g, err := cl1.NewGame(ctx, connect.NewRequest(&pb.NewGameArgs{PuzzleId: puz.Metadata.Id}))
 	must(t, "NewGame", err)
 
-	sub, err := cl1.Subscribe(ctx, &pb.SubscribeArgs{
-		GameId: g.Game.Id,
+	sub, err := cl1.Subscribe(ctx, connect.NewRequest(&pb.SubscribeArgs{
+		GameId: g.Msg.Game.Id,
 		NodeId: "node1",
-	})
+	}))
 	must(t, "Subscribe", err)
+	defer sub.Close()
 
-	evt, err := sub.Recv()
-	must(t, "First Recv", err)
+	if !sub.Receive() {
+		t.Fatalf("First Recv: %v", sub.Err())
+	}
 
-	if len(evt.Fill.Cells) != 0 {
+	if len(sub.Msg().Fill.Cells) != 0 {
 		t.Fatalf("expected empty fill")
 	}
 
@@ -88,13 +91,14 @@ func TestSubscribeSimple(t *testing.T) {
 		},
 	}
 
-	_, err = cl2.UpdateFill(ctx, &pb.UpdateFillArgs{
-		GameId: g.Game.Id,
+	_, err = cl2.UpdateFill(ctx, connect.NewRequest(&pb.UpdateFillArgs{
+		GameId: g.Msg.Game.Id,
 		Fill:   fill,
-	})
+	}))
 	must(t, "UpdateFill", err)
 
-	evt, err = sub.Recv()
-	must(t, "Second Recv", err)
-	assertJSON(t, "reflected fill", fill, evt.Fill)
+	if !sub.Receive() {
+		t.Fatalf("Second Recv: %v", sub.Err())
+	}
+	assertJSON(t, "reflected fill", fill, sub.Msg().Fill)
 }

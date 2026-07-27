@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"log"
-	"net"
+	"net/http"
 
-	"crossme.app/src/pb"
+	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
 	"crossme.app/src/server"
-	"google.golang.org/grpc"
+	"golang.org/x/net/http2"
+	"golang.org/x/net/http2/h2c"
 )
 
 func main() {
@@ -25,14 +26,21 @@ func main() {
 
 	srv := server.New(r)
 
-	lis, err := net.Listen("tcp", *bind)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	grpcServer := grpc.NewServer()
-	pb.RegisterCrossMeService(grpcServer, pb.NewCrossMeService(srv))
+	mux := http.NewServeMux()
+	path, handler := pbconnect.NewCrossMeHandler(srv)
+	// The web client reaches us under /api/, both through the vite dev
+	// server and through nginx in production.
+	mux.Handle("/api"+path, http.StripPrefix("/api", handler))
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatal("grpc.Serve: ", err)
+	// h2c lets HTTP/2 clients (gRPC, and Connect over HTTP/2) talk to us
+	// without TLS; browsers use the Connect protocol over HTTP/1.1.
+	httpServer := &http.Server{
+		Addr:    *bind,
+		Handler: h2c.NewHandler(mux, &http2.Server{}),
+	}
+
+	log.Printf("listening on %s", *bind)
+	if err := httpServer.ListenAndServe(); err != nil {
+		log.Fatal("ListenAndServe: ", err)
 	}
 }

@@ -1,21 +1,19 @@
-import { Fill } from "../pb/fill_pb";
+import { fromBinary, toJson } from "@bufbuild/protobuf";
+
+import { Fill, FillSchema } from "../pb/fill_pb";
 import { merge } from "./merge";
 
 import * as fs from "node:fs";
 import * as path from "node:path";
 
 function readFill(path: string): Fill {
-  // Copy into a plain Uint8Array: `readFileSync` returns a Node Buffer from
-  // another realm, which google-protobuf's `instanceof` check rejects under
-  // the jsdom test environment.
-  const bytes = new Uint8Array(fs.readFileSync(path));
-  return Fill.deserializeBinary(bytes);
+  return fromBinary(FillSchema, new Uint8Array(fs.readFileSync(path)));
 }
 
 function assertMerge(_name: string, l: Fill, r: Fill, want: Fill): Fill {
   const got = merge(l, r);
-  const gotstr = JSON.stringify(got.toObject(), null, 2);
-  const wantstr = JSON.stringify(want.toObject(), null, 2);
+  const gotstr = JSON.stringify(toJson(FillSchema, got), null, 2);
+  const wantstr = JSON.stringify(toJson(FillSchema, want), null, 2);
   expect(gotstr).toEqual(wantstr);
   return got;
 }

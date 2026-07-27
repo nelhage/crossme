@@ -1,6 +1,12 @@
 import * as Types from "./types";
 import { List } from "immutable";
-import * as FillPb from "./pb/fill_pb";
+import { create } from "@bufbuild/protobuf";
+import {
+  Fill as FillProto,
+  FillSchema,
+  Fill_CellSchema,
+  Fill_Flags,
+} from "./pb/fill_pb";
 
 type Fill = List<Readonly<Types.FillState> | undefined>;
 
@@ -19,7 +25,7 @@ export type Game = Readonly<MutableGame>;
 
 interface MutableGameUpdate {
   cursor?: Readonly<Types.CursorUpdate>;
-  fill?: Readonly<FillPb.Fill>;
+  fill?: FillProto;
 }
 
 export type GameUpdate = Readonly<MutableGameUpdate>;
@@ -167,44 +173,46 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
 
 function mergeFill(
   mut: List<Readonly<Types.FillState> | undefined>,
-  fill: FillPb.Fill
+  fill: FillProto
 ): void {
-  fill.getCellsList().forEach((cell) => {
+  fill.cells.forEach((cell) => {
     const existing: Types.FillState = Object.assign(
       {},
-      mut.get(cell.getIndex()) || {
+      mut.get(cell.index) || {
         clock: 0,
         owner: "",
         fill: "",
         pencil: false,
       }
     );
-    const flags = cell.getFlags();
-    if ((flags & FillPb.Fill.Flags.DID_CHECK) !== 0) {
+    // Clocks are int64 on the wire, and so `bigint` here; the game's own
+    // clock is a plain number.
+    const clock = Number(cell.clock);
+    const flags = cell.flags;
+    if ((flags & Fill_Flags.DID_CHECK) !== 0) {
       existing.didCheck = true;
-      mut.set(cell.getIndex(), existing);
+      mut.set(cell.index, existing);
     }
-    if ((flags & FillPb.Fill.Flags.DID_REVEAL) !== 0) {
+    if ((flags & Fill_Flags.DID_REVEAL) !== 0) {
       existing.didReveal = true;
-      mut.set(cell.getIndex(), existing);
+      mut.set(cell.index, existing);
     }
     if (
-      existing.clock > cell.getClock() ||
-      (existing.clock === cell.getClock() &&
-        existing.owner > fill.getNodesList()[cell.getOwner()])
+      existing.clock > clock ||
+      (existing.clock === clock && existing.owner > fill.nodes[cell.owner])
     ) {
       return;
     }
-    existing.pencil = (flags & FillPb.Fill.Flags.PENCIL) !== 0;
-    if ((flags & FillPb.Fill.Flags.CHECKED_RIGHT) !== 0) {
+    existing.pencil = (flags & Fill_Flags.PENCIL) !== 0;
+    if ((flags & Fill_Flags.CHECKED_RIGHT) !== 0) {
       existing.checked = Types.Checked.RIGHT;
-    } else if ((flags & FillPb.Fill.Flags.CHECKED_WRONG) !== 0) {
+    } else if ((flags & Fill_Flags.CHECKED_WRONG) !== 0) {
       existing.checked = Types.Checked.WRONG;
     }
-    existing.fill = cell.getFill();
-    existing.owner = fill.getNodesList()[cell.getOwner()];
-    existing.clock = cell.getClock();
-    mut.set(cell.getIndex(), existing);
+    existing.fill = cell.fill;
+    existing.owner = fill.nodes[cell.owner];
+    existing.clock = clock;
+    mut.set(cell.index, existing);
   });
 }
 
@@ -215,7 +223,7 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
   }
   if (update.fill && g.nextError !== undefined) {
     const mut = g.fill.asMutable();
-    const clock = Math.max(g.clock, update.fill.getClock()) + 1;
+    const clock = Math.max(g.clock, Number(update.fill.clock)) + 1;
     mergeFill(mut, update.fill);
     return check({
       ...out,
@@ -357,18 +365,19 @@ export function fillSquare(
   if (fill && fill.checked === Types.Checked.RIGHT) {
     return {};
   }
-  const update = new FillPb.Fill();
-  update.setClock(g.clock + 1);
-  update.addNodes(g.nodeID);
-  const sq = new FillPb.Fill.Cell();
-  sq.setIndex(key);
-  sq.setClock(g.clock + 1);
-  sq.setOwner(0);
-  sq.setFill(text.replace(/\s/, ""));
-  sq.setFlags(
-    g.cursor.pencil ? FillPb.Fill.Flags.PENCIL : FillPb.Fill.Flags.NONE
-  );
-  update.addCells(sq);
+  const update = create(FillSchema, {
+    clock: BigInt(g.clock + 1),
+    nodes: [g.nodeID],
+    cells: [
+      {
+        index: key,
+        clock: BigInt(g.clock + 1),
+        owner: 0,
+        fill: text.replace(/\s/, ""),
+        flags: g.cursor.pencil ? Fill_Flags.PENCIL : Fill_Flags.NONE,
+      },
+    ],
+  });
   return {
     fill: update,
   };
@@ -664,52 +673,56 @@ function eachTarget(
 }
 
 export function checkAnswers(g: Game, target: Target): GameUpdate {
-  const newfill = new FillPb.Fill();
-  newfill.setClock(g.clock + 1);
-  newfill.addNodes(g.nodeID);
+  const newfill = create(FillSchema, {
+    clock: BigInt(g.clock + 1),
+    nodes: [g.nodeID],
+  });
   const update: MutableGameUpdate = { fill: newfill };
 
   eachTarget(g, target, (idx, sq, fill) => {
     if (!fill || fill.fill === "") {
       return;
     }
-    const newsq = new FillPb.Fill.Cell();
-    newsq.setIndex(idx);
-    newsq.setFill(fill.fill);
-    newsq.setClock(g.clock + 1);
-    newsq.setOwner(0);
-    let flags: number = FillPb.Fill.Flags.DID_CHECK;
+    let flags: number = Fill_Flags.DID_CHECK;
     if (fill.fill === sq.fill) {
-      flags |= FillPb.Fill.Flags.CHECKED_RIGHT;
+      flags |= Fill_Flags.CHECKED_RIGHT;
     } else {
-      flags |= FillPb.Fill.Flags.CHECKED_WRONG;
+      flags |= Fill_Flags.CHECKED_WRONG;
       if (!update.cursor) {
         const pos = unpackIndex(g.puzzle, idx);
         update.cursor = pos;
       }
     }
-    newsq.setFlags(flags);
-    newfill.addCells(newsq);
+    newfill.cells.push(
+      create(Fill_CellSchema, {
+        index: idx,
+        fill: fill.fill,
+        clock: BigInt(g.clock + 1),
+        owner: 0,
+        flags,
+      })
+    );
   });
   return update;
 }
 
 export function revealAnswers(g: Game, target: Target): GameUpdate {
-  const newfill = new FillPb.Fill();
-  newfill.setClock(g.clock + 1);
-  newfill.addNodes(g.nodeID);
+  const newfill = create(FillSchema, {
+    clock: BigInt(g.clock + 1),
+    nodes: [g.nodeID],
+  });
   const update: GameUpdate = { fill: newfill };
 
   eachTarget(g, target, (idx, sq) => {
-    const newsq = new FillPb.Fill.Cell();
-    newsq.setIndex(idx);
-    newsq.setFill(sq.fill);
-    newsq.setClock(g.clock + 1);
-    newsq.setOwner(0);
-    const flags: number =
-      FillPb.Fill.Flags.DID_REVEAL | FillPb.Fill.Flags.CHECKED_RIGHT;
-    newsq.setFlags(flags);
-    newfill.addCells(newsq);
+    newfill.cells.push(
+      create(Fill_CellSchema, {
+        index: idx,
+        fill: sq.fill,
+        clock: BigInt(g.clock + 1),
+        owner: 0,
+        flags: Fill_Flags.DID_REVEAL | Fill_Flags.CHECKED_RIGHT,
+      })
+    );
   });
   return update;
 }
