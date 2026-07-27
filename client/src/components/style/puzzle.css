@@ -50,27 +50,31 @@
   background-color: #88f;
 }
 
+@property --puzzle-cols {
+    syntax: "<integer>";
+    initial-value: 10;
+}
+
+@property --puzzle-rows {
+    syntax: "<integer>";
+    initial-value: 10;
+}
+
 #puzzlegrid {
-  display: inline-block;
+  display: inline-grid;
+  width: fit-content;
+  grid-template-columns: repeat(var(--puzzle-cols), 30px);
+  grid-template-rows: repeat(var(--puzzle-cols), 30px);
   border-left: 1px solid black;
   border-top: 1px solid black;
 }
 
-/* Deliberately not Bootstrap's `.row`: the grid lays cells out as
-   inline-blocks, which Bootstrap's flex row would override. */
-#puzzlegrid .gridrow {
-  height: 30px;
-  padding: 0px;
-  margin: 0px;
-  clear: both;
-}
 
 #puzzlegrid .cell {
   width: 30px;
   height: 30px;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
-  display: inline-block;
   padding: 0px;
   margin: 0px;
 }
@@ -99,8 +103,6 @@
 
 #puzzlegrid .cell .cellbody {
   position: relative;
-  width: 31px;
-  height: 31px;
   text-align: center;
 }
 
@@ -108,8 +110,8 @@
   font-family: sans-serif;
   font-weight: bold;
   font-size: 20px;
-  vertical-align: baseline;
-  display: inline-block;
+  position: relative;
+  top: 2px;
 }
 
 #puzzlegrid .cell .numberlabel {

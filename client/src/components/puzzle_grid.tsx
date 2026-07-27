@@ -65,9 +65,8 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
 
   render() {
     const active_cell = Crossword.selectedSquare(this.props.game);
-    const rows: React.JSX.Element[] = [];
+    const cells: React.JSX.Element[] = [];
     for (let r = 0; r < this.props.game.puzzle.height; r++) {
-      const cells: React.JSX.Element[] = [];
       for (let c = 0; c < this.props.game.puzzle.width; c++) {
         const cell = Crossword.cellAt(this.props.game.puzzle, {
           row: r,
@@ -105,12 +104,11 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
 
         cells.push(<PuzzleCell key={`${r},${c}`} {...props} />);
       }
-      rows.push(
-        <div className="gridrow" key={r}>
-          {cells}
-        </div>
-      );
     }
+
+    const style = {};
+    style["--puzzle-cols"] = this.props.game.puzzle.width;
+    style["--puzzle-rows"] = this.props.game.puzzle.height;
 
     // In order to support mobile devices, we create an
     // off-screen <input> field, which we ensure is always focused
@@ -121,7 +119,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     // avoiding potentially buffering input in the keyboard itself
     // before it hits the DOM.
     return (
-      <div id="puzzlegrid">
+        <div id="puzzlegrid" style={style}>
         <meta
           name="viewport"
           content={`width=${this.computeWidth()}, user-scalable=no`}
@@ -134,7 +132,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
           onInput={this.onInput}
           ref={this.inputRef}
         />
-        {rows}
+        {cells}
       </div>
     );
   }
