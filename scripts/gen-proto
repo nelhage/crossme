@@ -1,4 +1,18 @@
 #!/bin/bash
+#
+# Regenerates the Go and TypeScript/JavaScript protobuf bindings. Needs the
+# following on $PATH, in addition to protoc itself:
+#
+#   protoc-gen-go, protoc-gen-go-grpc
+#       https://grpc.io/docs/languages/go/quickstart/
+#   protoc-gen-js
+#       https://github.com/protocolbuffers/protobuf-javascript/releases
+#       Keep in step with the `google-protobuf` version in client/package.json.
+#   protoc-gen-grpc-web
+#       https://github.com/grpc/grpc-web/releases
+#       Keep in step with the `grpc-web` version in client/package.json; the
+#       generated stubs are not compatible across its major versions.
+#
 set -eu
 cd "$(dirname "$0")/.."
 protoc -Ipb \

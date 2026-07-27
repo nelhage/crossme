@@ -1,11 +1,14 @@
 import { Fill } from "../pb/fill_pb";
 import { merge } from "./merge";
 
-import * as fs from "fs";
-import * as path from "path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 
 function readFill(path: string): Fill {
-  const bytes = fs.readFileSync(path);
+  // Copy into a plain Uint8Array: `readFileSync` returns a Node Buffer from
+  // another realm, which google-protobuf's `instanceof` check rejects under
+  // the jsdom test environment.
+  const bytes = new Uint8Array(fs.readFileSync(path));
   return Fill.deserializeBinary(bytes);
 }
 
@@ -33,9 +36,9 @@ function runOne(dir: string) {
 }
 
 describe("merge", () => {
-  const TEST_DIR = path.join(__dirname, "testdata/merge");
+  const TEST_DIR = path.join(import.meta.dirname, "testdata/merge");
   const dirs = fs.readdirSync(TEST_DIR);
-  dirs.forEach(dir => {
+  dirs.forEach((dir) => {
     it(`Test case: ${dir}`, () => {
       runOne(path.join(TEST_DIR, dir));
     });

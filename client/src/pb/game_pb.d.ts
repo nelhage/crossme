@@ -1,7 +1,7 @@
 import * as jspb from 'google-protobuf'
 
-import * as fill_pb from './fill_pb';
-import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
+import * as fill_pb from './fill_pb'; // proto import: "fill.proto"
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb'; // proto import: "google/protobuf/timestamp.proto"
 
 
 export class Game extends jspb.Message {
@@ -31,10 +31,10 @@ export class Game extends jspb.Message {
 
 export namespace Game {
   export type AsObject = {
-    id: string,
-    puzzleId: string,
-    fill?: fill_pb.Fill.AsObject,
-    created?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-  }
+    id: string;
+    puzzleId: string;
+    fill?: fill_pb.Fill.AsObject;
+    created?: google_protobuf_timestamp_pb.Timestamp.AsObject;
+  };
 }
 

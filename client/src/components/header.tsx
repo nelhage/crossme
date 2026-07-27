@@ -1,26 +1,26 @@
-import React from "react";
+import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
 import { NewGame } from "./new_game";
 
-export interface HeaderProps {}
-
-export const Header: React.FC<HeaderProps> = () => {
+export const Header = () => {
   return (
     <Navbar bg="dark" variant="dark" expand="md">
-      <Navbar.Brand href="/">CrossMe</Navbar.Brand>
-      <Navbar.Toggle />
-      <Navbar.Collapse>
-        <Nav className="mr-auto">
-          <NewGame />
-          <NavDropdown
-            title="Recent Games"
-            id="recent-games-dropdown"
-          ></NavDropdown>
-        </Nav>
-      </Navbar.Collapse>
+      <Container fluid>
+        <Navbar.Brand href="/">CrossMe</Navbar.Brand>
+        <Navbar.Toggle aria-controls="main-navbar" />
+        <Navbar.Collapse id="main-navbar">
+          <Nav className="me-auto">
+            <NewGame />
+            {/* Placeholder; the recent-games list is not implemented yet. */}
+            <NavDropdown title="Recent Games" id="recent-games-dropdown">
+              {null}
+            </NavDropdown>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
     </Navbar>
   );
 };

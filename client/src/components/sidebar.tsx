@@ -1,5 +1,3 @@
-import React from "react";
-
 import Nav from "react-bootstrap/Nav";
 
 import * as Crossword from "../crossword";
@@ -19,7 +17,7 @@ interface SidebarProps {
   openRebus: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = props => {
+export const Sidebar = (props: SidebarProps) => {
   return (
     <div id="controls">
       <Nav className="flex-lg-column">
@@ -38,12 +36,4 @@ export const Sidebar: React.FC<SidebarProps> = props => {
       </Nav>
     </div>
   );
-  /*
-        <li className="player-label"> Now playing:</li>
-        <li>
-          <PlayerListContainer gameId={props.gameId} />
-        </li>
-        <KeyboardShortcuts />
-      <UserPreferences currentUser={props.currentUser} />
-      */
 };

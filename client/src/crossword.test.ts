@@ -86,7 +86,7 @@ function parseGame(template: string): Crossword.Game {
         throw new Error(`bad fill char: '${ch}'`);
       }
       if (line[i + 1] === "(") {
-        let sq = grid[grid.length - 1];
+        const sq = grid[grid.length - 1];
         if (sq.black) {
           throw new Error("Attemping to set fill of a black square");
         }
@@ -117,7 +117,7 @@ function parseGame(template: string): Crossword.Game {
               line[i + 1] === ">"
                 ? Types.Direction.ACROSS
                 : Types.Direction.DOWN,
-            pencil: false
+            pencil: false,
           };
           break;
         default:
@@ -148,7 +148,7 @@ function parseGame(template: string): Crossword.Game {
     height,
     squares: grid,
     across_clues: across_clues,
-    down_clues: down_clues
+    down_clues: down_clues,
   };
 
   return Crossword.withFills(
@@ -163,7 +163,7 @@ function formatGame(g: Crossword.Game): string {
     const row: string[] = [];
     for (let c = 0; c < g.puzzle.width; c++) {
       const sq = Crossword.cellAt(g.puzzle, { row: r, column: c });
-      let ch = "";
+      let ch: string;
       if (sq.black) {
         ch = "#";
       } else {
@@ -217,7 +217,7 @@ describe("crossword operations", () => {
     string,
     string,
     (g: Crossword.Game) => Crossword.GameUpdate,
-    string
+    string,
   ][] = [
     [
       "Type into empty word",
@@ -228,14 +228,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.keypress(g, "A"),
+      (g) => Crossword.keypress(g, "A"),
       `
 # A .>. #
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Skip filled squares",
@@ -246,14 +246,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.keypress(g, "A"),
+      (g) => Crossword.keypress(g, "A"),
       `
 # A B .>#
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Don't skip when overwriting",
@@ -264,14 +264,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.keypress(g, "A"),
+      (g) => Crossword.keypress(g, "A"),
       `
 # A B>. #
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "insert at end of word",
@@ -282,14 +282,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.keypress(g, "C"),
+      (g) => Crossword.keypress(g, "C"),
       `
 # A B C #
 .>. . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "overwrite at end of word",
@@ -300,14 +300,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.keypress(g, "D"),
+      (g) => Crossword.keypress(g, "D"),
       `
 # A B D>#
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Delete at cursor",
@@ -325,7 +325,7 @@ describe("crossword operations", () => {
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Delete before cursor",
@@ -343,7 +343,7 @@ describe("crossword operations", () => {
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Delete at start of word",
@@ -361,7 +361,7 @@ describe("crossword operations", () => {
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Delete at 1a",
@@ -379,7 +379,7 @@ describe("crossword operations", () => {
 . . # . .
 . . D . .
 # . .v. #
-`
+`,
     ],
     [
       "Reveal word",
@@ -390,14 +390,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.revealAnswers(g, Crossword.Target.WORD),
+      (g) => Crossword.revealAnswers(g, Crossword.Target.WORD),
       `
 # X>X X #
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Reveal square",
@@ -408,14 +408,14 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
+      (g) => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
       `
 # A X>C #
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
+`,
     ],
     [
       "Reveal square overwrite",
@@ -426,15 +426,15 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      g => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
+      (g) => Crossword.revealAnswers(g, Crossword.Target.SQUARE),
       `
 # A X>C #
 . . . . .
 . . # . .
 . . . . .
 # . . . #
-`
-    ]
+`,
+    ],
   ];
   testCases.forEach(([name, before, op, after], i) => {
     it(`${name} [index: ${i}]`, () => {

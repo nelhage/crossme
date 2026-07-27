@@ -1,8 +1,8 @@
 import * as jspb from 'google-protobuf'
 
-import * as puzzle_pb from './puzzle_pb';
-import * as fill_pb from './fill_pb';
-import * as game_pb from './game_pb';
+import * as puzzle_pb from './puzzle_pb'; // proto import: "puzzle.proto"
+import * as fill_pb from './fill_pb'; // proto import: "fill.proto"
+import * as game_pb from './game_pb'; // proto import: "game.proto"
 
 
 export class GetPuzzleIndexArgs extends jspb.Message {
@@ -16,7 +16,7 @@ export class GetPuzzleIndexArgs extends jspb.Message {
 
 export namespace GetPuzzleIndexArgs {
   export type AsObject = {
-  }
+  };
 }
 
 export class GetPuzzleIndexResponse extends jspb.Message {
@@ -35,8 +35,8 @@ export class GetPuzzleIndexResponse extends jspb.Message {
 
 export namespace GetPuzzleIndexResponse {
   export type AsObject = {
-    puzzlesList: Array<puzzle_pb.PuzzleIndex.AsObject>,
-  }
+    puzzlesList: Array<puzzle_pb.PuzzleIndex.AsObject>;
+  };
 }
 
 export class GetPuzzleByIdArgs extends jspb.Message {
@@ -53,8 +53,8 @@ export class GetPuzzleByIdArgs extends jspb.Message {
 
 export namespace GetPuzzleByIdArgs {
   export type AsObject = {
-    id: string,
-  }
+    id: string;
+  };
 }
 
 export class GetPuzzleResponse extends jspb.Message {
@@ -73,8 +73,8 @@ export class GetPuzzleResponse extends jspb.Message {
 
 export namespace GetPuzzleResponse {
   export type AsObject = {
-    puzzle?: puzzle_pb.Puzzle.AsObject,
-  }
+    puzzle?: puzzle_pb.Puzzle.AsObject;
+  };
 }
 
 export class NewGameArgs extends jspb.Message {
@@ -91,8 +91,8 @@ export class NewGameArgs extends jspb.Message {
 
 export namespace NewGameArgs {
   export type AsObject = {
-    puzzleId: string,
-  }
+    puzzleId: string;
+  };
 }
 
 export class NewGameResponse extends jspb.Message {
@@ -111,8 +111,8 @@ export class NewGameResponse extends jspb.Message {
 
 export namespace NewGameResponse {
   export type AsObject = {
-    game?: game_pb.Game.AsObject,
-  }
+    game?: game_pb.Game.AsObject;
+  };
 }
 
 export class GetGameByIdArgs extends jspb.Message {
@@ -129,8 +129,8 @@ export class GetGameByIdArgs extends jspb.Message {
 
 export namespace GetGameByIdArgs {
   export type AsObject = {
-    id: string,
-  }
+    id: string;
+  };
 }
 
 export class GetGameResponse extends jspb.Message {
@@ -154,9 +154,9 @@ export class GetGameResponse extends jspb.Message {
 
 export namespace GetGameResponse {
   export type AsObject = {
-    game?: game_pb.Game.AsObject,
-    puzzle?: puzzle_pb.Puzzle.AsObject,
-  }
+    game?: game_pb.Game.AsObject;
+    puzzle?: puzzle_pb.Puzzle.AsObject;
+  };
 }
 
 export class UploadPuzzleArgs extends jspb.Message {
@@ -178,9 +178,9 @@ export class UploadPuzzleArgs extends jspb.Message {
 
 export namespace UploadPuzzleArgs {
   export type AsObject = {
-    filename: string,
-    data: Uint8Array | string,
-  }
+    filename: string;
+    data: Uint8Array | string;
+  };
 }
 
 export class UploadPuzzleResponse extends jspb.Message {
@@ -199,8 +199,8 @@ export class UploadPuzzleResponse extends jspb.Message {
 
 export namespace UploadPuzzleResponse {
   export type AsObject = {
-    puzzle?: puzzle_pb.Puzzle.AsObject,
-  }
+    puzzle?: puzzle_pb.Puzzle.AsObject;
+  };
 }
 
 export class SubscribeArgs extends jspb.Message {
@@ -220,9 +220,9 @@ export class SubscribeArgs extends jspb.Message {
 
 export namespace SubscribeArgs {
   export type AsObject = {
-    gameId: string,
-    nodeId: string,
-  }
+    gameId: string;
+    nodeId: string;
+  };
 }
 
 export class SubscribeEvent extends jspb.Message {
@@ -241,8 +241,8 @@ export class SubscribeEvent extends jspb.Message {
 
 export namespace SubscribeEvent {
   export type AsObject = {
-    fill?: fill_pb.Fill.AsObject,
-  }
+    fill?: fill_pb.Fill.AsObject;
+  };
 }
 
 export class UpdateFillArgs extends jspb.Message {
@@ -267,10 +267,10 @@ export class UpdateFillArgs extends jspb.Message {
 
 export namespace UpdateFillArgs {
   export type AsObject = {
-    gameId: string,
-    nodeId: string,
-    fill?: fill_pb.Fill.AsObject,
-  }
+    gameId: string;
+    nodeId: string;
+    fill?: fill_pb.Fill.AsObject;
+  };
 }
 
 export class UpdateFillResponse extends jspb.Message {
@@ -284,6 +284,6 @@ export class UpdateFillResponse extends jspb.Message {
 
 export namespace UpdateFillResponse {
   export type AsObject = {
-  }
+  };
 }
 

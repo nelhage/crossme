@@ -1,6 +1,6 @@
 import * as jspb from 'google-protobuf'
 
-import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb';
+import * as google_protobuf_timestamp_pb from 'google-protobuf/google/protobuf/timestamp_pb'; // proto import: "google/protobuf/timestamp.proto"
 
 
 export class Puzzle extends jspb.Message {
@@ -52,17 +52,17 @@ export class Puzzle extends jspb.Message {
 
 export namespace Puzzle {
   export type AsObject = {
-    title: string,
-    author: string,
-    copyright: string,
-    note: string,
-    width: number,
-    height: number,
-    squaresList: Array<Puzzle.Cell.AsObject>,
-    acrossCluesList: Array<Puzzle.Clue.AsObject>,
-    downCluesList: Array<Puzzle.Clue.AsObject>,
-    metadata?: Puzzle.Meta.AsObject,
-  }
+    title: string;
+    author: string;
+    copyright: string;
+    note: string;
+    width: number;
+    height: number;
+    squaresList: Array<Puzzle.Cell.AsObject>;
+    acrossCluesList: Array<Puzzle.Clue.AsObject>;
+    downCluesList: Array<Puzzle.Clue.AsObject>;
+    metadata?: Puzzle.Meta.AsObject;
+  };
 
   export class Cell extends jspb.Message {
     getNumber(): number;
@@ -93,13 +93,13 @@ export namespace Puzzle {
 
   export namespace Cell {
     export type AsObject = {
-      number: number,
-      black: boolean,
-      circled: boolean,
-      fill: string,
-      clueAcross: number,
-      clueDown: number,
-    }
+      number: number;
+      black: boolean;
+      circled: boolean;
+      fill: string;
+      clueAcross: number;
+      clueDown: number;
+    };
   }
 
 
@@ -120,9 +120,9 @@ export namespace Puzzle {
 
   export namespace Clue {
     export type AsObject = {
-      number: number,
-      text: string,
-    }
+      number: number;
+      text: string;
+    };
   }
 
 
@@ -151,11 +151,11 @@ export namespace Puzzle {
 
   export namespace Meta {
     export type AsObject = {
-      created?: google_protobuf_timestamp_pb.Timestamp.AsObject,
-      sha256: string,
-      id: string,
-      date: string,
-    }
+      created?: google_protobuf_timestamp_pb.Timestamp.AsObject;
+      sha256: string;
+      id: string;
+      date: string;
+    };
   }
 
 }
@@ -180,9 +180,9 @@ export class PuzzleIndex extends jspb.Message {
 
 export namespace PuzzleIndex {
   export type AsObject = {
-    id: string,
-    title: string,
-    date: string,
-  }
+    id: string;
+    title: string;
+    date: string;
+  };
 }
 

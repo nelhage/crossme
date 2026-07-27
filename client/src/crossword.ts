@@ -44,7 +44,7 @@ function newId(): string {
   const buf = new Uint8Array(8);
   window.crypto.getRandomValues(buf);
   let s = "";
-  buf.forEach(b => {
+  buf.forEach((b) => {
     s += HEX[b >> 4];
     s += HEX[b & 0xf];
   });
@@ -60,7 +60,7 @@ export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
     }
   });
 
-  const idx = puzzle.squares.findIndex(el => !el.black);
+  const idx = puzzle.squares.findIndex((el) => !el.black);
   const { row, column } = unpackIndex(puzzle, idx);
 
   return {
@@ -70,12 +70,12 @@ export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
       row,
       column,
       direction: Types.Direction.ACROSS,
-      pencil: false
+      pencil: false,
     },
     nextError: idx,
     fill: List(),
     nodeID: nodeID || newId(),
-    clock: 0
+    clock: 0,
   };
 }
 
@@ -104,8 +104,8 @@ export function withCursor(
     ...g,
     cursor: {
       ...g.cursor,
-      ...update
-    }
+      ...update,
+    },
   };
 }
 
@@ -146,7 +146,7 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   if (fill.length !== g.puzzle.height) {
     throw new Error("bad fill length");
   }
-  if (fill.find(row => row.length !== g.puzzle.width)) {
+  if (fill.find((row) => row.length !== g.puzzle.width)) {
     throw new Error("bad fill entry");
   }
   const array: Types.FillState[] = [];
@@ -157,7 +157,7 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
           fill: ch,
           pencil: g.cursor.pencil,
           clock: g.clock,
-          owner: g.nodeID
+          owner: g.nodeID,
         };
       }
     });
@@ -169,14 +169,14 @@ function mergeFill(
   mut: List<Readonly<Types.FillState> | undefined>,
   fill: FillPb.Fill
 ): void {
-  fill.getCellsList().forEach(cell => {
+  fill.getCellsList().forEach((cell) => {
     const existing: Types.FillState = Object.assign(
       {},
       mut.get(cell.getIndex()) || {
         clock: 0,
         owner: "",
         fill: "",
-        pencil: false
+        pencil: false,
       }
     );
     const flags = cell.getFlags();
@@ -214,13 +214,13 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
     out = withCursor(out, update.cursor);
   }
   if (update.fill && g.nextError !== undefined) {
-    let mut = g.fill.asMutable();
+    const mut = g.fill.asMutable();
     const clock = Math.max(g.clock, update.fill.getClock()) + 1;
     mergeFill(mut, update.fill);
     return check({
       ...out,
       clock: clock,
-      fill: mut.asImmutable()
+      fill: mut.asImmutable(),
     });
   }
   return out;
@@ -232,13 +232,14 @@ function withFill(g: Game, update: (fill: Fill) => Fill): Game {
   }
   return check({
     ...g,
-    fill: update(g.fill)
+    fill: update(g.fill),
   });
 }
 
-function directionToDelta(
-  direction: Types.Direction
-): { dr: number; dc: number } {
+function directionToDelta(direction: Types.Direction): {
+  dr: number;
+  dc: number;
+} {
   if (direction === Types.Direction.ACROSS) {
     return { dr: 0, dc: 1 };
   }
@@ -254,8 +255,8 @@ function otherDirection(d: Types.Direction): Types.Direction {
 export function swapDirection(g: Game): GameUpdate {
   return {
     cursor: {
-      direction: otherDirection(g.cursor.direction)
-    }
+      direction: otherDirection(g.cursor.direction),
+    },
   };
 }
 
@@ -369,7 +370,7 @@ export function fillSquare(
   );
   update.addCells(sq);
   return {
-    fill: update
+    fill: update,
   };
 }
 
@@ -458,14 +459,14 @@ function nextClue(
   ) => Types.CursorUpdate | undefined,
   reverse?: boolean
 ): GameUpdate {
-  let direction = g.cursor.direction;
+  const direction = g.cursor.direction;
   const firstClue =
     direction === Types.Direction.DOWN
       ? selectedSquare(g).clueDown
       : selectedSquare(g).clueAcross;
   const clues = cluesForDirection(g, direction);
   const otherClues = cluesForDirection(g, otherDirection(direction));
-  const activeIndex = clues.findIndex(c => c.number === firstClue);
+  const activeIndex = clues.findIndex((c) => c.number === firstClue);
   if (activeIndex < 0) {
     throw new Error(`no such clue: ${firstClue}-${direction}`);
   }
@@ -477,20 +478,20 @@ function nextClue(
         direction,
         clues,
         fromIndex: activeIndex - 1,
-        toIndex: 0
+        toIndex: 0,
       });
     }
     search.push({
       direction: otherDirection(direction),
       clues: otherClues,
       fromIndex: otherClues.length - 1,
-      toIndex: 0
+      toIndex: 0,
     });
     search.push({
       direction,
       clues,
       fromIndex: clues.length - 1,
-      toIndex: activeIndex
+      toIndex: activeIndex,
     });
   } else {
     if (activeIndex < clues.length - 1) {
@@ -498,20 +499,20 @@ function nextClue(
         direction,
         clues,
         fromIndex: activeIndex + 1,
-        toIndex: clues.length - 1
+        toIndex: clues.length - 1,
       });
     }
     search.push({
       direction: otherDirection(direction),
       clues: otherClues,
       fromIndex: 0,
-      toIndex: otherClues.length - 1
+      toIndex: otherClues.length - 1,
     });
     search.push({
       direction,
       clues,
       fromIndex: 0,
-      toIndex: activeIndex
+      toIndex: activeIndex,
     });
   }
 
@@ -625,7 +626,7 @@ export function deleteKey(g: Game): GameUpdate {
 export enum Target {
   SQUARE = "square",
   WORD = "word",
-  PUZZLE = "puzzle"
+  PUZZLE = "puzzle",
 }
 
 function eachTarget(
@@ -646,7 +647,7 @@ function eachTarget(
   const want: (sq: Types.LetterCell) => boolean =
     target === Target.PUZZLE
       ? () => true
-      : sq => {
+      : (sq) => {
           if (g.cursor.direction === Types.Direction.ACROSS) {
             return sq.clueAcross === active.clueAcross;
           } else {
@@ -699,13 +700,13 @@ export function revealAnswers(g: Game, target: Target): GameUpdate {
   newfill.addNodes(g.nodeID);
   const update: GameUpdate = { fill: newfill };
 
-  eachTarget(g, target, (idx, sq, fill) => {
+  eachTarget(g, target, (idx, sq) => {
     const newsq = new FillPb.Fill.Cell();
     newsq.setIndex(idx);
     newsq.setFill(sq.fill);
     newsq.setClock(g.clock + 1);
     newsq.setOwner(0);
-    let flags: number =
+    const flags: number =
       FillPb.Fill.Flags.DID_REVEAL | FillPb.Fill.Flags.CHECKED_RIGHT;
     newsq.setFlags(flags);
     newfill.addCells(newsq);

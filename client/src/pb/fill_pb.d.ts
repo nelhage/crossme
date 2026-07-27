@@ -29,11 +29,11 @@ export class Fill extends jspb.Message {
 
 export namespace Fill {
   export type AsObject = {
-    complete: boolean,
-    clock: number,
-    nodesList: Array<string>,
-    cellsList: Array<Fill.Cell.AsObject>,
-  }
+    complete: boolean;
+    clock: number;
+    nodesList: Array<string>;
+    cellsList: Array<Fill.Cell.AsObject>;
+  };
 
   export class Cell extends jspb.Message {
     getIndex(): number;
@@ -61,16 +61,16 @@ export namespace Fill {
 
   export namespace Cell {
     export type AsObject = {
-      index: number,
-      clock: number,
-      owner: number,
-      fill: string,
-      flags: number,
-    }
+      index: number;
+      clock: number;
+      owner: number;
+      fill: string;
+      flags: number;
+    };
   }
 
 
-  export enum Flags { 
+  export enum Flags {
     NONE = 0,
     CHECKED_RIGHT = 1,
     CHECKED_WRONG = 2,

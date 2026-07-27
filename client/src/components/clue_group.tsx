@@ -1,5 +1,3 @@
-import React from "react";
-
 import * as Types from "../types";
 
 import { Clue } from "./clue";
@@ -23,14 +21,14 @@ function classFor(selected: boolean, active: boolean): string {
   return "otherword";
 }
 
-export const ClueGroup: React.FC<ClueGroupProps> = ({
+export const ClueGroup = ({
   active,
   direction,
   selected,
   clues,
-  onSelect
-}) => {
-  const contents = clues.map(c => (
+  onSelect,
+}: ClueGroupProps) => {
+  const contents = clues.map((c) => (
     <Clue
       key={c.number}
       number={c.number}

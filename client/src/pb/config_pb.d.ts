@@ -16,7 +16,7 @@ export class Config extends jspb.Message {
 
 export namespace Config {
   export type AsObject = {
-    schemaVersion: number,
-  }
+    schemaVersion: number;
+  };
 }
 

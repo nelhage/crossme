@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-import { useHistory } from "react-router";
+import { useNavigate } from "react-router";
 
 import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
@@ -12,10 +12,8 @@ export interface PreviewContainerProps {
   puzzleId: string;
 }
 
-export const PreviewContainer: React.FC<PreviewContainerProps> = ({
-  puzzleId
-}) => {
-  const [puzzle, setPuzzle] = useState(null as null | Types.Puzzle);
+export const PreviewContainer = ({ puzzleId }: PreviewContainerProps) => {
+  const [puzzle, setPuzzle] = useState<null | Types.Puzzle>(null);
   const client = useClient();
   useEffect(() => {
     const args = new Pb.GetPuzzleByIdArgs();
@@ -32,7 +30,7 @@ export const PreviewContainer: React.FC<PreviewContainerProps> = ({
       setPuzzle(proto2Puzzle(proto));
     });
   }, [client, puzzleId]);
-  const history = useHistory();
+  const navigate = useNavigate();
 
   const startGame = () => {
     if (!puzzle) {
@@ -47,9 +45,7 @@ export const PreviewContainer: React.FC<PreviewContainerProps> = ({
       }
       const game = resp.getGame();
       if (game) {
-        history.push(`/game/${game.getId()}`, {
-          puzzleId: puzzle.id
-        });
+        navigate(`/game/${game.getId()}`, { state: { puzzleId: puzzle.id } });
       }
     });
   };

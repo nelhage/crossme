@@ -1,5 +1,3 @@
-import React from "react";
-
 import Button from "react-bootstrap/Button";
 
 import { Puzzle } from "../types";
@@ -11,25 +9,25 @@ export interface MetadataProps {
   startGame?: () => void;
 }
 
-export const Metadata: React.FC<MetadataProps> = ({
+export const Metadata = ({
   puzzle,
   solved,
   preview,
-  startGame
-}) => {
+  startGame,
+}: MetadataProps) => {
   return (
     <div id="details">
       <div className="title">
         {preview ? (
-          <span className="badge badge-info">Preview</span>
+          <span className="badge bg-info">Preview</span>
         ) : (
-          <span className="badge badge-default">Title</span>
+          <span className="badge bg-secondary">Title</span>
         )}{" "}
         <span className="value">{puzzle.title}</span>
-        {solved && <span className="badge badge-success">Solved!</span>}
+        {solved && <span className="badge bg-success">Solved!</span>}
       </div>
       <div className="author">
-        <span className="badge badge-default">By</span>{" "}
+        <span className="badge bg-secondary">By</span>{" "}
         <span className="value">{puzzle.author}</span>
       </div>
       {preview && (
@@ -41,7 +39,7 @@ export const Metadata: React.FC<MetadataProps> = ({
       )}
       {puzzle.note && (
         <div className="note">
-          <span className="badge badge-default">Note</span>{" "}
+          <span className="badge bg-secondary">Note</span>{" "}
           <span className="value">{puzzle.note}</span>
         </div>
       )}

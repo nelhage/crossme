@@ -28,7 +28,7 @@ export interface PuzzleState {
 
 export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   static contextType = ClientContext;
-  context!: React.ContextType<typeof ClientContext>;
+  declare context: React.ContextType<typeof ClientContext>;
 
   client(): CrossMeClient {
     if (!this.context) {
@@ -41,12 +41,12 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   timeoutId?: number;
   reconnectDelay: number = 0;
 
-  grid: React.RefObject<PuzzleGrid>;
+  grid: React.RefObject<PuzzleGrid | null>;
 
   constructor(props: PuzzleProps) {
     super(props);
     this.state = {
-      game: Crossword.newGame(props.puzzle)
+      game: Crossword.newGame(props.puzzle),
     };
     this.grid = React.createRef();
 
@@ -61,7 +61,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
-    this.setState(state => {
+    this.setState((state) => {
       let update = op(state.game);
       if (state.game.nextError === undefined) {
         update = { ...update, fill: undefined };
@@ -75,7 +75,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         args.setGameId(this.props.gameId);
         args.setNodeId(this.state.game.nodeID);
         args.setFill(update.fill);
-        this.client().updateFill(args, null, (err, _) => {
+        this.client().updateFill(args, null, (err) => {
           if (err) {
             console.log("Error updating fill: %j", err);
           }
@@ -83,7 +83,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       }
       return {
         ...state,
-        game
+        game,
       };
     });
   }
@@ -95,11 +95,11 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   setPencil(pencil: boolean) {
-    this.updateGame(g => Crossword.withPencil(g, pencil));
+    this.updateGame((g) => Crossword.withPencil(g, pencil));
   }
 
   onInput(fill: string) {
-    this.updateGame(game => Crossword.keypress(game, fill.toUpperCase()));
+    this.updateGame((game) => Crossword.keypress(game, fill.toUpperCase()));
   }
 
   keyDown(e: KeyboardEvent) {
@@ -137,9 +137,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         this.arrow(1, 0);
         break;
       case "Tab":
-        this.updateGame(game => Crossword.nextBlank(game, e.shiftKey));
+        this.updateGame((game) => Crossword.nextBlank(game, e.shiftKey));
         break;
-      case "Enter":
+      case "Enter": {
         const fill = Crossword.fillAt(this.state.game, this.state.game.cursor);
         if (fill && fill.fill && fill.fill.length > 1) {
           this.openRebus();
@@ -147,6 +147,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           this.updateGame(Crossword.swapDirection);
         }
         break;
+      }
       case "Delete":
       case "Backspace":
         this.updateGame(Crossword.deleteKey);
@@ -161,10 +162,10 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
     // TODO: settingArrows
     if (direction !== this.state.game.cursor.direction) {
-      this.updateGame(state => Crossword.swapDirection(state));
+      this.updateGame((state) => Crossword.swapDirection(state));
       return;
     }
-    this.updateGame(state => Crossword.move(state, dr, dc));
+    this.updateGame((state) => Crossword.move(state, dr, dc));
   }
 
   onClickCell(pos: Types.Position) {
@@ -183,20 +184,20 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         this.updateGame(Crossword.swapDirection);
       }
     } else {
-      this.updateGame(game => Crossword.selectSquare(game, pos));
+      this.updateGame((game) => Crossword.selectSquare(game, pos));
     }
   }
 
   onSelectClue(evt: Types.SelectClueEvent) {
-    this.updateGame(game => Crossword.selectClue(game, evt));
+    this.updateGame((game) => Crossword.selectClue(game, evt));
   }
 
   doReveal(target: Crossword.Target) {
-    this.updateGame(game => Crossword.revealAnswers(game, target));
+    this.updateGame((game) => Crossword.revealAnswers(game, target));
   }
 
   doCheck(target: Crossword.Target) {
-    this.updateGame(game => Crossword.checkAnswers(game, target));
+    this.updateGame((game) => Crossword.checkAnswers(game, target));
   }
 
   selectedClueNumber(): number {
@@ -216,7 +217,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
         ? this.props.puzzle.down_clues
         : this.props.puzzle.across_clues;
     const num = this.selectedClueNumber();
-    const clue = clues.find(c => c.number === num);
+    const clue = clues.find((c) => c.number === num);
     if (clue) {
       return clue;
     }
@@ -245,12 +246,12 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       if (!fill) {
         return;
       }
-      this.setState(state => ({
+      this.setState((state) => ({
         ...state,
-        game: Crossword.withUpdate(state.game, { fill })
+        game: Crossword.withUpdate(state.game, { fill }),
       }));
     });
-    sub.on("error", (err: grpcWeb.Error) => {
+    sub.on("error", (err: grpcWeb.RpcError) => {
       this.reconnectDelay = Math.max(this.reconnectDelay, 100);
       this.reconnectDelay *= 1.5;
       this.reconnectDelay = Math.min(this.reconnectDelay, 30 * 1000);

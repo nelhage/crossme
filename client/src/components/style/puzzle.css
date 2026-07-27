@@ -1,250 +1,252 @@
 #puzzle {
-    display: inline-block;
-    padding-left: 10px;
+  display: inline-block;
+  padding-left: 10px;
 }
 
 #details {
-    margin: 1em;
+  margin: 1em;
 }
 
 #details div.title {
-    font-size: 150%;
+  font-size: 150%;
 }
 
 #default div.author {
-    font-size: 120%;
+  font-size: 120%;
 }
 
 #details .label {
-    font-weight: bold;
+  font-weight: bold;
 }
 
 #details div.solved {
-    font-size: 200%;
-    border: 5px solid #0c0;
-    margin: 5px;
-    float: right;
+  font-size: 200%;
+  border: 5px solid #0c0;
+  margin: 5px;
+  float: right;
 }
 
 #theclue {
-    font-size: 125%;
-    margin: 0px 0px 10px 0px;
-    vertical-align: middle;
+  font-size: 125%;
+  margin: 0px 0px 10px 0px;
+  vertical-align: middle;
 }
 
 .preview button {
-    margin: 5px 0px;
+  margin: 5px 0px;
 }
 
-#theclue>span {
-    display: block;
-    float: left;
-    margin: 0px;
-    height: 100%;
-    padding: 5px;
-    font-weight: bold;
-    line-height: 20px;
+#theclue > span {
+  display: block;
+  float: left;
+  margin: 0px;
+  height: 100%;
+  padding: 5px;
+  font-weight: bold;
+  line-height: 20px;
 }
 
 #theclue .label {
-    background-color: #88f;
+  background-color: #88f;
 }
 
 #puzzlegrid {
-    display: inline-block;
-    border-left: 1px solid black;
-    border-top:  1px solid black;
+  display: inline-block;
+  border-left: 1px solid black;
+  border-top: 1px solid black;
 }
 
-#puzzlegrid .row {
-    height: 30px;
-    padding: 0px;
-    margin: 0px;
-    clear: both;
+/* Deliberately not Bootstrap's `.row`: the grid lays cells out as
+   inline-blocks, which Bootstrap's flex row would override. */
+#puzzlegrid .gridrow {
+  height: 30px;
+  padding: 0px;
+  margin: 0px;
+  clear: both;
 }
 
 #puzzlegrid .cell {
-    width: 30px;
-    height: 30px;
-    border-right: 1px solid black;
-    border-bottom: 1px solid black;
-    display: inline-block;
-    padding: 0px;
-    margin: 0px;
+  width: 30px;
+  height: 30px;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+  display: inline-block;
+  padding: 0px;
+  margin: 0px;
 }
 
 #puzzleinput {
-    width: 0;
-    height: 0;
-    padding: 0;
-    border: none;
-    position: fixed;
-    z-index: -1;
+  width: 0;
+  height: 0;
+  padding: 0;
+  border: none;
+  position: fixed;
+  z-index: -1;
 }
 
 #puzzlegrid .cell.rebus .fill {
-    font-size: 15px;
-    left: 0px;
-    top: 4px;
+  font-size: 15px;
+  left: 0px;
+  top: 4px;
 }
 
 #puzzlegrid .cell input.fill {
-    width: 3em;
-    z-index: 100;
-    left: -1em;
-    text-transform: uppercase;
+  width: 3em;
+  z-index: 100;
+  left: -1em;
+  text-transform: uppercase;
 }
 
 #puzzlegrid .cell .cellbody {
-    position: relative;
-    width: 31px;
-    height: 31px;
-    text-align: center;
+  position: relative;
+  width: 31px;
+  height: 31px;
+  text-align: center;
 }
 
 #puzzlegrid .cell .fill {
-    font-family: sans-serif;
-    font-weight: bold;
-    font-size: 20px;
-    vertical-align: baseline;
-    display: inline-block;
+  font-family: sans-serif;
+  font-weight: bold;
+  font-size: 20px;
+  vertical-align: baseline;
+  display: inline-block;
 }
 
 #puzzlegrid .cell .numberlabel {
-    position: absolute;
-    width: 15px;
-    height: 15px;
-    font-size: 10px;
-    font-family: serif;
+  position: absolute;
+  width: 15px;
+  height: 15px;
+  font-size: 10px;
+  font-family: serif;
 }
 
 #puzzlegrid .cell.correct {
-    color: #33a;
+  color: #33a;
 }
 
 #puzzlegrid .cell.filled {
-    background-color: black;
+  background-color: black;
 }
 
 #puzzlegrid .cell.selected {
-    background-color: #77f;
+  background-color: #77f;
 }
 
 #puzzlegrid .cell.inword {
-    background-color: #ccf;
+  background-color: #ccf;
 }
 
 #puzzlegrid .cell.otherword {
 }
 
 #puzzlegrid .cell.pencil {
-    color: #777;
+  color: #777;
 }
 
 #puzzlegrid .cell.wrong .cellbody {
-    background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M0 100 L100 0' stroke='red' stroke-width='4'/></svg>");
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' preserveAspectRatio='none' viewBox='0 0 100 100'><path d='M0 100 L100 0' stroke='red' stroke-width='4'/></svg>");
 }
 
 #puzzlegrid .cell.reveal .cellbody {
-    border: 2px solid #66f;
-    margin: 0px;
+  border: 2px solid #66f;
+  margin: 0px;
 }
 
 #puzzlegrid .cell.circled .circle {
-    border: 1px solid #000;
-    border-radius: 15px;
-    width: 100%;
-    height: 100%;
+  border: 1px solid #000;
+  border-radius: 15px;
+  width: 100%;
+  height: 100%;
 }
 
 #clues {
-    font-family: serif;
-    font-size: 90%;
-    margin-left: 5px;
-    display: inline-block;
-    width: 200px;
-    border: 1px solid black;
-    padding: 3px;
-    vertical-align: top;
+  font-family: serif;
+  font-size: 90%;
+  margin-left: 5px;
+  display: inline-block;
+  width: 200px;
+  border: 1px solid black;
+  padding: 3px;
+  vertical-align: top;
 }
 
 #clues .section {
-    margin: 3px;
-    border: 1px solid black;
+  margin: 3px;
+  border: 1px solid black;
 }
 
 #clues .title {
-    height: 25px;
-    background: #ccc;
-    border-bottom: 3px double black;
+  height: 25px;
+  background: #ccc;
+  border-bottom: 3px double black;
 }
 
 #clues .cluelist {
-    overflow-y: scroll;
-    height: 190px;
+  overflow-y: scroll;
+  height: 190px;
 }
 
 #clues .clue {
 }
 
 #clues .clue.selected {
-    background-color: #ccf;
+  background-color: #ccf;
 }
 
 #clues .clue.otherword {
-    background-color: #ccc;
+  background-color: #ccc;
 }
 
 .clear {
-    clear: both;
+  clear: both;
 }
 
 #controls {
-    display: inline-block;
-    vertical-align: top;
-    padding-left: 10px;
+  display: inline-block;
+  vertical-align: top;
+  padding-left: 10px;
 }
 
 #controls .player-label {
-    padding: 5px 0px;
+  padding: 5px 0px;
 }
 
 #controls div.dropdown {
-    width: 100%;
+  width: 100%;
 }
 
 #controls div.nav-item {
-    padding: 3px;
+  padding: 3px;
 }
 
 #player-list input {
-    font-size: 90%;
-    width: 10em;
-    line-height: 80%;
+  font-size: 90%;
+  width: 10em;
+  line-height: 80%;
 }
 
 #shortcuts-help {
-    position: absolute;
-    left: 10%;
-    top: 10%;
-    z-index: 100;
-    background-color: #333;
-    border-radius: 20px;
-    opacity: 0.9;
-    border: 2px solid black;
+  position: absolute;
+  left: 10%;
+  top: 10%;
+  z-index: 100;
+  background-color: #333;
+  border-radius: 20px;
+  opacity: 0.9;
+  border: 2px solid black;
 }
 
 #shortcuts-help .contents {
-    opacity: 1;
-    color: white;
-    padding: 3em;
+  opacity: 1;
+  color: white;
+  padding: 3em;
 }
 
 #shortcuts-help .contents th {
-    padding-right: 1em;
+  padding-right: 1em;
 }
 
 .sidebar-link {
-    font-size: 80%;
-    display: block;
+  font-size: 80%;
+  display: block;
 }

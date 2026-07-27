@@ -34,7 +34,7 @@ export interface Puzzle {
 
 export enum Direction {
   DOWN = "down",
-  ACROSS = "across"
+  ACROSS = "across",
 }
 
 export interface Position {
@@ -63,7 +63,14 @@ export interface CursorUpdate {
 
 export enum Checked {
   RIGHT,
-  WRONG
+  WRONG,
+}
+
+// How a cell relates to the word the cursor is currently in.
+export enum InWord {
+  SELECTED,
+  IN_WORD,
+  OTHER_WORD,
 }
 
 export interface FillState {

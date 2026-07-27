@@ -1,0 +1,4 @@
+{
+  "//": "The protoc-generated *_pb.js files are CommonJS; this marker keeps Node and the bundler from treating them as ESM under the root package's \"type\": \"module\".",
+  "type": "commonjs"
+}

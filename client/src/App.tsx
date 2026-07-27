@@ -1,14 +1,12 @@
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 
 import {
-  BrowserRouter as Router,
-  Switch,
-  Route,
+  createBrowserRouter,
+  Outlet,
+  RouterProvider,
+  useLocation,
   useParams,
-  useLocation
-} from "react-router-dom";
-
-import "./App.css";
+} from "react-router";
 
 import { CrossMeClient } from "./pb/CrossmeServiceClientPb";
 
@@ -18,48 +16,48 @@ import { GameContainer } from "./components/game_container";
 import { HomePage } from "./components/home_page";
 import { Header } from "./components/header";
 
-const RoutePreview: React.FC = () => {
-  const { puzzleId } = useParams<{ puzzleId: string }>();
-  return <PreviewContainer puzzleId={puzzleId} />;
+const Layout = () => (
+  <div className="App">
+    <Header />
+    <Outlet />
+  </div>
+);
+
+const RoutePreview = () => {
+  const { puzzleId } = useParams<"puzzleId">();
+  return <PreviewContainer puzzleId={puzzleId ?? ""} />;
 };
 
 interface LocationState {
   puzzleId?: string;
 }
 
-const RouteGame: React.FC = () => {
-  const { gameId } = useParams<{ gameId: string }>();
-  const loc = useLocation<LocationState>();
-  const state = loc.state;
-  return <GameContainer gameId={gameId} puzzleId={state && state.puzzleId} />;
+const RouteGame = () => {
+  const { gameId } = useParams<"gameId">();
+  const state = useLocation().state as LocationState | null;
+  return <GameContainer gameId={gameId ?? ""} puzzleId={state?.puzzleId} />;
 };
 
-const App: React.FC = () => {
+const router = createBrowserRouter([
+  {
+    element: <Layout />,
+    children: [
+      { index: true, element: <HomePage /> },
+      { path: "preview/:puzzleId", element: <RoutePreview /> },
+      { path: "game/:gameId", element: <RouteGame /> },
+    ],
+  },
+]);
+
+const App = () => {
   const client = useMemo(
     () => new CrossMeClient(window.location.origin + "/api", null, null),
     []
   );
   return (
-    <ClientContext.Provider value={client}>
-      <Router>
-        <div className="App">
-          <Header />
-          <Switch>
-            <Route exact path="/">
-              <HomePage />
-            </Route>
-
-            <Route path="/preview/:puzzleId">
-              <RoutePreview />
-            </Route>
-
-            <Route path="/game/:gameId">
-              <RouteGame />
-            </Route>
-          </Switch>
-        </div>
-      </Router>
-    </ClientContext.Provider>
+    <ClientContext value={client}>
+      <RouterProvider router={router} />
+    </ClientContext>
   );
 };
 

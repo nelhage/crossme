@@ -3,12 +3,6 @@ import classNames from "classnames";
 
 import * as Types from "../types";
 
-export enum InWord {
-  SELECTED,
-  IN_WORD,
-  OTHER_WORD
-}
-
 export interface PuzzleCellProps {
   square: Types.Cell;
   row: number;
@@ -19,7 +13,7 @@ export interface PuzzleCellProps {
   onClick: (evt: React.MouseEvent<HTMLDivElement>) => void;
   onInput?: (text: string) => void;
 
-  inword?: InWord;
+  inword?: Types.InWord;
 }
 
 interface PuzzleCellState {
@@ -37,7 +31,7 @@ export class PuzzleCell extends React.PureComponent<
   }
 
   static getDerivedStateFromProps(props: PuzzleCellProps): PuzzleCellState {
-    if (props.inword !== InWord.SELECTED) {
+    if (props.inword !== Types.InWord.SELECTED) {
       return { rebus: false };
     }
     return {};
@@ -53,16 +47,16 @@ export class PuzzleCell extends React.PureComponent<
       pencil: fill && fill.pencil,
       reveal: fill && fill.didReveal,
       wrong: fill && fill.checked === Types.Checked.WRONG,
-      correct: fill && fill.checked === Types.Checked.RIGHT
+      correct: fill && fill.checked === Types.Checked.RIGHT,
     };
     switch (this.props.inword) {
-      case InWord.SELECTED:
+      case Types.InWord.SELECTED:
         classes.selected = true;
         break;
-      case InWord.IN_WORD:
+      case Types.InWord.IN_WORD:
         classes.inword = true;
         break;
-      case InWord.OTHER_WORD:
+      case Types.InWord.OTHER_WORD:
         classes.otherword = true;
     }
     if (fill && fill.fill && fill.fill.length > 1) {
@@ -89,7 +83,6 @@ export class PuzzleCell extends React.PureComponent<
 
     const classes = this.computeClasses();
 
-    /* eslint-disable jsx-a11y/no-autofocus */
     return (
       <div
         role="button"

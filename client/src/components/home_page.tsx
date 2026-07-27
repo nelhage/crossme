@@ -1,6 +1,4 @@
-import React from "react";
-
-export const HomePage: React.FC = () => {
+export const HomePage = () => {
   return (
     <div className="container">
       <meta name="viewport" content="width=device-width" />

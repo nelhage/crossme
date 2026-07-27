@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 import * as Types from "../types";
 import { PuzzleComponent } from "./puzzle";
@@ -11,11 +11,8 @@ export interface GameContainerProps {
   puzzleId?: string;
 }
 
-export const GameContainer: React.FC<GameContainerProps> = ({
-  gameId,
-  puzzleId
-}) => {
-  const [puzzle, setPuzzle] = useState(null as null | Types.Puzzle);
+export const GameContainer = ({ gameId, puzzleId }: GameContainerProps) => {
+  const [puzzle, setPuzzle] = useState<null | Types.Puzzle>(null);
   const client = useClient();
   useEffect(() => {
     const args = new Pb.GetGameByIdArgs();

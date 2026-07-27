@@ -1,5 +1,3 @@
-import React from "react";
-
 import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 
@@ -9,9 +7,13 @@ export interface CheckProps {
   doCheck: (target: Crossword.Target) => void;
 }
 
-export const Check: React.FC<CheckProps> = ({ doCheck }) => {
+export const Check = ({ doCheck }: CheckProps) => {
   return (
-    <DropdownButton title="Check" id="dCheck" onSelect={doCheck as any}>
+    <DropdownButton
+      title="Check"
+      id="dCheck"
+      onSelect={(key) => key && doCheck(key as Crossword.Target)}
+    >
       <Dropdown.Item active={false} eventKey={Crossword.Target.SQUARE}>
         Square
       </Dropdown.Item>

@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Clue, Direction } from "../types";
 
 export interface CurrentClueProps {
@@ -7,12 +5,9 @@ export interface CurrentClueProps {
   direction: Direction;
 }
 
-export const CurrentClue: React.FC<CurrentClueProps> = ({
-  clue,
-  direction
-}) => (
+export const CurrentClue = ({ clue, direction }: CurrentClueProps) => (
   <div id="theclue">
-    <span className="badge badge-secondary">
+    <span className="badge bg-secondary">
       <span className="number">{clue.number}</span>
       <span className="direction"> {direction}</span>
     </span>

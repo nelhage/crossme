@@ -10,12 +10,12 @@ export function merge(l: Fill, r: Fill): Fill {
 
   out.setComplete(l.getComplete() || r.getComplete());
 
-  let nodemap: { [id: string]: number } = {};
-  l.getNodesList().forEach(node => {
+  const nodemap: { [id: string]: number } = {};
+  l.getNodesList().forEach((node) => {
     out.addNodes(node);
     nodemap[node] = 0;
   });
-  r.getNodesList().forEach(node => {
+  r.getNodesList().forEach((node) => {
     if (!(node in nodemap)) {
       out.addNodes(node);
       nodemap[node] = 0;

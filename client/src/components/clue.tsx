@@ -1,4 +1,4 @@
-import React from "react";
+import { memo, MouseEvent } from "react";
 
 import classNames from "classnames";
 
@@ -27,13 +27,13 @@ function scrollIntoView(node: null | HTMLElement) {
   parentNode.scrollTop = node.offsetTop - parentNode.offsetTop;
 }
 
-export const Clue: React.FC<ClueProps> = React.memo(props => {
+export const Clue = memo(function Clue(props: ClueProps) {
   const classes = classNames("clue", `clue-${props.number}`, props.className);
-  const onClick = (evt: React.MouseEvent<HTMLDivElement>) => {
+  const onClick = (evt: MouseEvent<HTMLDivElement>) => {
     const target = evt.target as HTMLDivElement;
     props.onClick({
       number: parseInt(target.dataset.number as string, 10),
-      direction: target.dataset.direction as Types.Direction
+      direction: target.dataset.direction as Types.Direction,
     });
   };
   return (

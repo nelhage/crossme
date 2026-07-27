@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Puzzle, Direction, SelectClueEvent } from "../types";
 import { ClueGroup } from "./clue_group";
 
@@ -9,10 +7,10 @@ export interface ClueBoxProps {
   down_clue?: number;
   direction: Direction;
 
-  onSelect: (evt: SelectClueEvent) => any;
+  onSelect: (evt: SelectClueEvent) => void;
 }
 
-export const ClueBox: React.FC<ClueBoxProps> = props => (
+export const ClueBox = (props: ClueBoxProps) => (
   <div id="clues" className="d-none d-md-inline-block">
     <div className="section across">
       <div className="title"> Across </div>
