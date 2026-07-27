@@ -106,9 +106,12 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
       }
     }
 
-    const style = {};
-    style["--puzzle-cols"] = this.props.game.puzzle.width;
-    style["--puzzle-rows"] = this.props.game.puzzle.height;
+    // Custom properties aren't part of React.CSSProperties, so the cast is
+    // what lets the grid read its dimensions out of CSS.
+    const style = {
+      "--puzzle-cols": this.props.game.puzzle.width,
+      "--puzzle-rows": this.props.game.puzzle.height,
+    } as React.CSSProperties;
 
     // In order to support mobile devices, we create an
     // off-screen <input> field, which we ensure is always focused
@@ -119,7 +122,7 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     // avoiding potentially buffering input in the keyboard itself
     // before it hits the DOM.
     return (
-        <div id="puzzlegrid" style={style}>
+      <div id="puzzlegrid" style={style}>
         <meta
           name="viewport"
           content={`width=${this.computeWidth()}, user-scalable=no`}

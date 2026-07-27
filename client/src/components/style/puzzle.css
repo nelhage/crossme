@@ -51,24 +51,25 @@
 }
 
 @property --puzzle-cols {
-    syntax: "<integer>";
-    initial-value: 10;
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 10;
 }
 
 @property --puzzle-rows {
-    syntax: "<integer>";
-    initial-value: 10;
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 10;
 }
 
 #puzzlegrid {
   display: inline-grid;
   width: fit-content;
   grid-template-columns: repeat(var(--puzzle-cols), 30px);
-  grid-template-rows: repeat(var(--puzzle-cols), 30px);
+  grid-template-rows: repeat(var(--puzzle-rows), 30px);
   border-left: 1px solid black;
   border-top: 1px solid black;
 }
-
 
 #puzzlegrid .cell {
   width: 30px;
