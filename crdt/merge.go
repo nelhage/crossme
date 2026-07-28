@@ -2,7 +2,7 @@ package crdt
 
 import (
 	"fmt"
-	"sort"
+	"slices"
 
 	"crossme.app/src/pb"
 	"google.golang.org/protobuf/proto"
@@ -35,7 +35,7 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		nodemap[n] = uint32(len(out.Nodes))
 		out.Nodes = append(out.Nodes, n)
 	}
-	sort.Slice(out.Nodes, func(i, j int) bool { return out.Nodes[i] < out.Nodes[j] })
+	slices.Sort(out.Nodes)
 	for i, n := range out.Nodes {
 		nodemap[n] = uint32(i)
 	}

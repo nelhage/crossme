@@ -13,10 +13,10 @@ import (
 )
 
 type namedQueryer interface {
-	NamedQuery(query string, arg interface{}) (*sqlx.Rows, error)
+	NamedQuery(query string, arg any) (*sqlx.Rows, error)
 }
 
-func namedGet(q namedQueryer, out interface{}, query string, arg interface{}) error {
+func namedGet(q namedQueryer, out any, query string, arg any) error {
 	rows, err := q.NamedQuery(query, arg)
 	if err != nil {
 		return err

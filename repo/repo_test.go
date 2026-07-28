@@ -1,9 +1,10 @@
 package repo
 
 import (
-	"path"
-	"sort"
 	"os"
+	"path"
+	"slices"
+	"sort"
 	"testing"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -33,7 +34,7 @@ func TestRoundTripConfig(t *testing.T) {
 		t.Fatalf("mktemp: %v", err)
 	}
 	defer os.RemoveAll(td)
-	
+
 	dbpath := path.Join(td, "crossme.db")
 
 	repo, err := Open(dbpath)
@@ -91,7 +92,7 @@ func TestInsertQuery(t *testing.T) {
 		ids = append(ids, id)
 	}
 
-	sort.Slice(ids, func(i, j int) bool { return ids[i] < ids[j] })
+	slices.Sort(ids)
 	if ids[0] == ids[1] {
 		t.Fatalf("duplicate ids: %#v", ids)
 	}

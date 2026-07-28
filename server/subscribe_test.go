@@ -19,7 +19,7 @@ func must(t *testing.T, what string, err error) {
 	}
 }
 
-func assertJSON(t *testing.T, name string, expect interface{}, got interface{}) {
+func assertJSON(t *testing.T, name string, expect any, got any) {
 	gotbytes, err := json.MarshalIndent(got, "", "  ")
 	must(t, "Marshal", err)
 
