@@ -1,9 +1,7 @@
 CrossMe -- A collaborative crossword-puzzle solver
 --------------------------------------------------
 
-CrossMe is a collaborative crossword puzzle solver written in Meteor.
-
-You can try a live version at https://crossme.herokuapp.com/
+CrossMe is a collaborative crossword puzzle solver.
 
 CrossMe supports puzzles in the ".puz" format used
 by ["Across Lite"][1]. You can find format documentation
