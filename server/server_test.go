@@ -2,9 +2,9 @@ package server
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 
 	"connectrpc.com/connect"
@@ -72,7 +72,7 @@ func TestUploadPuzzle(t *testing.T) {
 		t.Fatalf("UploadPuzzle('') succeeded!")
 	}
 
-	bytes, err := ioutil.ReadFile("../puz/testdata/nyt_weekday_with_notes.puz")
+	bytes, err := os.ReadFile("../puz/testdata/nyt_weekday_with_notes.puz")
 	if err != nil {
 		panic("ReadFile")
 	}

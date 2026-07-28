@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 	"time"
 
@@ -37,7 +37,7 @@ func assertJSON(t *testing.T, name string, expect interface{}, got interface{}) 
 func makeServerWithPuzzle(t *testing.T, name string) (*TestServer, *pb.Puzzle) {
 	ts := makeServer(t)
 	path := fmt.Sprintf("../puz/testdata/%s.puz", name)
-	bytes, err := ioutil.ReadFile(path)
+	bytes, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("ReadFile(%q): %v", path, err)
 	}

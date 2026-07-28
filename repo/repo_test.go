@@ -1,7 +1,6 @@
 package repo
 
 import (
-	"io/ioutil"
 	"path"
 	"sort"
 	"os"
@@ -75,7 +74,7 @@ func TestInsertQuery(t *testing.T) {
 		"nyt_sun_rebus.puz",
 		"nyt_with_shape.puz",
 	} {
-		data, err := ioutil.ReadFile(path.Join(TestdataPath, name))
+		data, err := os.ReadFile(path.Join(TestdataPath, name))
 		if err != nil {
 			t.Fatalf("Reading puzzle: %v", err)
 		}

@@ -2,7 +2,7 @@ package crdt
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"os"
 	"path"
 	"strings"
 	"testing"
@@ -14,7 +14,7 @@ import (
 )
 
 func mustReadFile(t *testing.T, path string) *pb.Fill {
-	data, err := ioutil.ReadFile(path)
+	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("ReadFile(%q): %v", path, err)
 	}
@@ -22,12 +22,12 @@ func mustReadFile(t *testing.T, path string) *pb.Fill {
 	if err := json.Unmarshal(data, &out); err != nil {
 		t.Fatalf("Unmarshal(%q): %v", path, err)
 	}
-	datfile := strings.Replace(path, ".json", ".dat", -1)
+	datfile := strings.TrimSuffix(path, ".json") +  ".dat"
 	encoded, err := proto.Marshal(out)
 	if err != nil {
 		t.Fatalf("re-encode: %v", err)
 	}
-	ioutil.WriteFile(datfile, encoded, 0644)
+	os.WriteFile(datfile, encoded, 0644)
 	return out
 }
 
@@ -71,7 +71,7 @@ func runOne(t *testing.T, dir string) {
 }
 
 func TestMerge(t *testing.T) {
-	dents, err := ioutil.ReadDir("testdata/merge")
+	dents, err := os.ReadDir("testdata/merge")
 	if err != nil {
 		t.Fatalf("readdir: %v", err)
 	}

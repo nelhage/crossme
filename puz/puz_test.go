@@ -1,14 +1,14 @@
 package puz
 
 import (
-	"io/ioutil"
 	"path"
 	"testing"
+	"os"
 )
 
 func TestPuzReader(t *testing.T) {
 	puzzles := make(map[string]*PuzFile)
-	dents, err := ioutil.ReadDir("testdata")
+	dents, err := os.ReadDir("testdata")
 	if err != nil {
 		t.Fatal(err)
 	}
