@@ -92,9 +92,7 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
     client.newGame({ puzzleId: selectedId }).then(
       (resp) => {
         if (resp.game) {
-          navigate(`/game/${resp.game.id}`, {
-            state: { puzzleId: selectedId },
-          });
+          navigate(`/game/${resp.game.id}`);
           onClose();
         }
       },

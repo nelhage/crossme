@@ -4,7 +4,6 @@ import {
   createBrowserRouter,
   Outlet,
   RouterProvider,
-  useLocation,
   useParams,
 } from "react-router";
 
@@ -31,14 +30,9 @@ const RoutePreview = () => {
   return <PreviewContainer puzzleId={puzzleId ?? ""} />;
 };
 
-interface LocationState {
-  puzzleId?: string;
-}
-
 const RouteGame = () => {
   const { gameId } = useParams<"gameId">();
-  const state = useLocation().state as LocationState | null;
-  return <GameContainer gameId={gameId ?? ""} puzzleId={state?.puzzleId} />;
+  return <GameContainer gameId={gameId ?? ""} />;
 };
 
 const router = createBrowserRouter([

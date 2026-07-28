@@ -7,10 +7,9 @@ import { useClient, proto2Puzzle } from "../rpc";
 
 export interface GameContainerProps {
   gameId: string;
-  puzzleId?: string;
 }
 
-export const GameContainer = ({ gameId, puzzleId }: GameContainerProps) => {
+export const GameContainer = ({ gameId }: GameContainerProps) => {
   const [puzzle, setPuzzle] = useState<null | Types.Puzzle>(null);
   const client = useClient();
   useEffect(() => {
