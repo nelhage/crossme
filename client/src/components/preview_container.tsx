@@ -46,7 +46,7 @@ export const PreviewContainer = ({ puzzleId }: PreviewContainerProps) => {
 
   if (puzzle) {
     return (
-      <PuzzleComponent puzzle={puzzle} key={puzzleId} startGame={startGame} />
+      <PuzzleComponent puzzle={puzzle} key={puzzle.id} startGame={startGame} />
     );
   } else {
     return null;
