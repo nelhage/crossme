@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"crossme.app/src/pb"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
 )
 

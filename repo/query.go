@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"crossme.app/src/pb"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 var (

@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
 	"crossme.app/src/pb"
 	"github.com/jmoiron/sqlx"

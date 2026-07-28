@@ -9,7 +9,7 @@ import (
 
 	"crossme.app/src/pb"
 
-	proto "github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	"github.com/kylelemons/godebug/diff"
 )
 
