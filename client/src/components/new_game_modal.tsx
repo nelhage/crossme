@@ -58,9 +58,9 @@ async function uploadFiles(
 export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
   const [index, setIndex] = useState<PuzzleIndex[]>([]);
   const [selectedId, setSelectedId] = useState<null | string>(null);
-  const [epoch, setEpoch] = useState<number>(0);
   const client = useClient();
-  useEffect(() => {
+
+  const loadPuzzles = (client) => {
     client.getPuzzleIndex({}).then(
       (resp) => {
         setIndex(resp.puzzles);
@@ -69,7 +69,8 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
         console.log("unable to load puzzle index: ", err);
       }
     );
-  }, [client, epoch]);
+  };
+  useEffect(() => loadPuzzles(client), [client]);
   const navigate = useNavigate();
   const puzzles: PuzzleOption[] = index.map((puz) => ({
     value: puz.id,
@@ -111,8 +112,8 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
     }
 
     uploadFiles(client, navigate, fileList).then(() => {
-      setEpoch(epoch + 1);
       onClose();
+      loadPuzzles(client);
     });
   };
   return (
