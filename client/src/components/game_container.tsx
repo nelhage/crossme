@@ -25,8 +25,9 @@ export const GameContainer = ({ gameId, puzzleId }: GameContainerProps) => {
       }
     );
   }, [client, gameId]);
+
   if (puzzle) {
-    return <PuzzleComponent puzzle={puzzle} gameId={gameId} key={puzzleId} />;
+    return <PuzzleComponent puzzle={puzzle} gameId={gameId} key={puzzle.id} />;
   } else {
     return null;
   }
