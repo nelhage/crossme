@@ -3,6 +3,7 @@ package puz
 import (
 	"bytes"
 	"errors"
+	"unicode/utf8"
 
 	"golang.org/x/text/encoding/charmap"
 )
@@ -21,11 +22,15 @@ func (s *stringReader) next() string {
 		s.err = errors.New("No NUL byte found")
 		return ""
 	}
-	str, err := charmap.ISO8859_1.NewDecoder().Bytes(s.data[:nul])
-	if err != nil {
-		s.err = err
-		return ""
-	}
+	bytes := s.data[:nul]
 	s.data = s.data[nul+1:]
-	return string(str)
+
+	if !utf8.Valid(bytes) {
+		bytes, s.err = charmap.ISO8859_1.NewDecoder().Bytes(bytes)
+		if s.err != nil {
+			return ""
+		}
+	}
+
+	return string(bytes)
 }
