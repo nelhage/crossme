@@ -61,13 +61,13 @@ func runOne(t *testing.T, dir string) {
 	m1 := assertMerge(t, "left, right", l, r, m)
 	m2 := assertMerge(t, "right, left", r, l, m)
 
-	inc := *m
+	inc := proto.CloneOf(m)
 
-	assertMerge(t, "(left, right), m", m1, m, &inc)
-	assertMerge(t, "(right, left), m", m2, m, &inc)
-	assertMerge(t, "m, (left, right)", m, m1, &inc)
-	assertMerge(t, "m, (right, left), m", m, m2, &inc)
-	assertMerge(t, "m, m", m, m, &inc)
+	assertMerge(t, "(left, right), m", m1, m, inc)
+	assertMerge(t, "(right, left), m", m2, m, inc)
+	assertMerge(t, "m, (left, right)", m, m1, inc)
+	assertMerge(t, "m, (right, left), m", m, m2, inc)
+	assertMerge(t, "m, m", m, m, inc)
 }
 
 func TestMerge(t *testing.T) {
@@ -77,7 +77,6 @@ func TestMerge(t *testing.T) {
 	}
 
 	for _, d := range dents {
-		d := d
 		t.Run(d.Name(), func(t *testing.T) {
 			t.Parallel()
 			runOne(t, path.Join("testdata/merge", d.Name()))

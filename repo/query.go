@@ -27,6 +27,9 @@ func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {
 		}
 		out = append(out, &puz)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return out, nil
 }
 

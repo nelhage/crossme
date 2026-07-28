@@ -5,10 +5,11 @@ import (
 	"sort"
 
 	"crossme.app/src/pb"
+	"google.golang.org/protobuf/proto"
 )
 
 func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
-	out := *l
+	out := proto.CloneOf(l)
 
 	if r.Clock > out.Clock {
 		out.Clock = r.Clock
@@ -66,8 +67,8 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 			return nil, fmt.Errorf("Out-of-order cells list! l=%d r=%d", lc.Index, rc.Index)
 		}
 
-		oc := *lc
-		out.Cells = append(out.Cells, &oc)
+		oc := proto.CloneOf(lc)
+		out.Cells = append(out.Cells, oc)
 
 		// "history" flags merge between the two sides
 		oc.Flags = (lc.Flags | rc.Flags) & uint32(pb.Fill_DID_CHECK|pb.Fill_DID_REVEAL)
@@ -112,5 +113,5 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		oc.Flags |= win.Flags & uint32(pb.Fill_CHECKED_RIGHT|pb.Fill_CHECKED_WRONG|pb.Fill_PENCIL)
 	}
 
-	return &out, nil
+	return out, nil
 }
