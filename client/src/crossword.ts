@@ -96,13 +96,10 @@ export function withCursor(
   g: Game,
   update: Readonly<Types.CursorUpdate>
 ): Game {
-  if (update.row && (update.row < 0 || update.row >= g.puzzle.width)) {
+  if (update.row && (update.row < 0 || update.row >= g.puzzle.height)) {
     throw new Error(`bad cursor: row=${update.row}`);
   }
-  if (
-    update.column &&
-    (update.column < 0 || update.column >= g.puzzle.height)
-  ) {
+  if (update.column && (update.column < 0 || update.column >= g.puzzle.width)) {
     throw new Error(`bad cursor: column=${update.column}`);
   }
 
