@@ -60,7 +60,7 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
   const [selectedId, setSelectedId] = useState<null | string>(null);
   const client = useClient();
 
-  const loadPuzzles = (client) => {
+  const loadPuzzles = (client: CrossMeClient) => {
     client.getPuzzleIndex({}).then(
       (resp) => {
         setIndex(resp.puzzles);
