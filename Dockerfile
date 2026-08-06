@@ -44,10 +44,8 @@ VOLUME /data
 USER crossme
 EXPOSE 4000
 
-# wget exits 8 when the server returns an HTTP error; the Connect handler 404s
-# on a bare GET, so either a success or an 8 means we're serving.
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
-  CMD wget -q -O /dev/null http://127.0.0.1:4000/api/ || [ "$?" = 8 ]
+  CMD wget -q -O /dev/null http://127.0.0.1:4000/healthz
 
 ENTRYPOINT ["crossme"]
 CMD ["-bind", "0.0.0.0:4000", "-db", "/data/crossme.db"]
