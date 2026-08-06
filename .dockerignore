@@ -1,3 +1,7 @@
+.git/
+.github/
 bin/
 client/
-maria/
+data/
+docs/
+*.md

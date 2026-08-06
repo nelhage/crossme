@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"flag"
+	"io"
 	"log"
 	"net/http"
+	"time"
 
 	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
@@ -27,6 +30,23 @@ func main() {
 	srv := server.New(r)
 
 	mux := http.NewServeMux()
+
+	// Health check for the container runtime. It lives outside /api/ so nginx
+	// doesn't expose it, and it touches the database so that a server which
+	// has lost its sqlite file reports unhealthy instead of merely accepting
+	// connections.
+	mux.HandleFunc("GET /healthz", func(w http.ResponseWriter, req *http.Request) {
+		ctx, cancel := context.WithTimeout(req.Context(), 2*time.Second)
+		defer cancel()
+		if err := r.Ping(ctx); err != nil {
+			log.Printf("healthz: %v", err)
+			http.Error(w, "database unavailable", http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Type", "text/plain")
+		io.WriteString(w, "ok\n")
+	})
+
 	path, handler := pbconnect.NewCrossMeHandler(srv)
 	// The web client reaches us under /api/, both through the vite dev
 	// server and through nginx in production.

@@ -1,6 +1,7 @@
 package repo
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"net/url"
@@ -67,6 +68,12 @@ func (r *Repository) init() error {
 	}
 
 	return nil
+}
+
+// Ping checks that the database is still usable. It's meant for health
+// checks, not for use on the request path.
+func (r *Repository) Ping(ctx context.Context) error {
+	return r.db.PingContext(ctx)
 }
 
 func (r *Repository) Close() error {
