@@ -1,0 +1,21 @@
+#recent-games-dropdown + .dropdown-menu {
+  max-width: 22em;
+}
+
+#recent-games-dropdown + .dropdown-menu .recent-game {
+  display: flex;
+  gap: 1em;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+#recent-games-dropdown + .dropdown-menu .recent-game .title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#recent-games-dropdown + .dropdown-menu .recent-game .played-at,
+#recent-games-dropdown + .dropdown-menu .author {
+  font-size: 85%;
+  opacity: 0.7;
+}
