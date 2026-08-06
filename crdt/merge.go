@@ -8,6 +8,18 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
+// remapOwner returns a copy of `cell` with its `owner` field rewritten
+// from an index into `nodes` into an index into the merged node table
+// described by `nodemap`.
+func remapOwner(cell *pb.Fill_Cell, nodes []string, nodemap map[string]uint32) (*pb.Fill_Cell, error) {
+	if cell.Owner >= uint32(len(nodes)) {
+		return nil, fmt.Errorf("node id out of range")
+	}
+	out := proto.CloneOf(cell)
+	out.Owner = nodemap[nodes[cell.Owner]]
+	return out, nil
+}
+
 func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 	out := proto.CloneOf(l)
 
@@ -46,13 +58,21 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 	for li < len(l.Cells) || ri < len(r.Cells) {
 		if ri == len(r.Cells) || (li < len(l.Cells) && l.Cells[li].Index < r.Cells[ri].Index) {
 			// Consume the left
-			out.Cells = append(out.Cells, l.Cells[li])
+			cell, err := remapOwner(l.Cells[li], l.Nodes, nodemap)
+			if err != nil {
+				return nil, err
+			}
+			out.Cells = append(out.Cells, cell)
 			li += 1
 			continue
 		}
 		if li == len(l.Cells) || l.Cells[li].Index > r.Cells[ri].Index {
 			// Consume the right
-			out.Cells = append(out.Cells, r.Cells[ri])
+			cell, err := remapOwner(r.Cells[ri], r.Nodes, nodemap)
+			if err != nil {
+				return nil, err
+			}
+			out.Cells = append(out.Cells, cell)
 			ri += 1
 			continue
 		}

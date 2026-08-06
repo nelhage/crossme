@@ -8,6 +8,26 @@ import {
   Fill_Flags,
 } from "../pb/fill_pb";
 
+// remapOwner returns a copy of `cell` with its `owner` field rewritten
+// from an index into `nodes` into an index into the merged node table
+// described by `nodemap`.
+function remapOwner(
+  cell: Fill_Cell,
+  nodes: string[],
+  nodemap: { [id: string]: number }
+): Fill_Cell {
+  if (cell.owner >= nodes.length) {
+    throw new Error("node index out of range");
+  }
+  return create(Fill_CellSchema, {
+    index: cell.index,
+    clock: cell.clock,
+    owner: nodemap[nodes[cell.owner]],
+    fill: cell.fill,
+    flags: cell.flags,
+  });
+}
+
 export function merge(l: Fill, r: Fill): Fill {
   const out = create(FillSchema, {
     clock: l.clock > r.clock ? l.clock : r.clock,
@@ -40,12 +60,12 @@ export function merge(l: Fill, r: Fill): Fill {
       ri === rcells.length ||
       (li < lcells.length && lcells[li].index < rcells[ri].index)
     ) {
-      out.cells.push(lcells[li]);
+      out.cells.push(remapOwner(lcells[li], l.nodes, nodemap));
       li++;
       continue;
     }
     if (li === lcells.length || lcells[li].index > rcells[ri].index) {
-      out.cells.push(rcells[ri]);
+      out.cells.push(remapOwner(rcells[ri], r.nodes, nodemap));
       ri++;
       continue;
     }
