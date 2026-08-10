@@ -174,7 +174,6 @@ func (s *Server) broadcastFill(ctx context.Context,
 	defer game.Unlock()
 
 	if merged, err := crdt.Merge(game.game.Fill, fill); err != nil {
-		game.Unlock()
 		return err
 	} else {
 		game.game.Fill = merged
