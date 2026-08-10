@@ -1,5 +1,7 @@
 import * as Crossword from "./crossword";
 import * as Types from "./types";
+import { create } from "@bufbuild/protobuf";
+import { FillSchema } from "./pb/fill_pb";
 
 function computeNumbering(
   { width, height }: { width: number; height: number },
@@ -447,5 +449,62 @@ describe("crossword operations", () => {
       const xformed = Crossword.withUpdate(g_before, op(g_before));
       expect(formatGame(xformed)).toEqual(formatGame(g_after));
     });
+  });
+});
+
+describe("applying remote updates", () => {
+  const template = `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`;
+  const pos = { row: 0, column: 1 };
+  const index = 1;
+
+  function remoteWrite(clock: number, fill: string) {
+    return create(FillSchema, {
+      clock: BigInt(clock),
+      nodes: ["remote"],
+      cells: [{ index, clock: BigInt(clock), owner: 0, fill }],
+    });
+  }
+
+  it("keeps a revealed cell over a higher-clock remote write", () => {
+    let g = parseGame(template);
+    g = Crossword.withUpdate(
+      g,
+      Crossword.revealAnswers(g, Crossword.Target.SQUARE)
+    );
+    expect(Crossword.fillAt(g, pos)).toMatchObject({
+      fill: "X",
+      checked: Types.Checked.RIGHT,
+    });
+
+    g = Crossword.withUpdate(g, { fill: remoteWrite(100, "Z") });
+    expect(Crossword.fillAt(g, pos)).toMatchObject({
+      fill: "X",
+      checked: Types.Checked.RIGHT,
+    });
+  });
+
+  it("clears a checked-wrong mark when a remote write wins", () => {
+    let g = parseGame(template);
+    g = Crossword.withUpdate(g, Crossword.fillSquare(g, "B"));
+    g = Crossword.withUpdate(
+      g,
+      Crossword.checkAnswers(g, Crossword.Target.SQUARE)
+    );
+    expect(Crossword.fillAt(g, pos)).toMatchObject({
+      fill: "B",
+      checked: Types.Checked.WRONG,
+      didCheck: true,
+    });
+
+    g = Crossword.withUpdate(g, { fill: remoteWrite(100, "Z") });
+    const fill = Crossword.fillAt(g, pos);
+    expect(fill).toMatchObject({ fill: "Z", didCheck: true });
+    expect(fill?.checked).toBeUndefined();
   });
 });
