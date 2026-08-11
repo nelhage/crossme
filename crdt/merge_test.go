@@ -2,6 +2,7 @@ package crdt
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path"
 	"strings"
@@ -80,6 +81,52 @@ func TestMerge(t *testing.T) {
 		t.Run(d.Name(), func(t *testing.T) {
 			t.Parallel()
 			runOne(t, path.Join("testdata/merge", d.Name()))
+		})
+	}
+}
+
+// runAssociative checks that three-way merges converge to the same
+// state regardless of the order or association of the merges. Two-way
+// tests can't catch rules that consult fill-level state when resolving
+// cell conflicts; the old "complete side wins per-cell" rule was
+// non-associative in exactly that way.
+func runAssociative(t *testing.T, dir string) {
+	a := mustReadFile(t, path.Join(dir, "a.json"))
+	b := mustReadFile(t, path.Join(dir, "b.json"))
+	c := mustReadFile(t, path.Join(dir, "c.json"))
+	m := mustReadFile(t, path.Join(dir, "merged.json"))
+
+	fills := []*pb.Fill{a, b, c}
+	names := []string{"a", "b", "c"}
+	perms := [][3]int{{0, 1, 2}, {0, 2, 1}, {1, 0, 2}, {1, 2, 0}, {2, 0, 1}, {2, 1, 0}}
+	for _, p := range perms {
+		x, y, z := fills[p[0]], fills[p[1]], fills[p[2]]
+		xn, yn, zn := names[p[0]], names[p[1]], names[p[2]]
+
+		xy, err := Merge(x, y)
+		if err != nil {
+			t.Fatalf("Merge(%s, %s): %v", xn, yn, err)
+		}
+		assertMerge(t, fmt.Sprintf("merge(merge(%s, %s), %s)", xn, yn, zn), xy, z, m)
+
+		yz, err := Merge(y, z)
+		if err != nil {
+			t.Fatalf("Merge(%s, %s): %v", yn, zn, err)
+		}
+		assertMerge(t, fmt.Sprintf("merge(%s, merge(%s, %s))", xn, yn, zn), x, yz, m)
+	}
+}
+
+func TestMergeAssociative(t *testing.T) {
+	dents, err := os.ReadDir("testdata/associative")
+	if err != nil {
+		t.Fatalf("readdir: %v", err)
+	}
+
+	for _, d := range dents {
+		t.Run(d.Name(), func(t *testing.T) {
+			t.Parallel()
+			runAssociative(t, path.Join("testdata/associative", d.Name()))
 		})
 	}
 }

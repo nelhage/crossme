@@ -1,0 +1,13 @@
+{
+  "complete": false,
+  "clock": 20,
+  "nodes": [ "nodeC" ],
+  "cells": [
+    {
+      "index": 5,
+      "clock": 20,
+      "owner": 0,
+      "fill": "Y"
+    }
+  ]
+}
