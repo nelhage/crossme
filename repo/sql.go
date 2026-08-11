@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS games (
   proto blob not null,
   id text not null unique primary key,
   puzzle_id text not null,
-  created text not null
+  created text not null,
+  completed_at text null
 ) strict;
 
 CREATE TABLE IF NOT EXISTS puz_files (
@@ -105,11 +106,12 @@ type query_game_by_id_args struct {
 
 const sql_update_game = `
 UPDATE games
-SET proto = :proto
+SET proto = :proto, completed_at = :completed_at
 WHERE id = :id
 `
 
 type update_game_args struct {
-	Id    string `db:"id"`
-	Proto []byte `db:"proto"`
+	Id          string         `db:"id"`
+	Proto       []byte         `db:"proto"`
+	CompletedAt sql.NullString `db:"completed_at"`
 }

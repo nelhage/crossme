@@ -22,7 +22,8 @@ The CRDT `merge` implementation is implemented both client-side and server-side.
 
 The CRDT is primarily a last-writer-wins structure on a per-cell basis, using Lamport clocks to determine ordering, but with a few exceptions:
 
-- Some pieces of state ("has the puzzle been solved?", "has this cell ever been checked?") are sticky, and persist if **either** side has set them
+- Some pieces of state ("has this cell ever been checked?") are sticky, and persist if **either** side has set them
 - Cells which have been confirmed correct to the player (e.g. via checking or revealing their content) will always win, even in the face of later writes from another node.
+- A `Fill` marked `complete` is terminal: it wins any merge wholesale, which freezes the game — nothing can ever change a completed fill. Only the server sets `complete`, after verifying the merged grid against the puzzle's solution; it then broadcasts the full canonical fill and drops any further updates to that game. Server-only stamping guarantees at most one distinct complete fill per game, which is what keeps the wholesale rule convergent.
 
 [connect-web]: https://github.com/anysphere/connect-web

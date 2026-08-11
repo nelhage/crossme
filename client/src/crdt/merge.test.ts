@@ -42,3 +42,36 @@ describe("merge", () => {
     });
   });
 });
+
+// Three-way merges must converge to the same state regardless of the
+// order or association of the merges; see runAssociative in
+// crdt/merge_test.go, which also generates the .dat files.
+function runAssociative(dir: string) {
+  const a = readFill(path.join(dir, "a.dat"));
+  const b = readFill(path.join(dir, "b.dat"));
+  const c = readFill(path.join(dir, "c.dat"));
+  const m = readFill(path.join(dir, "merged.dat"));
+
+  const perms: [Fill, Fill, Fill][] = [
+    [a, b, c],
+    [a, c, b],
+    [b, a, c],
+    [b, c, a],
+    [c, a, b],
+    [c, b, a],
+  ];
+  perms.forEach(([x, y, z]) => {
+    assertMerge("left-assoc", merge(x, y), z, m);
+    assertMerge("right-assoc", x, merge(y, z), m);
+  });
+}
+
+describe("merge associativity", () => {
+  const TEST_DIR = path.join(import.meta.dirname, "testdata/associative");
+  const dirs = fs.readdirSync(TEST_DIR);
+  dirs.forEach((dir) => {
+    it(`Test case: ${dir}`, () => {
+      runAssociative(path.join(TEST_DIR, dir));
+    });
+  });
+});

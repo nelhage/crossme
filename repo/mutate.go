@@ -119,9 +119,17 @@ func (r *Repository) UpdateGame(game *pb.Game) error {
 	if err != nil {
 		return err
 	}
+	var completedAt sql.NullString
+	if game.CompletedAt != nil {
+		completedAt = sql.NullString{
+			Valid:  true,
+			String: formatTimestamp(game.CompletedAt),
+		}
+	}
 	_, err = r.db.NamedExec(sql_update_game, &update_game_args{
-		Id:    game.Id,
-		Proto: protobytes,
+		Id:          game.Id,
+		Proto:       protobytes,
+		CompletedAt: completedAt,
 	})
 	return err
 }

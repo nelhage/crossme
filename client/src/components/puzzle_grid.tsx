@@ -8,6 +8,9 @@ import { PuzzleCell, PuzzleCellProps } from "./puzzle_cell";
 export interface PuzzleGridProps {
   game: Crossword.Game;
   showCursor?: boolean;
+  // The game is solved: the grid is frozen, but the cursor stays live
+  // so players can browse the finished puzzle.
+  complete?: boolean;
 
   onClickCell: (arg: Types.Position) => void;
   onInput: (arg: string) => void;
@@ -122,7 +125,11 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     // avoiding potentially buffering input in the keyboard itself
     // before it hits the DOM.
     return (
-      <div id="puzzlegrid" style={style}>
+      <div
+        id="puzzlegrid"
+        className={this.props.complete ? "complete" : undefined}
+        style={style}
+      >
         <meta
           name="viewport"
           content={`width=${this.computeWidth()}, user-scalable=no`}

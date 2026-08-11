@@ -127,6 +127,25 @@
   color: #33a;
 }
 
+/* A completed game: the grid is frozen, but the cursor stays live so
+   players can browse the solved puzzle. Shift the whole grid to a
+   green scheme to make the solved state unmistakable. */
+#puzzlegrid.complete .cell:not(.filled) {
+  background-color: #efe;
+}
+
+#puzzlegrid.complete .cell .fill {
+  color: #050;
+}
+
+#puzzlegrid.complete .cell.selected {
+  background-color: #6c6;
+}
+
+#puzzlegrid.complete .cell.inword {
+  background-color: #cec;
+}
+
 #puzzlegrid .cell.filled {
   background-color: black;
 }

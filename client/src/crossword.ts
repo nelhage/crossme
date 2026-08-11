@@ -226,12 +226,23 @@ function fillView(fill: FillProto, old: Fill): Fill {
   return List(cells);
 }
 
+// isSolved reports whether this game is over: either the server has
+// confirmed the fill complete, or the local grid is fully correct and
+// we're waiting on that confirmation. Either way the grid is frozen to
+// local edits; the cursor stays live for browsing the solved puzzle.
+export function isSolved(g: Game): boolean {
+  return g.fillProto.complete || g.nextError === undefined;
+}
+
 export function withUpdate(g: Game, update: GameUpdate): Game {
   let out = g;
   if (update.cursor) {
     out = withCursor(out, update.cursor);
   }
-  if (update.fill && g.nextError !== undefined) {
+  if (update.fill) {
+    // Updates are applied unconditionally: the merge itself enforces
+    // the end-of-game freeze, since a complete fillProto absorbs
+    // anything merged into it.
     const merged = merge(g.fillProto, update.fill);
     const clock = Math.max(g.clock, Number(update.fill.clock)) + 1;
     return check({

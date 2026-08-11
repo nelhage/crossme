@@ -1,4 +1,4 @@
-import { create } from "@bufbuild/protobuf";
+import { clone, create } from "@bufbuild/protobuf";
 
 import {
   Fill,
@@ -29,9 +29,20 @@ function remapOwner(
 }
 
 export function merge(l: Fill, r: Fill): Fill {
+  // A complete fill is terminal: the grid has been verified fully
+  // correct and the game is over, so the complete side wins wholesale
+  // and nothing ever merges into it. Convergence relies on the server
+  // being the sole writer of `complete` (stamped under the game lock),
+  // so at most one distinct complete fill exists per game. If both
+  // sides are complete they must agree on content, and we fall through
+  // to the ordinary per-cell rules.
+  if (l.complete !== r.complete) {
+    return clone(FillSchema, l.complete ? l : r);
+  }
+
   const out = create(FillSchema, {
     clock: l.clock > r.clock ? l.clock : r.clock,
-    complete: l.complete || r.complete,
+    complete: l.complete,
   });
 
   const nodemap: { [id: string]: number } = {};
@@ -88,13 +99,7 @@ export function merge(l: Fill, r: Fill): Fill {
     });
 
     let win: Fill_Cell;
-    if (l.complete !== r.complete) {
-      if (l.complete) {
-        win = lc;
-      } else {
-        win = rc;
-      }
-    } else if (
+    if (
       (lc.flags & Fill_Flags.CHECKED_RIGHT) !==
       (rc.flags & Fill_Flags.CHECKED_RIGHT)
     ) {

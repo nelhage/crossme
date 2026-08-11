@@ -61,14 +61,14 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
     this.setState((state) => {
       let update = op(state.game);
-      if (state.game.nextError === undefined) {
+      // A solved game is frozen: local edits are dropped and nothing
+      // more is sent to the server. (The server decides when the game
+      // is actually complete -- we never send `complete` ourselves.)
+      if (Crossword.isSolved(state.game)) {
         update = { ...update, fill: undefined };
       }
       const game = Crossword.withUpdate(state.game, update);
       if (update.fill && this.props.gameId) {
-        if (game.nextError === undefined) {
-          update.fill.complete = true;
-        }
         this.client()
           .updateFill({
             gameId: this.props.gameId,
@@ -300,11 +300,12 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   render() {
     const sel = Crossword.selectedSquare(this.state.game);
     const playing = this.props.gameId ? true : undefined;
+    const solved = Crossword.isSolved(this.state.game);
     return (
       <div id="puzzle">
         <Metadata
           puzzle={this.props.puzzle}
-          solved={this.state.game.nextError === undefined}
+          solved={solved}
           preview={!playing}
           startGame={this.props.startGame}
         />
@@ -320,6 +321,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           onClickCell={this.onClickCell}
           onInput={this.onInput}
           showCursor={playing}
+          complete={solved}
         />
         <ClueBox
           puzzle={this.props.puzzle}

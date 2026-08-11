@@ -21,14 +21,24 @@ func remapOwner(cell *pb.Fill_Cell, nodes []string, nodemap map[string]uint32) (
 }
 
 func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
+	// A complete fill is terminal: the grid has been verified fully
+	// correct and the game is over, so the complete side wins wholesale
+	// and nothing ever merges into it. Convergence relies on the server
+	// being the sole writer of `complete` (stamped under the game lock),
+	// so at most one distinct complete fill exists per game. If both
+	// sides are complete they must agree on content, and we fall through
+	// to the ordinary per-cell rules.
+	if l.Complete != r.Complete {
+		if l.Complete {
+			return proto.CloneOf(l), nil
+		}
+		return proto.CloneOf(r), nil
+	}
+
 	out := proto.CloneOf(l)
 
 	if r.Clock > out.Clock {
 		out.Clock = r.Clock
-	}
-
-	if r.Complete {
-		out.Complete = true
 	}
 
 	nodemap := make(map[string]uint32)
@@ -96,14 +106,7 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		// Decide which side wins; all other fields will come
 		// from the winner
 		var win *pb.Fill_Cell
-		if l.Complete != r.Complete {
-			// If one puzzle is solved, that side wins
-			if l.Complete {
-				win = lc
-			} else {
-				win = rc
-			}
-		} else if (lc.Flags & uint32(pb.Fill_CHECKED_RIGHT)) != (rc.Flags & uint32(pb.Fill_CHECKED_RIGHT)) {
+		if (lc.Flags & uint32(pb.Fill_CHECKED_RIGHT)) != (rc.Flags & uint32(pb.Fill_CHECKED_RIGHT)) {
 			// If one side has been checked as "correct",
 			// keep that fill
 			if (lc.Flags & uint32(pb.Fill_CHECKED_RIGHT)) != 0 {
