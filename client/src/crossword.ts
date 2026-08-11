@@ -7,6 +7,7 @@ import {
   Fill_CellSchema,
   Fill_Flags,
 } from "./pb/fill_pb";
+import { merge } from "./crdt/merge";
 
 type Fill = List<Readonly<Types.FillState> | undefined>;
 
@@ -14,6 +15,10 @@ export interface MutableGame {
   by_clue: Readonly<{ [clue: number]: Types.Position }>;
   puzzle: Readonly<Types.Puzzle>;
   cursor: Readonly<Types.Cursor>;
+  // The canonical CRDT state. All updates -- local edits and deltas
+  // from the server alike -- are applied by CRDT-merging them in.
+  fillProto: FillProto;
+  // View-model derived from fillProto; never mutated directly.
   fill: Fill;
 
   nextError?: number;
@@ -79,6 +84,7 @@ export function newGame(puzzle: Types.Puzzle, nodeID?: string): Game {
       pencil: false,
     },
     nextError: idx,
+    fillProto: create(FillSchema, {}),
     fill: List(),
     nodeID: nodeID || newId(),
     clock: 0,
@@ -152,65 +158,72 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   if (fill.find((row) => row.length !== g.puzzle.width)) {
     throw new Error("bad fill entry");
   }
-  const array: Types.FillState[] = [];
+  const delta = create(FillSchema, {
+    clock: BigInt(g.clock),
+    nodes: [g.nodeID],
+  });
   fill.forEach((row, r) => {
     row.forEach((ch, c) => {
       if (ch) {
-        array[packIndex(g.puzzle, { row: r, column: c })] = {
-          fill: ch,
-          pencil: g.cursor.pencil,
-          clock: g.clock,
-          owner: g.nodeID,
-        };
+        delta.cells.push(
+          create(Fill_CellSchema, {
+            index: packIndex(g.puzzle, { row: r, column: c }),
+            clock: BigInt(g.clock),
+            owner: 0,
+            fill: ch,
+            flags: g.cursor.pencil ? Fill_Flags.PENCIL : Fill_Flags.NONE,
+          })
+        );
       }
     });
   });
-  return withFill(g, () => List(array));
+  return withUpdate(g, { fill: delta });
 }
 
-function mergeFill(
-  mut: List<Readonly<Types.FillState> | undefined>,
-  fill: FillProto
-): void {
+function sameFillState(
+  a: Readonly<Types.FillState>,
+  b: Readonly<Types.FillState>
+): boolean {
+  return (
+    a.fill === b.fill &&
+    a.pencil === b.pencil &&
+    a.clock === b.clock &&
+    a.owner === b.owner &&
+    a.checked === b.checked &&
+    a.didCheck === b.didCheck &&
+    a.didReveal === b.didReveal
+  );
+}
+
+// fillView derives the view-model from the canonical CRDT state. Cells
+// whose state is unchanged from `old` keep their object identity, so
+// that PuzzleCell's shallow prop compare skips re-rendering them.
+function fillView(fill: FillProto, old: Fill): Fill {
+  const cells: (Readonly<Types.FillState> | undefined)[] = [];
   fill.cells.forEach((cell) => {
-    const existing: Types.FillState = Object.assign(
-      {},
-      mut.get(cell.index) || {
-        clock: 0,
-        owner: "",
-        fill: "",
-        pencil: false,
-      }
-    );
-    // Clocks are int64 on the wire, and so `bigint` here; the game's own
-    // clock is a plain number.
-    const clock = Number(cell.clock);
-    const flags = cell.flags;
-    if ((flags & Fill_Flags.DID_CHECK) !== 0) {
-      existing.didCheck = true;
-      mut.set(cell.index, existing);
+    const state: Types.FillState = {
+      fill: cell.fill,
+      pencil: (cell.flags & Fill_Flags.PENCIL) !== 0,
+      // Clocks are int64 on the wire, and so `bigint` here; the game's
+      // own clock is a plain number.
+      clock: Number(cell.clock),
+      owner: fill.nodes[cell.owner],
+    };
+    if ((cell.flags & Fill_Flags.CHECKED_RIGHT) !== 0) {
+      state.checked = Types.Checked.RIGHT;
+    } else if ((cell.flags & Fill_Flags.CHECKED_WRONG) !== 0) {
+      state.checked = Types.Checked.WRONG;
     }
-    if ((flags & Fill_Flags.DID_REVEAL) !== 0) {
-      existing.didReveal = true;
-      mut.set(cell.index, existing);
+    if ((cell.flags & Fill_Flags.DID_CHECK) !== 0) {
+      state.didCheck = true;
     }
-    if (
-      existing.clock > clock ||
-      (existing.clock === clock && existing.owner > fill.nodes[cell.owner])
-    ) {
-      return;
+    if ((cell.flags & Fill_Flags.DID_REVEAL) !== 0) {
+      state.didReveal = true;
     }
-    existing.pencil = (flags & Fill_Flags.PENCIL) !== 0;
-    if ((flags & Fill_Flags.CHECKED_RIGHT) !== 0) {
-      existing.checked = Types.Checked.RIGHT;
-    } else if ((flags & Fill_Flags.CHECKED_WRONG) !== 0) {
-      existing.checked = Types.Checked.WRONG;
-    }
-    existing.fill = cell.fill;
-    existing.owner = fill.nodes[cell.owner];
-    existing.clock = clock;
-    mut.set(cell.index, existing);
+    const prev = old.get(cell.index);
+    cells[cell.index] = prev && sameFillState(prev, state) ? prev : state;
   });
+  return List(cells);
 }
 
 export function withUpdate(g: Game, update: GameUpdate): Game {
@@ -219,26 +232,16 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
     out = withCursor(out, update.cursor);
   }
   if (update.fill && g.nextError !== undefined) {
-    const mut = g.fill.asMutable();
+    const merged = merge(g.fillProto, update.fill);
     const clock = Math.max(g.clock, Number(update.fill.clock)) + 1;
-    mergeFill(mut, update.fill);
     return check({
       ...out,
       clock: clock,
-      fill: mut.asImmutable(),
+      fillProto: merged,
+      fill: fillView(merged, g.fill),
     });
   }
   return out;
-}
-
-function withFill(g: Game, update: (fill: Fill) => Fill): Game {
-  if (g.nextError === undefined) {
-    return g;
-  }
-  return check({
-    ...g,
-    fill: update(g.fill),
-  });
 }
 
 function directionToDelta(direction: Types.Direction): {
@@ -670,17 +673,27 @@ function eachTarget(
 }
 
 export function checkAnswers(g: Game, target: Target): GameUpdate {
+  // A check is a read-only annotation: each cell in the delta carries its
+  // existing (fill, clock, owner) unchanged, plus the check flags. At the
+  // same clock the merge tie-breaks in the delta's favor, applying the
+  // flags — but a concurrent write with a fresher clock wins the clock
+  // comparison, so checking never needlessly clobbers another player's
+  // edit. A cell checked *correct* still beats concurrent writes, via the
+  // merge's CHECKED_RIGHT rule — that clobbering is by design.
   const newfill = create(FillSchema, {
     clock: BigInt(g.clock + 1),
-    nodes: [g.nodeID],
   });
   const update: MutableGameUpdate = { fill: newfill };
+  const nodes: { [id: string]: number } = {};
 
   eachTarget(g, target, (idx, sq, fill) => {
     if (!fill || fill.fill === "") {
       return;
     }
     let flags: number = Fill_Flags.DID_CHECK;
+    if (fill.pencil) {
+      flags |= Fill_Flags.PENCIL;
+    }
     if (fill.fill === sq.fill) {
       flags |= Fill_Flags.CHECKED_RIGHT;
     } else {
@@ -690,12 +703,18 @@ export function checkAnswers(g: Game, target: Target): GameUpdate {
         update.cursor = pos;
       }
     }
+    let owner = nodes[fill.owner];
+    if (owner === undefined) {
+      owner = newfill.nodes.length;
+      nodes[fill.owner] = owner;
+      newfill.nodes.push(fill.owner);
+    }
     newfill.cells.push(
       create(Fill_CellSchema, {
         index: idx,
         fill: fill.fill,
-        clock: BigInt(g.clock + 1),
-        owner: 0,
+        clock: BigInt(fill.clock),
+        owner,
         flags,
       })
     );
