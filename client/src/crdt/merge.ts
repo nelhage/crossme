@@ -45,12 +45,26 @@ export function merge(l: Fill, r: Fill): Fill {
     complete: l.complete,
   });
 
-  const nodemap: { [id: string]: number } = {};
+  // A node table with a repeated entry is malformed: `owner` indices
+  // into it are ambiguous, so we can't merge it. Reject it on either
+  // side -- tolerating it on one side only would make `merge`
+  // non-commutative on such input.
+  // Null-prototype so that a node named e.g. "constructor" doesn't
+  // collide with an inherited property in the `in` checks below.
+  const nodemap: { [id: string]: number } = Object.create(null);
   l.nodes.forEach((node) => {
+    if (node in nodemap) {
+      throw new Error(`duplicate node in left: ${node}`);
+    }
     out.nodes.push(node);
     nodemap[node] = 0;
   });
+  const seen = new Set<string>();
   r.nodes.forEach((node) => {
+    if (seen.has(node)) {
+      throw new Error(`duplicate node in right: ${node}`);
+    }
+    seen.add(node);
     if (!(node in nodemap)) {
       out.nodes.push(node);
       nodemap[node] = 0;
