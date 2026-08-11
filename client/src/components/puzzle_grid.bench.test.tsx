@@ -5,7 +5,11 @@ import { PuzzleGrid } from "./puzzle_grid";
 import { PuzzleCell } from "./puzzle_cell";
 import ThePuzzle from "../puzzle";
 import * as Crossword from "../crossword";
-import { FillSchema, Fill_CellSchema, type Fill as FillProto } from "../pb/fill_pb";
+import {
+  FillSchema,
+  Fill_CellSchema,
+  type Fill as FillProto,
+} from "../pb/fill_pb";
 
 // Render-count benchmark: simulates the live subscription path from
 // PuzzleComponent -- a collaborator's single-cell deltas arrive and are
