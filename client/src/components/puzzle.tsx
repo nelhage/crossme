@@ -59,31 +59,41 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   }
 
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
-    this.setState((state) => {
-      let update = op(state.game);
-      // A solved game is frozen: local edits are dropped and nothing
-      // more is sent to the server. (The server decides when the game
-      // is actually complete -- we never send `complete` ourselves.)
-      if (Crossword.isSolved(state.game)) {
-        update = { ...update, fill: undefined };
-      }
-      const game = Crossword.withUpdate(state.game, update);
-      if (update.fill && this.props.gameId) {
+    // The updater must stay pure -- React may call it more than once
+    // for a single update (StrictMode double-invokes it in dev). It
+    // only records the fill to send; the RPC happens once, from the
+    // post-commit callback.
+    let send: Crossword.GameUpdate["fill"];
+    this.setState(
+      (state) => {
+        let update = op(state.game);
+        // A solved game is frozen: local edits are dropped and nothing
+        // more is sent to the server. (The server decides when the game
+        // is actually complete -- we never send `complete` ourselves.)
+        if (Crossword.isSolved(state.game)) {
+          update = { ...update, fill: undefined };
+        }
+        send = update.fill;
+        return {
+          ...state,
+          game: Crossword.withUpdate(state.game, update),
+        };
+      },
+      () => {
+        if (!send || !this.props.gameId) {
+          return;
+        }
         this.client()
           .updateFill({
             gameId: this.props.gameId,
             nodeId: this.state.game.nodeID,
-            fill: update.fill,
+            fill: send,
           })
           .catch((err) => {
             console.log("Error updating fill: %j", err);
           });
       }
-      return {
-        ...state,
-        game,
-      };
-    });
+    );
   }
 
   openRebus() {
