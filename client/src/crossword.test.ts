@@ -471,6 +471,21 @@ describe("applying remote updates", () => {
     });
   }
 
+  // The canonical fill as the server would broadcast it on completion:
+  // every white square solved, with the complete flag set.
+  function serverCompleteFill(g: Crossword.Game) {
+    return create(FillSchema, {
+      complete: true,
+      clock: BigInt(1),
+      nodes: ["server"],
+      cells: g.puzzle.squares.flatMap((sq, i) =>
+        sq.black
+          ? []
+          : [{ index: i, clock: BigInt(1), owner: 0, fill: sq.fill }]
+      ),
+    });
+  }
+
   it("keeps a revealed cell over a higher-clock remote write", () => {
     let g = parseGame(template);
     g = Crossword.withUpdate(
@@ -503,6 +518,30 @@ describe("applying remote updates", () => {
     const fill = Crossword.fillAt(g, pos);
     expect(fill).toMatchObject({ fill: "Z", didCheck: true });
     expect(fill?.checked).toBeUndefined();
+  });
+
+  it("adopts a server-completed fill wholesale", () => {
+    let g = parseGame(template);
+    // A local wrong write with a clock far ahead of the server's fill:
+    // the complete fill must still win wholesale.
+    g = Crossword.withUpdate(g, Crossword.fillSquare(g, "Z"));
+    expect(Crossword.fillAt(g, pos)).toMatchObject({ fill: "Z" });
+
+    g = Crossword.withUpdate(g, { fill: serverCompleteFill(g) });
+    expect(g.fillProto.complete).toBe(true);
+    expect(Crossword.isSolved(g)).toBe(true);
+    expect(g.nextError).toBeUndefined();
+    expect(Crossword.fillAt(g, pos)).toMatchObject({ fill: "X" });
+  });
+
+  it("freezes local edits once the fill is complete", () => {
+    let g = parseGame(template);
+    g = Crossword.withUpdate(g, { fill: serverCompleteFill(g) });
+    expect(Crossword.isSolved(g)).toBe(true);
+
+    g = Crossword.withUpdate(g, Crossword.fillSquare(g, "Q"));
+    expect(Crossword.fillAt(g, pos)).toMatchObject({ fill: "X" });
+    expect(g.fillProto.complete).toBe(true);
   });
 
   it("clears a checked-wrong mark when a remote write wins", () => {
