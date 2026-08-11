@@ -489,6 +489,22 @@ describe("applying remote updates", () => {
     });
   });
 
+  it("does not clobber a concurrent remote correction when checking", () => {
+    let g = parseGame(template);
+    g = Crossword.withUpdate(g, Crossword.fillSquare(g, "B"));
+
+    // The check is computed before the remote write arrives, but applied
+    // after it — i.e. the two are concurrent. The remote correction must
+    // win; the check may not re-assert the stale "B".
+    const check = Crossword.checkAnswers(g, Crossword.Target.SQUARE);
+    g = Crossword.withUpdate(g, { fill: remoteWrite(100, "Z") });
+    g = Crossword.withUpdate(g, check);
+
+    const fill = Crossword.fillAt(g, pos);
+    expect(fill).toMatchObject({ fill: "Z", didCheck: true });
+    expect(fill?.checked).toBeUndefined();
+  });
+
   it("clears a checked-wrong mark when a remote write wins", () => {
     let g = parseGame(template);
     g = Crossword.withUpdate(g, Crossword.fillSquare(g, "B"));

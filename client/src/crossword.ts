@@ -673,17 +673,27 @@ function eachTarget(
 }
 
 export function checkAnswers(g: Game, target: Target): GameUpdate {
+  // A check is a read-only annotation: each cell in the delta carries its
+  // existing (fill, clock, owner) unchanged, plus the check flags. At the
+  // same clock the merge tie-breaks in the delta's favor, applying the
+  // flags — but a concurrent write with a fresher clock wins the clock
+  // comparison, so checking never needlessly clobbers another player's
+  // edit. A cell checked *correct* still beats concurrent writes, via the
+  // merge's CHECKED_RIGHT rule — that clobbering is by design.
   const newfill = create(FillSchema, {
     clock: BigInt(g.clock + 1),
-    nodes: [g.nodeID],
   });
   const update: MutableGameUpdate = { fill: newfill };
+  const nodes: { [id: string]: number } = {};
 
   eachTarget(g, target, (idx, sq, fill) => {
     if (!fill || fill.fill === "") {
       return;
     }
     let flags: number = Fill_Flags.DID_CHECK;
+    if (fill.pencil) {
+      flags |= Fill_Flags.PENCIL;
+    }
     if (fill.fill === sq.fill) {
       flags |= Fill_Flags.CHECKED_RIGHT;
     } else {
@@ -693,12 +703,18 @@ export function checkAnswers(g: Game, target: Target): GameUpdate {
         update.cursor = pos;
       }
     }
+    let owner = nodes[fill.owner];
+    if (owner === undefined) {
+      owner = newfill.nodes.length;
+      nodes[fill.owner] = owner;
+      newfill.nodes.push(fill.owner);
+    }
     newfill.cells.push(
       create(Fill_CellSchema, {
         index: idx,
         fill: fill.fill,
-        clock: BigInt(g.clock + 1),
-        owner: 0,
+        clock: BigInt(fill.clock),
+        owner,
         flags,
       })
     );
