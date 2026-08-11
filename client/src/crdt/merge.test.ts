@@ -1,4 +1,4 @@
-import { fromBinary, toJson } from "@bufbuild/protobuf";
+import { create, fromJson, toJson } from "@bufbuild/protobuf";
 
 import { Fill, FillSchema } from "../pb/fill_pb";
 import { merge } from "./merge";
@@ -6,8 +6,12 @@ import { merge } from "./merge";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+// The test vectors are protobuf JSON, shared verbatim with the Go merge
+// tests (see crdt/merge_test.go) through the `testdata` symlink. Reading
+// the same source files means neither test suite can be validating a
+// stale copy of the other's input.
 function readFill(path: string): Fill {
-  return fromBinary(FillSchema, new Uint8Array(fs.readFileSync(path)));
+  return fromJson(FillSchema, JSON.parse(fs.readFileSync(path, "utf8")));
 }
 
 function assertMerge(_name: string, l: Fill, r: Fill, want: Fill): Fill {
@@ -19,9 +23,9 @@ function assertMerge(_name: string, l: Fill, r: Fill, want: Fill): Fill {
 }
 
 function runOne(dir: string) {
-  const l = readFill(path.join(dir, "left.dat"));
-  const r = readFill(path.join(dir, "right.dat"));
-  const m = readFill(path.join(dir, "merged.dat"));
+  const l = readFill(path.join(dir, "left.json"));
+  const r = readFill(path.join(dir, "right.json"));
+  const m = readFill(path.join(dir, "merged.json"));
 
   const m1 = assertMerge("(left, right)", l, r, m);
   const m2 = assertMerge("(right, left)", r, l, m);
@@ -45,12 +49,12 @@ describe("merge", () => {
 
 // Three-way merges must converge to the same state regardless of the
 // order or association of the merges; see runAssociative in
-// crdt/merge_test.go, which also generates the .dat files.
+// crdt/merge_test.go.
 function runAssociative(dir: string) {
-  const a = readFill(path.join(dir, "a.dat"));
-  const b = readFill(path.join(dir, "b.dat"));
-  const c = readFill(path.join(dir, "c.dat"));
-  const m = readFill(path.join(dir, "merged.dat"));
+  const a = readFill(path.join(dir, "a.json"));
+  const b = readFill(path.join(dir, "b.json"));
+  const c = readFill(path.join(dir, "c.json"));
+  const m = readFill(path.join(dir, "merged.json"));
 
   const perms: [Fill, Fill, Fill][] = [
     [a, b, c],
@@ -73,5 +77,29 @@ describe("merge associativity", () => {
     it(`Test case: ${dir}`, () => {
       runAssociative(path.join(TEST_DIR, dir));
     });
+  });
+});
+
+// A duplicate entry in a node table makes the `owner` indices into it
+// ambiguous; both implementations reject such a fill, from either side.
+// See TestMergeDuplicateNodes in crdt/merge_test.go.
+describe("merge with a malformed node table", () => {
+  const dup = create(FillSchema, {
+    clock: 1n,
+    nodes: ["nodeA", "nodeA"],
+    cells: [{ index: 1, clock: 1n, owner: 0, fill: "X" }],
+  });
+  const ok = create(FillSchema, {
+    clock: 1n,
+    nodes: ["nodeB"],
+    cells: [{ index: 1, clock: 1n, owner: 0, fill: "Y" }],
+  });
+
+  it("rejects a duplicate node on the left", () => {
+    expect(() => merge(dup, ok)).toThrow(/duplicate node/);
+  });
+
+  it("rejects a duplicate node on the right", () => {
+    expect(() => merge(ok, dup)).toThrow(/duplicate node/);
   });
 });

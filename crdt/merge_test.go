@@ -5,30 +5,28 @@ import (
 	"fmt"
 	"os"
 	"path"
-	"strings"
 	"testing"
 
 	"crossme.app/src/pb"
 
-	"google.golang.org/protobuf/proto"
 	"github.com/kylelemons/godebug/diff"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
+// mustReadFile reads a test vector. The vectors are protobuf JSON, and
+// are read directly by the TypeScript merge tests as well (via the
+// `testdata` symlink), so both implementations parse the same bytes and
+// neither test run can leave the other validating stale input.
 func mustReadFile(t *testing.T, path string) *pb.Fill {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("ReadFile(%q): %v", path, err)
 	}
-	var out *pb.Fill
-	if err := json.Unmarshal(data, &out); err != nil {
+	out := &pb.Fill{}
+	if err := protojson.Unmarshal(data, out); err != nil {
 		t.Fatalf("Unmarshal(%q): %v", path, err)
 	}
-	datfile := strings.TrimSuffix(path, ".json") +  ".dat"
-	encoded, err := proto.Marshal(out)
-	if err != nil {
-		t.Fatalf("re-encode: %v", err)
-	}
-	os.WriteFile(datfile, encoded, 0644)
 	return out
 }
 
@@ -128,5 +126,27 @@ func TestMergeAssociative(t *testing.T) {
 			t.Parallel()
 			runAssociative(t, path.Join("testdata/associative", d.Name()))
 		})
+	}
+}
+
+// A duplicate entry in a node table makes the `owner` indices into it
+// ambiguous; both implementations reject such a fill, from either side.
+func TestMergeDuplicateNodes(t *testing.T) {
+	dup := &pb.Fill{
+		Clock: 1,
+		Nodes: []string{"nodeA", "nodeA"},
+		Cells: []*pb.Fill_Cell{{Index: 1, Clock: 1, Owner: 0, Fill: "X"}},
+	}
+	ok := &pb.Fill{
+		Clock: 1,
+		Nodes: []string{"nodeB"},
+		Cells: []*pb.Fill_Cell{{Index: 1, Clock: 1, Owner: 0, Fill: "Y"}},
+	}
+
+	if _, err := Merge(dup, ok); err == nil {
+		t.Errorf("Merge(dup, ok): expected an error")
+	}
+	if _, err := Merge(ok, dup); err == nil {
+		t.Errorf("Merge(ok, dup): expected an error")
 	}
 }

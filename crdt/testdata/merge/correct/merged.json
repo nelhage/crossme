@@ -1,5 +1,4 @@
 {
-  "puzzle_id": "a",
   "clock": 5,
   "nodes": [ "node0", "node1" ],
   "cells": [
