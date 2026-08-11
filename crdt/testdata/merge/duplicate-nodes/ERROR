@@ -1,0 +1,5 @@
+left.json's node table lists `node0` twice. A repeated entry is
+redundant -- two indices for the same node -- and nothing either
+implementation generates, so the merge rejects it rather than quietly
+collapsing it. It is rejected from whichever side it arrives on, so
+that the merge stays commutative.

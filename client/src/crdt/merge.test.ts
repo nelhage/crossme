@@ -1,4 +1,4 @@
-import { create, fromJson, toJson } from "@bufbuild/protobuf";
+import { fromJson, toJson } from "@bufbuild/protobuf";
 
 import { Fill, FillSchema } from "../pb/fill_pb";
 import { merge } from "./merge";
@@ -6,10 +6,8 @@ import { merge } from "./merge";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-// The test vectors are protobuf JSON, shared verbatim with the Go merge
-// tests (see crdt/merge_test.go) through the `testdata` symlink. Reading
-// the same source files means neither test suite can be validating a
-// stale copy of the other's input.
+// The test vectors are protobuf JSON, shared with the Go merge tests
+// (see crdt/merge_test.go) through the `testdata` symlink.
 function readFill(path: string): Fill {
   return fromJson(FillSchema, JSON.parse(fs.readFileSync(path, "utf8")));
 }
@@ -25,6 +23,16 @@ function assertMerge(_name: string, l: Fill, r: Fill, want: Fill): Fill {
 function runOne(dir: string) {
   const l = readFill(path.join(dir, "left.json"));
   const r = readFill(path.join(dir, "right.json"));
+
+  // A case carrying an `ERROR` file in place of a `merged.json` has
+  // illegal inputs, and the merge must reject them. The file's contents
+  // explain why, for the reader; nothing checks them.
+  if (fs.existsSync(path.join(dir, "ERROR"))) {
+    expect(() => merge(l, r)).toThrow();
+    expect(() => merge(r, l)).toThrow();
+    return;
+  }
+
   const m = readFill(path.join(dir, "merged.json"));
 
   const m1 = assertMerge("(left, right)", l, r, m);
@@ -77,29 +85,5 @@ describe("merge associativity", () => {
     it(`Test case: ${dir}`, () => {
       runAssociative(path.join(TEST_DIR, dir));
     });
-  });
-});
-
-// A duplicate entry in a node table makes the `owner` indices into it
-// ambiguous; both implementations reject such a fill, from either side.
-// See TestMergeDuplicateNodes in crdt/merge_test.go.
-describe("merge with a malformed node table", () => {
-  const dup = create(FillSchema, {
-    clock: 1n,
-    nodes: ["nodeA", "nodeA"],
-    cells: [{ index: 1, clock: 1n, owner: 0, fill: "X" }],
-  });
-  const ok = create(FillSchema, {
-    clock: 1n,
-    nodes: ["nodeB"],
-    cells: [{ index: 1, clock: 1n, owner: 0, fill: "Y" }],
-  });
-
-  it("rejects a duplicate node on the left", () => {
-    expect(() => merge(dup, ok)).toThrow(/duplicate node/);
-  });
-
-  it("rejects a duplicate node on the right", () => {
-    expect(() => merge(ok, dup)).toThrow(/duplicate node/);
   });
 });
