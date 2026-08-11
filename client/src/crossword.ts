@@ -180,9 +180,26 @@ export function withFills(g: Game, fill: (string | undefined)[][]): Game {
   return withUpdate(g, { fill: delta });
 }
 
-// fillView derives the view-model from the canonical CRDT state.
-function fillView(fill: FillProto): Fill {
-  const cells: (Types.FillState | undefined)[] = [];
+function sameFillState(
+  a: Readonly<Types.FillState>,
+  b: Readonly<Types.FillState>
+): boolean {
+  return (
+    a.fill === b.fill &&
+    a.pencil === b.pencil &&
+    a.clock === b.clock &&
+    a.owner === b.owner &&
+    a.checked === b.checked &&
+    a.didCheck === b.didCheck &&
+    a.didReveal === b.didReveal
+  );
+}
+
+// fillView derives the view-model from the canonical CRDT state. Cells
+// whose state is unchanged from `old` keep their object identity, so
+// that PuzzleCell's shallow prop compare skips re-rendering them.
+function fillView(fill: FillProto, old: Fill): Fill {
+  const cells: (Readonly<Types.FillState> | undefined)[] = [];
   fill.cells.forEach((cell) => {
     const state: Types.FillState = {
       fill: cell.fill,
@@ -203,7 +220,8 @@ function fillView(fill: FillProto): Fill {
     if ((cell.flags & Fill_Flags.DID_REVEAL) !== 0) {
       state.didReveal = true;
     }
-    cells[cell.index] = state;
+    const prev = old.get(cell.index);
+    cells[cell.index] = prev && sameFillState(prev, state) ? prev : state;
   });
   return List(cells);
 }
@@ -220,7 +238,7 @@ export function withUpdate(g: Game, update: GameUpdate): Game {
       ...out,
       clock: clock,
       fillProto: merged,
-      fill: fillView(merged),
+      fill: fillView(merged, g.fill),
     });
   }
   return out;

@@ -109,7 +109,8 @@ it("re-renders after a single-cell remote update", () => {
       `[data-column="${target % ThePuzzle.width}"]`
   );
   expect(cell?.textContent).toContain("Q");
-  expect(renders).toBeGreaterThanOrEqual(1);
+  expect(identityChurn(g0, g1)).toBe(1);
+  expect(renders).toBe(1);
 
   console.log(
     `single remote cell: ${renders}/${whiteCells} white cells re-rendered ` +
@@ -128,6 +129,11 @@ it("re-renders after a local keystroke", () => {
   rerender(<PuzzleGrid game={g1} {...gridProps} />);
   const renders = spy.mock.calls.length;
   spy.mockRestore();
+
+  // Only the typed cell's FillState changes; the remaining re-renders
+  // are the cursor-word `inword` highlight moving.
+  expect(identityChurn(g0, g1)).toBe(1);
+  expect(renders).toBeLessThan(30);
 
   console.log(
     `local keystroke: ${renders}/${whiteCells} white cells re-rendered ` +
@@ -153,6 +159,8 @@ it("applies a burst of remote updates", () => {
   const ms = performance.now() - start;
   const renders = spy.mock.calls.length;
   spy.mockRestore();
+
+  expect(renders).toBe(N);
 
   console.log(
     `${N} remote single-cell updates: ${ms.toFixed(0)}ms total, ` +
