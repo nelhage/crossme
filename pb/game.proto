@@ -12,4 +12,9 @@ message Game {
     crossme.Fill fill = 3;
 
     google.protobuf.Timestamp created = 4;
+
+    // Set (by the server) when the fill was verified complete; unset
+    // for games still in progress. `fill.complete` is the CRDT-visible
+    // flag; this records when the game froze.
+    google.protobuf.Timestamp completed_at = 5;
 }
