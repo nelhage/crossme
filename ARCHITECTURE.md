@@ -10,6 +10,8 @@ The backend is implemented in Go, and the frontend communicates with it via [con
 
 The server stores data using sqlite. All direct interaction with the SQL database is managed via the `Repo` type, exported from the `repo` top-level package. Data is stored in the database primarily as encoded protobuf objects in `blob` columns, with a small number of fields replicated as SQL columns for efficient indexing or querying.
 
+The SQL schema is defined by an ordered list of migrations in `repo/migrate.go`; `migrations[i]` upgrades the database from schema version `i` to version `i+1`, so the current schema version is just the number of migrations. The database records its own version in the `Config` proto stored in the `config` table, which is the one piece of schema created outside the migration sequence. Opening a database plays any missing migrations forward, each in a transaction that also stamps the new version; opening a database from the future is an error. Migrations are append-only: changing the schema means adding a migration, not editing an existing one.
+
 Durable state is committed to the SQL database. Transient state about current connections and live games lives in-memory in the server. If the server restarts, we assume clients will reconnect if necessary. The server is assumed to be a single instance of the Go server process; there is no support for running across multiple processes or nodes.
 
 ## The "Game" CRDT

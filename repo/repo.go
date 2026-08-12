@@ -2,12 +2,9 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"net/url"
 	"strings"
-
-	"google.golang.org/protobuf/proto"
 
 	"crossme.app/src/pb"
 	"github.com/jmoiron/sqlx"
@@ -20,6 +17,12 @@ type Repository struct {
 }
 
 func Open(dsn string) (*Repository, error) {
+	return open(dsn, CurrentSchemaVersion)
+}
+
+// open opens a database and migrates it to `target`. Callers other than
+// tests always want CurrentSchemaVersion.
+func open(dsn string, target int32) (*Repository, error) {
 	bits := strings.SplitN(dsn, "?", 2)
 	var q url.Values
 	if len(bits) > 1 {
@@ -43,31 +46,18 @@ func Open(dsn string) (*Repository, error) {
 	}
 
 	repo := &Repository{db: sql}
-	if err := repo.init(); err != nil {
+	if err := repo.init(target); err != nil {
 		repo.Close()
 		return nil, err
 	}
 	return repo, nil
 }
 
-func (r *Repository) init() error {
-	if _, err := r.db.Exec(sql_init); err != nil {
-		return fmt.Errorf("error loading schema: %v", err)
+func (r *Repository) init(target int32) error {
+	if err := r.loadConfig(); err != nil {
+		return err
 	}
-	var config_bytes []byte
-	if err := r.db.Get(&config_bytes, "SELECT proto FROM config LIMIT 1"); err != nil {
-		if err != sql.ErrNoRows {
-			return fmt.Errorf("error loading config: %v", err)
-		}
-	}
-	if config_bytes != nil {
-		err := proto.Unmarshal(config_bytes, &r.Config)
-		if err != nil {
-			return err
-		}
-	}
-
-	return nil
+	return r.migrate(target)
 }
 
 // Ping checks that the database is still usable. It's meant for health
