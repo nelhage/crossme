@@ -2,33 +2,31 @@ package crdt
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io/fs"
 	"os"
 	"path"
-	"strings"
 	"testing"
 
 	"crossme.app/src/pb"
 
-	"google.golang.org/protobuf/proto"
 	"github.com/kylelemons/godebug/diff"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
+// mustReadFile reads a test vector. The vectors are protobuf JSON,
+// shared with the TypeScript merge tests via the `testdata` symlink.
 func mustReadFile(t *testing.T, path string) *pb.Fill {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("ReadFile(%q): %v", path, err)
 	}
-	var out *pb.Fill
-	if err := json.Unmarshal(data, &out); err != nil {
+	out := &pb.Fill{}
+	if err := protojson.Unmarshal(data, out); err != nil {
 		t.Fatalf("Unmarshal(%q): %v", path, err)
 	}
-	datfile := strings.TrimSuffix(path, ".json") +  ".dat"
-	encoded, err := proto.Marshal(out)
-	if err != nil {
-		t.Fatalf("re-encode: %v", err)
-	}
-	os.WriteFile(datfile, encoded, 0644)
 	return out
 }
 
@@ -54,9 +52,35 @@ func assertMerge(t *testing.T, name string, left *pb.Fill, right *pb.Fill, out *
 	return merged
 }
 
+// expectsError reports whether a test case carries an `ERROR` file in
+// place of a `merged.json`, meaning the inputs are illegal and the
+// merge must reject them. The file's contents explain why, for the
+// reader; nothing checks them.
+func expectsError(t *testing.T, dir string) bool {
+	_, err := os.Stat(path.Join(dir, "ERROR"))
+	if err == nil {
+		return true
+	}
+	if !errors.Is(err, fs.ErrNotExist) {
+		t.Fatalf("stat(%q): %v", path.Join(dir, "ERROR"), err)
+	}
+	return false
+}
+
 func runOne(t *testing.T, dir string) {
 	l := mustReadFile(t, path.Join(dir, "left.json"))
 	r := mustReadFile(t, path.Join(dir, "right.json"))
+
+	if expectsError(t, dir) {
+		if _, err := Merge(l, r); err == nil {
+			t.Errorf("Merge(left, right): expected an error")
+		}
+		if _, err := Merge(r, l); err == nil {
+			t.Errorf("Merge(right, left): expected an error")
+		}
+		return
+	}
+
 	m := mustReadFile(t, path.Join(dir, "merged.json"))
 
 	m1 := assertMerge(t, "left, right", l, r, m)

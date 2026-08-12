@@ -41,6 +41,10 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		out.Clock = r.Clock
 	}
 
+	// A repeated entry in a node table is redundant -- two indices for
+	// the same node -- and nothing we ever generate, so reject it
+	// rather than quietly collapse it. Reject it from either side:
+	// accepting it on one side only would make `Merge` non-commutative.
 	nodemap := make(map[string]uint32)
 	out.Nodes = make([]string, 0, len(l.Nodes))
 	for _, n := range l.Nodes {
@@ -50,7 +54,12 @@ func Merge(l *pb.Fill, r *pb.Fill) (*pb.Fill, error) {
 		nodemap[n] = uint32(len(out.Nodes))
 		out.Nodes = append(out.Nodes, n)
 	}
+	seen := make(map[string]struct{}, len(r.Nodes))
 	for _, n := range r.Nodes {
+		if _, ok := seen[n]; ok {
+			return nil, fmt.Errorf("duplicate node in right: %s", n)
+		}
+		seen[n] = struct{}{}
 		if _, ok := nodemap[n]; ok {
 			continue
 		}

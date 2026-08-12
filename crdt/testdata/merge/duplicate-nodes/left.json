@@ -1,10 +1,10 @@
 {
-  "clock": 3,
-  "nodes": [ "node0" ],
+  "clock": 1,
+  "nodes": [ "node0", "node0" ],
   "cells": [
     {
       "index": 1,
-      "clock": 4,
+      "clock": 1,
       "owner": 0,
       "fill": "L",
       "flags": 0

@@ -45,12 +45,26 @@ export function merge(l: Fill, r: Fill): Fill {
     complete: l.complete,
   });
 
-  const nodemap: { [id: string]: number } = {};
+  // A repeated entry in a node table is redundant -- two indices for
+  // the same node -- and nothing we ever generate, so reject it
+  // rather than quietly collapse it. Reject it from either side:
+  // accepting it on one side only would make `merge` non-commutative.
+  // Null-prototype so that a node named e.g. "constructor" doesn't
+  // collide with an inherited property in the `in` checks below.
+  const nodemap: { [id: string]: number } = Object.create(null);
   l.nodes.forEach((node) => {
+    if (node in nodemap) {
+      throw new Error(`duplicate node in left: ${node}`);
+    }
     out.nodes.push(node);
     nodemap[node] = 0;
   });
+  const seen = new Set<string>();
   r.nodes.forEach((node) => {
+    if (seen.has(node)) {
+      throw new Error(`duplicate node in right: ${node}`);
+    }
+    seen.add(node);
     if (!(node in nodemap)) {
       out.nodes.push(node);
       nodemap[node] = 0;
