@@ -22,20 +22,14 @@ func TestOpenEmpty(t *testing.T) {
 	if repo.db == nil {
 		t.Fatalf("open: nil db")
 	}
-	if v := repo.Config.SchemaVersion; v != 0 {
-		t.Fatalf("schema version %d", v)
+	if v := repo.Config.SchemaVersion; v != CurrentSchemaVersion {
+		t.Fatalf("schema version %d, want %d", v, CurrentSchemaVersion)
 	}
 }
 
 func TestRoundTripConfig(t *testing.T) {
 	t.Parallel()
-	td, err := os.MkdirTemp("", "crossme.test.*")
-	if err != nil {
-		t.Fatalf("mktemp: %v", err)
-	}
-	defer os.RemoveAll(td)
-
-	dbpath := path.Join(td, "crossme.db")
+	dbpath := path.Join(t.TempDir(), "crossme.db")
 
 	repo, err := Open(dbpath)
 	if err != nil {
@@ -43,9 +37,6 @@ func TestRoundTripConfig(t *testing.T) {
 	}
 	defer repo.Close()
 
-	var version int32 = 32
-
-	repo.Config.SchemaVersion = version
 	if err := repo.FlushConfig(); err != nil {
 		t.Fatal("FlushConfig", err)
 	}
@@ -55,7 +46,7 @@ func TestRoundTripConfig(t *testing.T) {
 		t.Fatal("reopen", err)
 	}
 	defer r2.Close()
-	if v := r2.Config.SchemaVersion; v != version {
+	if v := r2.Config.SchemaVersion; v != CurrentSchemaVersion {
 		t.Fatalf("wrong config version on reopen: %d", v)
 	}
 }

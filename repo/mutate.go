@@ -10,12 +10,7 @@ import (
 )
 
 func (r *Repository) FlushConfig() error {
-	data, err := proto.Marshal(&r.Config)
-	if err != nil {
-		return err
-	}
-	_, err = r.db.Exec("REPLACE INTO config (id, proto) VALUES(0, ?)", data)
-	return err
+	return writeConfig(r.db, &r.Config)
 }
 
 func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {

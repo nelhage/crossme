@@ -2,36 +2,7 @@ package repo
 
 import "database/sql"
 
-const sql_init = `
-CREATE TABLE IF NOT EXISTS config (
-  id int primary key not null,
-  proto blob not null
-) strict;
-
-CREATE TABLE IF NOT EXISTS puzzles (
-  proto blob not null,
-  title text not null,
-  meta__sha256 text null unique,
-  meta__id text unique not null primary key,
-  meta__date text not null,
-  meta__created text not null
-) strict;
-
-CREATE INDEX IF NOT EXISTS puzzles__date ON puzzles (meta__date);
-
-CREATE TABLE IF NOT EXISTS games (
-  proto blob not null,
-  id text not null unique primary key,
-  puzzle_id text not null,
-  created text not null,
-  completed_at text null
-) strict;
-
-CREATE TABLE IF NOT EXISTS puz_files (
-  sha256 text unique primary key,
-  file blob
-) strict;
-`
+// The schema itself lives in migrate.go, as a sequence of migrations.
 
 const sql_insert_puz_file = `
 REPLACE INTO puz_files(sha256, file) VALUES (:sha256, :blob)
