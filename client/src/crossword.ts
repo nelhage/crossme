@@ -109,12 +109,12 @@ export function withCursor(
     throw new Error(`bad cursor: column=${update.column}`);
   }
 
-  let newCursor = {
+  const newCursor = {
     ...g.cursor,
     ...update,
   };
 
-  let cell = cellAt(g.puzzle, newCursor);
+  const cell = cellAt(g.puzzle, newCursor);
   if (cell.black) {
     throw new Error("Attempted to select black square!");
   }
