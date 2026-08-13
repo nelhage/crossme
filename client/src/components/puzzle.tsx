@@ -168,10 +168,15 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
   arrow(dr: number, dc: number) {
     const direction = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
+    const g = this.state.game;
     // TODO: settingArrows
-    if (direction !== this.state.game.cursor.direction) {
-      this.updateGame((state) => Crossword.swapDirection(state));
-      return;
+    if (direction !== g.cursor.direction) {
+      const newDirection = Crossword.otherDirection(g.cursor.direction);
+      const cell = Crossword.selectedSquare(g);
+      if (Crossword.hasClue(cell, newDirection)) {
+        this.updateGame((state) => Crossword.swapDirection(state));
+        return;
+      }
     }
     this.updateGame((state) => Crossword.move(state, dr, dc));
   }

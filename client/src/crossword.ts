@@ -109,12 +109,22 @@ export function withCursor(
     throw new Error(`bad cursor: column=${update.column}`);
   }
 
+  let newCursor = {
+    ...g.cursor,
+    ...update,
+  };
+
+  let cell = cellAt(g.puzzle, newCursor);
+  if (cell.black) {
+    throw new Error("Attempted to select black square!");
+  }
+  if (!hasClue(cell, newCursor.direction)) {
+    newCursor.direction = otherDirection(newCursor.direction);
+  }
+
   return {
     ...g,
-    cursor: {
-      ...g.cursor,
-      ...update,
-    },
+    cursor: newCursor,
   };
 }
 
@@ -265,10 +275,21 @@ function directionToDelta(direction: Types.Direction): {
   return { dr: 1, dc: 0 };
 }
 
-function otherDirection(d: Types.Direction): Types.Direction {
+export function otherDirection(d: Types.Direction): Types.Direction {
   return d === Types.Direction.ACROSS
     ? Types.Direction.DOWN
     : Types.Direction.ACROSS;
+}
+
+export function hasClue(cell: Types.LetterCell, dir: Types.Direction): boolean {
+  if (dir === Types.Direction.ACROSS) {
+    return !!cell.clueAcross;
+  }
+  if (dir === Types.Direction.DOWN) {
+    return !!cell.clueDown;
+  }
+
+  throw new Error(`Illegal direction: ${dir}`);
 }
 
 export function swapDirection(g: Game): GameUpdate {
