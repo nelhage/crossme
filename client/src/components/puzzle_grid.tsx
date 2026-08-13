@@ -91,12 +91,18 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
             props.inword = Types.InWord.SELECTED;
             props.ref = this.activeCell;
             props.onInput = this.props.onInput;
-          } else if (cell.clueAcross === active_cell.clueAcross) {
+          } else if (
+            cell.clueAcross > 0 &&
+            cell.clueAcross === active_cell.clueAcross
+          ) {
             props.inword =
               this.props.game.cursor.direction === Types.Direction.ACROSS
                 ? Types.InWord.IN_WORD
                 : Types.InWord.OTHER_WORD;
-          } else if (cell.clueDown === active_cell.clueDown) {
+          } else if (
+            cell.clueDown > 0 &&
+            cell.clueDown === active_cell.clueDown
+          ) {
             props.inword =
               this.props.game.cursor.direction === Types.Direction.DOWN
                 ? Types.InWord.IN_WORD
