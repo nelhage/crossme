@@ -10,8 +10,10 @@ export const HomePage = () => {
       </p>
 
       <p>
-        To get started, just click &quot;New Game&quot; above, select a puzzle
-        (I&apos;ve uploaded most of the recently NYT puzzles), and get started!
+        To get started, just click &quot;New Game&quot; above, select a puzzle,
+        and get started!
+      </p>
+      <p>
         In the popup, you can click &quot;New Game&quot; to get going right
         away, or &quot;Preview&quot; to view the puzzle before you start
         playing.
