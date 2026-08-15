@@ -37,13 +37,8 @@
 }
 
 #theclue > span {
-  display: block;
-  float: left;
-  margin: 0px;
-  height: 100%;
   padding: 5px;
   font-weight: bold;
-  line-height: 20px;
 }
 
 #theclue .label {
@@ -271,4 +266,23 @@
 .sidebar-link {
   font-size: 80%;
   display: block;
+}
+
+
+@media (max-width: 768px) {
+    #theclue {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        background-color: white;
+        border-top: 2px solid black;
+        padding: 10px;
+        margin: 0;
+        z-index: 5;
+    }
+
+    #controls {
+        padding-bottom: 100px;
+    }
 }
