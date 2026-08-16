@@ -268,21 +268,20 @@
   display: block;
 }
 
-
 @media (max-width: 768px) {
-    #theclue {
-        position: fixed;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
-        background-color: white;
-        border-top: 2px solid black;
-        padding: 10px;
-        margin: 0;
-        z-index: 5;
-    }
+  #theclue {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: white;
+    border-top: 2px solid black;
+    padding: 10px;
+    margin: 0;
+    z-index: 5;
+  }
 
-    #controls {
-        padding-bottom: 100px;
-    }
+  #controls {
+    padding-bottom: 100px;
+  }
 }
