@@ -58,17 +58,25 @@
 }
 
 #puzzlegrid {
+  /* Cells are 30px, shrinking as needed so the grid spans the
+     viewport on small screens. The 11px covers #puzzle's
+     padding-left and our own border-left. Sizes within cells are
+     given in em, keyed off the font-size set here, so they scale
+     with the cells. */
+  --cell-size: min(30px, calc((100vw - 11px) / var(--puzzle-cols)));
   display: inline-grid;
   width: fit-content;
-  grid-template-columns: repeat(var(--puzzle-cols), 30px);
-  grid-template-rows: repeat(var(--puzzle-rows), 30px);
+  grid-template-columns: repeat(var(--puzzle-cols), var(--cell-size));
+  grid-template-rows: repeat(var(--puzzle-rows), var(--cell-size));
+  font-size: var(--cell-size);
   border-left: 1px solid black;
   border-top: 1px solid black;
 }
 
 #puzzlegrid .cell {
-  width: 30px;
-  height: 30px;
+  box-sizing: border-box;
+  width: var(--cell-size);
+  height: var(--cell-size);
   border-right: 1px solid black;
   border-bottom: 1px solid black;
   padding: 0px;
@@ -85,9 +93,9 @@
 }
 
 #puzzlegrid .cell.rebus .fill {
-  font-size: 15px;
+  font-size: 0.5em;
   left: 0px;
-  top: 4px;
+  top: 0.267em;
 }
 
 #puzzlegrid .cell input.fill {
@@ -105,16 +113,16 @@
 #puzzlegrid .cell .fill {
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 0.667em;
   position: relative;
-  top: 2px;
+  top: 0.1em;
 }
 
 #puzzlegrid .cell .numberlabel {
   position: absolute;
-  width: 15px;
-  height: 15px;
-  font-size: 10px;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.333em;
   font-family: serif;
 }
 
@@ -171,7 +179,7 @@
 
 #puzzlegrid .cell.circled .circle {
   border: 1px solid #000;
-  border-radius: 15px;
+  border-radius: 50%;
   width: 100%;
   height: 100%;
 }
