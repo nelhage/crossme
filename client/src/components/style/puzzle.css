@@ -1,6 +1,13 @@
 #puzzle {
-  display: inline-block;
+  /* Size container for the grid's --cell-size. Must be a plain
+     block: its width then derives from the initial containing
+     block, which stays at the real device width even when
+     overflowing content makes mobile browsers expand the layout
+     viewport (which would make vw units useless for fitting
+     content to the screen). */
+  container-type: inline-size;
   padding-left: 10px;
+  padding-right: 10px;
 }
 
 #details {
@@ -59,11 +66,11 @@
 
 #puzzlegrid {
   /* Cells are 30px, shrinking as needed so the grid spans the
-     viewport on small screens. The 11px covers #puzzle's
-     padding-left and our own border-left. Sizes within cells are
-     given in em, keyed off the font-size set here, so they scale
-     with the cells. */
-  --cell-size: min(30px, calc((100vw - 11px) / var(--puzzle-cols)));
+     screen on small devices. 100cqw is #puzzle's content box
+     (padding already excluded); the 1px is our border-left. Sizes
+     within cells are given in em, keyed off the font-size set
+     here, so they scale with the cells. */
+  --cell-size: min(30px, calc((100cqw - 1px) / var(--puzzle-cols)));
   display: inline-grid;
   width: fit-content;
   grid-template-columns: repeat(var(--puzzle-cols), var(--cell-size));
