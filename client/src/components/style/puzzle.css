@@ -301,12 +301,14 @@
     z-index: 5;
   }
 
-  /* While the clue is pinned, scroll inside #puzzle instead of the
+  /* While the clue is pinned, scroll inside .App instead of the
      document. Scrolling the document makes mobile browsers show and
      hide the URL bar, resizing the viewport the fixed clue is
      anchored to; the clue then jitters (and lets the puzzle peek
      through underneath) while the browser re-anchors it. With the
-     document pinned, the browser chrome never moves. */
+     document pinned, the browser chrome never moves. Scrolling .App
+     (rather than #puzzle) puts the nav bar inside the scroller, so
+     it scrolls away and frees its space while solving. */
   body:has(#theclue) {
     height: 100dvh;
     overflow: hidden;
@@ -318,13 +320,6 @@
 
   body:has(#theclue) .App {
     height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  body:has(#theclue) #puzzle {
-    flex: 1;
-    min-height: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
