@@ -29,10 +29,6 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     this.onInput = this.onInput.bind(this);
   }
 
-  computeWidth(): number {
-    return this.props.game.puzzle.width * 31 + 10;
-  }
-
   onClick(evt: React.MouseEvent<HTMLDivElement>) {
     if (!this.props.showCursor) {
       return;
@@ -136,11 +132,6 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
         className={this.props.complete ? "complete" : undefined}
         style={style}
       >
-        <meta
-          name="viewport"
-          content={`width=${this.computeWidth()}, user-scalable=no`}
-          id="viewport-meta"
-        />
         <input
           id="puzzleinput"
           defaultValue=""

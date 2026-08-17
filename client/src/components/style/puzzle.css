@@ -1,6 +1,13 @@
 #puzzle {
-  display: inline-block;
+  /* Size container for the grid's --cell-size. Must be a plain
+     block: its width then derives from the initial containing
+     block, which stays at the real device width even when
+     overflowing content makes mobile browsers expand the layout
+     viewport (which would make vw units useless for fitting
+     content to the screen). */
+  container-type: inline-size;
   padding-left: 10px;
+  padding-right: 10px;
 }
 
 #details {
@@ -37,13 +44,8 @@
 }
 
 #theclue > span {
-  display: block;
-  float: left;
-  margin: 0px;
-  height: 100%;
   padding: 5px;
   font-weight: bold;
-  line-height: 20px;
 }
 
 #theclue .label {
@@ -63,17 +65,30 @@
 }
 
 #puzzlegrid {
+  /* Cells are 30px, shrinking as needed so the grid spans the
+     screen on small devices. 100cqw is #puzzle's content box
+     (padding already excluded); the 1px is our border-left. Sizes
+     within cells are given in em, keyed off the font-size set
+     here, so they scale with the cells. */
+  --cell-size: min(30px, calc((100cqw - 1px) / var(--puzzle-cols)));
   display: inline-grid;
   width: fit-content;
-  grid-template-columns: repeat(var(--puzzle-cols), 30px);
-  grid-template-rows: repeat(var(--puzzle-rows), 30px);
+  grid-template-columns: repeat(var(--puzzle-cols), var(--cell-size));
+  grid-template-rows: repeat(var(--puzzle-rows), var(--cell-size));
+  font-size: var(--cell-size);
   border-left: 1px solid black;
   border-top: 1px solid black;
 }
 
 #puzzlegrid .cell {
-  width: 30px;
-  height: 30px;
+  /* Containing block for the absolute .numberlabel: without a
+     positioned ancestor it would anchor to the initial containing
+     block, outside the mobile scroll container, and stay behind
+     when the grid scrolls. */
+  position: relative;
+  box-sizing: border-box;
+  width: var(--cell-size);
+  height: var(--cell-size);
   border-right: 1px solid black;
   border-bottom: 1px solid black;
   padding: 0px;
@@ -86,13 +101,15 @@
   padding: 0;
   border: none;
   position: fixed;
+  left: -10px;
+  top: -10px;
   z-index: -1;
 }
 
 #puzzlegrid .cell.rebus .fill {
-  font-size: 15px;
+  font-size: 0.5em;
   left: 0px;
-  top: 4px;
+  top: 0.267em;
 }
 
 #puzzlegrid .cell input.fill {
@@ -110,16 +127,16 @@
 #puzzlegrid .cell .fill {
   font-family: sans-serif;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 0.667em;
   position: relative;
-  top: 2px;
+  top: 0.1em;
 }
 
 #puzzlegrid .cell .numberlabel {
   position: absolute;
-  width: 15px;
-  height: 15px;
-  font-size: 10px;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.333em;
   font-family: serif;
 }
 
@@ -176,7 +193,7 @@
 
 #puzzlegrid .cell.circled .circle {
   border: 1px solid #000;
-  border-radius: 15px;
+  border-radius: 50%;
   width: 100%;
   height: 100%;
 }
@@ -271,4 +288,46 @@
 .sidebar-link {
   font-size: 80%;
   display: block;
+}
+
+@media (max-width: 768px) {
+  #theclue {
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    background-color: white;
+    border-top: 2px solid black;
+    padding: 10px;
+    margin: 0;
+    z-index: 5;
+  }
+
+  /* While the clue is pinned, scroll inside .App instead of the
+     document. Scrolling the document makes mobile browsers show and
+     hide the URL bar, resizing the viewport the fixed clue is
+     anchored to; the clue then jitters (and lets the puzzle peek
+     through underneath) while the browser re-anchors it. With the
+     document pinned, the browser chrome never moves. Scrolling .App
+     (rather than #puzzle) puts the nav bar inside the scroller, so
+     it scrolls away and frees its space while solving. */
+  body:has(#theclue) {
+    height: 100dvh;
+    overflow: hidden;
+  }
+
+  body:has(#theclue) #root {
+    height: 100%;
+  }
+
+  body:has(#theclue) .App {
+    height: 100%;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Room to scroll the bottom of the page up past the pinned clue. */
+  #controls {
+    padding-bottom: 100px;
+  }
 }
