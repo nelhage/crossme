@@ -81,6 +81,11 @@
 }
 
 #puzzlegrid .cell {
+  /* Containing block for the absolute .numberlabel: without a
+     positioned ancestor it would anchor to the initial containing
+     block, outside the mobile scroll container, and stay behind
+     when the grid scrolls. */
+  position: relative;
   box-sizing: border-box;
   width: var(--cell-size);
   height: var(--cell-size);
