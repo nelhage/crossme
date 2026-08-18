@@ -1,6 +1,8 @@
 # User accounts via Google auth — implementation plan
 
-Status: proposed, not yet implemented.
+Status: implemented (with sliding session renewal, throttled to one
+write per day). See ARCHITECTURE.md's "Users and authentication" for the
+as-built summary.
 
 ## Goals
 
