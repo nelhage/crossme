@@ -9,8 +9,10 @@ import (
 )
 
 var (
-	ErrNoSuchPuzzle = errors.New("no such puzzle")
-	ErrNoSuchGame   = errors.New("no such game")
+	ErrNoSuchPuzzle  = errors.New("no such puzzle")
+	ErrNoSuchGame    = errors.New("no such game")
+	ErrNoSuchUser    = errors.New("no such user")
+	ErrNoSuchSession = errors.New("no such session")
 )
 
 func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {

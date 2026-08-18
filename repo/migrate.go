@@ -68,6 +68,42 @@ CREATE TABLE puz_files (
 ALTER TABLE games ADD COLUMN completed_at text null;
 `,
 	},
+	{
+		// User accounts. A user is our own record; each external login
+		// (Google today, possibly others later) is an identity row
+		// pointing at a user. Sessions are durable so a server restart
+		// doesn't log everyone out, and store only a hash of the token
+		// so a copy of the database doesn't yield live sessions.
+		name: "user-accounts",
+		sql: `
+CREATE TABLE users (
+  proto blob not null,
+  id text unique not null primary key,
+  created text not null
+) strict;
+
+CREATE TABLE identities (
+  proto blob not null,
+  provider text not null,
+  subject text not null,
+  user_id text not null references users(id),
+  primary key (provider, subject)
+) strict;
+
+CREATE INDEX identities__user_id ON identities (user_id);
+
+CREATE TABLE sessions (
+  token_hash text unique not null primary key,
+  user_id text not null references users(id),
+  created text not null,
+  expires text not null
+) strict;
+
+CREATE INDEX sessions__user_id ON sessions (user_id);
+
+ALTER TABLE games ADD COLUMN owner_id text null;
+`,
+	},
 }
 
 // CurrentSchemaVersion is the schema version this build expects. A database

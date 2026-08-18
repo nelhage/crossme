@@ -31,7 +31,10 @@ type Game struct {
 	// Set (by the server) when the fill was verified complete; unset
 	// for games still in progress. `fill.complete` is the CRDT-visible
 	// flag; this records when the game froze.
-	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
+	CompletedAt *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
+	// The User who created this game; empty for games created
+	// anonymously.
+	OwnerId       string `protobuf:"bytes,6,opt,name=owner_id,json=ownerId,proto3" json:"owner_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -101,19 +104,27 @@ func (x *Game) GetCompletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *Game) GetOwnerId() string {
+	if x != nil {
+		return x.OwnerId
+	}
+	return ""
+}
+
 var File_game_proto protoreflect.FileDescriptor
 
 const file_game_proto_rawDesc = "" +
 	"\n" +
 	"\n" +
 	"game.proto\x12\acrossme\x1a\n" +
-	"fill.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xcb\x01\n" +
+	"fill.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe6\x01\n" +
 	"\x04Game\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x1b\n" +
 	"\tpuzzle_id\x18\x02 \x01(\tR\bpuzzleId\x12!\n" +
 	"\x04fill\x18\x03 \x01(\v2\r.crossme.FillR\x04fill\x124\n" +
 	"\acreated\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\acreated\x12=\n" +
-	"\fcompleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\vcompletedAtB\x14Z\x12crossme.app/src/pbb\x06proto3"
+	"\fcompleted_at\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\vcompletedAt\x12\x19\n" +
+	"\bowner_id\x18\x06 \x01(\tR\aownerIdB\x14Z\x12crossme.app/src/pbb\x06proto3"
 
 var (
 	file_game_proto_rawDescOnce sync.Once

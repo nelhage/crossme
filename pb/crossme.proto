@@ -4,6 +4,7 @@ package crossme;
 import "puzzle.proto";
 import "fill.proto";
 import "game.proto";
+import "user.proto";
 
 option go_package = "crossme.app/src/pb";
 
@@ -67,6 +68,15 @@ message UpdateFillArgs {
 message UpdateFillResponse {
 }
 
+message GetSelfArgs {
+}
+
+message GetSelfResponse {
+    // Unset if the request carried no (valid) session: the caller is
+    // anonymous.
+    crossme.User user = 1;
+}
+
 service CrossMe {
     rpc GetPuzzleIndex(GetPuzzleIndexArgs) returns (GetPuzzleIndexResponse);
     rpc GetPuzzleById(GetPuzzleByIdArgs) returns (GetPuzzleResponse);
@@ -78,4 +88,8 @@ service CrossMe {
     rpc UpdateFill(UpdateFillArgs) returns (UpdateFillResponse);
 
     rpc Subscribe(SubscribeArgs) returns (stream SubscribeEvent);
+
+    // Who am I? Resolves the caller's session cookie; the session
+    // itself is managed by the HTTP endpoints under /api/auth/.
+    rpc GetSelf(GetSelfArgs) returns (GetSelfResponse);
 }

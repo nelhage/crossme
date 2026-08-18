@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"connectrpc.com/connect"
+	"crossme.app/src/auth"
 	"crossme.app/src/crdt"
 	"crossme.app/src/pb"
 	"crossme.app/src/pb/pbconnect"
@@ -84,7 +85,9 @@ func (s *Server) GetPuzzleById(ctx context.Context, req *connect.Request[pb.GetP
 }
 
 func (s *Server) NewGame(ctx context.Context, req *connect.Request[pb.NewGameArgs]) (*connect.Response[pb.NewGameResponse], error) {
-	game, err := s.repo.NewGame(req.Msg.PuzzleId)
+	// Anonymous creators leave the owner empty; nothing requires being
+	// signed in.
+	game, err := s.repo.NewGame(req.Msg.PuzzleId, auth.UserFromContext(ctx).GetId())
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
@@ -124,6 +127,15 @@ func (s *Server) UploadPuzzle(ctx context.Context, req *connect.Request[pb.Uploa
 	}
 	return connect.NewResponse(&pb.UploadPuzzleResponse{
 		Puzzle: proto,
+	}), nil
+}
+
+// GetSelf reports who the caller is, per the session middleware; an
+// anonymous caller gets an empty response. The session itself is created
+// and destroyed by the HTTP endpoints in the auth package.
+func (s *Server) GetSelf(ctx context.Context, req *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error) {
+	return connect.NewResponse(&pb.GetSelfResponse{
+		User: auth.UserFromContext(ctx),
 	}), nil
 }
 

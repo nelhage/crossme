@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"connectrpc.com/connect"
+	"crossme.app/src/auth"
 	"crossme.app/src/pb"
 	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
@@ -38,7 +39,11 @@ func makeServer(t *testing.T) *TestServer {
 	}
 
 	mux := http.NewServeMux()
-	mux.Handle(pbconnect.NewCrossMeHandler(&Server{repo: srv.repo}))
+	path, handler := pbconnect.NewCrossMeHandler(&Server{repo: srv.repo})
+	// The session middleware runs in tests just as in cmd/crossme, so
+	// RPCs see the signed-in user when a request carries a session
+	// cookie.
+	mux.Handle(path, auth.NewHandler(srv.repo).Middleware(handler))
 	srv.http = httptest.NewServer(mux)
 
 	return &srv

@@ -47,6 +47,8 @@ const (
 	CrossMeUpdateFillProcedure = "/crossme.CrossMe/UpdateFill"
 	// CrossMeSubscribeProcedure is the fully-qualified name of the CrossMe's Subscribe RPC.
 	CrossMeSubscribeProcedure = "/crossme.CrossMe/Subscribe"
+	// CrossMeGetSelfProcedure is the fully-qualified name of the CrossMe's GetSelf RPC.
+	CrossMeGetSelfProcedure = "/crossme.CrossMe/GetSelf"
 )
 
 // CrossMeClient is a client for the crossme.CrossMe service.
@@ -58,6 +60,9 @@ type CrossMeClient interface {
 	UploadPuzzle(context.Context, *connect.Request[pb.UploadPuzzleArgs]) (*connect.Response[pb.UploadPuzzleResponse], error)
 	UpdateFill(context.Context, *connect.Request[pb.UpdateFillArgs]) (*connect.Response[pb.UpdateFillResponse], error)
 	Subscribe(context.Context, *connect.Request[pb.SubscribeArgs]) (*connect.ServerStreamForClient[pb.SubscribeEvent], error)
+	// Who am I? Resolves the caller's session cookie; the session
+	// itself is managed by the HTTP endpoints under /api/auth/.
+	GetSelf(context.Context, *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error)
 }
 
 // NewCrossMeClient constructs a client for the crossme.CrossMe service. By default, it uses the
@@ -113,6 +118,12 @@ func NewCrossMeClient(httpClient connect.HTTPClient, baseURL string, opts ...con
 			connect.WithSchema(crossMeMethods.ByName("Subscribe")),
 			connect.WithClientOptions(opts...),
 		),
+		getSelf: connect.NewClient[pb.GetSelfArgs, pb.GetSelfResponse](
+			httpClient,
+			baseURL+CrossMeGetSelfProcedure,
+			connect.WithSchema(crossMeMethods.ByName("GetSelf")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -125,6 +136,7 @@ type crossMeClient struct {
 	uploadPuzzle   *connect.Client[pb.UploadPuzzleArgs, pb.UploadPuzzleResponse]
 	updateFill     *connect.Client[pb.UpdateFillArgs, pb.UpdateFillResponse]
 	subscribe      *connect.Client[pb.SubscribeArgs, pb.SubscribeEvent]
+	getSelf        *connect.Client[pb.GetSelfArgs, pb.GetSelfResponse]
 }
 
 // GetPuzzleIndex calls crossme.CrossMe.GetPuzzleIndex.
@@ -162,6 +174,11 @@ func (c *crossMeClient) Subscribe(ctx context.Context, req *connect.Request[pb.S
 	return c.subscribe.CallServerStream(ctx, req)
 }
 
+// GetSelf calls crossme.CrossMe.GetSelf.
+func (c *crossMeClient) GetSelf(ctx context.Context, req *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error) {
+	return c.getSelf.CallUnary(ctx, req)
+}
+
 // CrossMeHandler is an implementation of the crossme.CrossMe service.
 type CrossMeHandler interface {
 	GetPuzzleIndex(context.Context, *connect.Request[pb.GetPuzzleIndexArgs]) (*connect.Response[pb.GetPuzzleIndexResponse], error)
@@ -171,6 +188,9 @@ type CrossMeHandler interface {
 	UploadPuzzle(context.Context, *connect.Request[pb.UploadPuzzleArgs]) (*connect.Response[pb.UploadPuzzleResponse], error)
 	UpdateFill(context.Context, *connect.Request[pb.UpdateFillArgs]) (*connect.Response[pb.UpdateFillResponse], error)
 	Subscribe(context.Context, *connect.Request[pb.SubscribeArgs], *connect.ServerStream[pb.SubscribeEvent]) error
+	// Who am I? Resolves the caller's session cookie; the session
+	// itself is managed by the HTTP endpoints under /api/auth/.
+	GetSelf(context.Context, *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error)
 }
 
 // NewCrossMeHandler builds an HTTP handler from the service implementation. It returns the path on
@@ -222,6 +242,12 @@ func NewCrossMeHandler(svc CrossMeHandler, opts ...connect.HandlerOption) (strin
 		connect.WithSchema(crossMeMethods.ByName("Subscribe")),
 		connect.WithHandlerOptions(opts...),
 	)
+	crossMeGetSelfHandler := connect.NewUnaryHandler(
+		CrossMeGetSelfProcedure,
+		svc.GetSelf,
+		connect.WithSchema(crossMeMethods.ByName("GetSelf")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/crossme.CrossMe/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CrossMeGetPuzzleIndexProcedure:
@@ -238,6 +264,8 @@ func NewCrossMeHandler(svc CrossMeHandler, opts ...connect.HandlerOption) (strin
 			crossMeUpdateFillHandler.ServeHTTP(w, r)
 		case CrossMeSubscribeProcedure:
 			crossMeSubscribeHandler.ServeHTTP(w, r)
+		case CrossMeGetSelfProcedure:
+			crossMeGetSelfHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -273,4 +301,8 @@ func (UnimplementedCrossMeHandler) UpdateFill(context.Context, *connect.Request[
 
 func (UnimplementedCrossMeHandler) Subscribe(context.Context, *connect.Request[pb.SubscribeArgs], *connect.ServerStream[pb.SubscribeEvent]) error {
 	return connect.NewError(connect.CodeUnimplemented, errors.New("crossme.CrossMe.Subscribe is not implemented"))
+}
+
+func (UnimplementedCrossMeHandler) GetSelf(context.Context, *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crossme.CrossMe.GetSelf is not implemented"))
 }

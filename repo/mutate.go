@@ -72,11 +72,14 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 	return puz.Metadata.Id, tx.Commit()
 }
 
-func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
+// NewGame creates a game. `owner_id` is the creating user's id, or empty
+// for a game created anonymously (stored as NULL).
+func (r *Repository) NewGame(puzzle_id string, owner_id string) (*pb.Game, error) {
 	now := time.Now()
 	game := pb.Game{
 		Id:       NewId(),
 		PuzzleId: puzzle_id,
+		OwnerId:  owner_id,
 		Fill:     &pb.Fill{},
 		Created: &timestamp.Timestamp{
 			Seconds: now.Unix(),
@@ -101,6 +104,7 @@ func (r *Repository) NewGame(puzzle_id string) (*pb.Game, error) {
 			Id:       game.Id,
 			PuzzleId: puzzle_id,
 			Created:  formatTimestamp(game.Created),
+			OwnerId:  sql.NullString{Valid: owner_id != "", String: owner_id},
 		}); err != nil {
 		return nil, err
 	}

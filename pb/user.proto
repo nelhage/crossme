@@ -1,0 +1,28 @@
+syntax = "proto3";
+package crossme;
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "crossme.app/src/pb";
+
+message User {
+    // Our own id (repo.NewId()), not any provider's. Providers' ids live
+    // on the Identity that points at this user.
+    string id = 1;
+    string email = 2;
+    string display_name = 3;
+    string avatar_url = 4;
+    google.protobuf.Timestamp created = 5;
+}
+
+// One external login bound to a User. A separate message (rather than
+// fields on User) so a user can gain additional providers later.
+message Identity {
+    // e.g. "google"
+    string provider = 1;
+    // The provider's stable id for this user (OIDC `sub`). Never an
+    // email: providers recycle those.
+    string subject = 2;
+    string user_id = 3;
+    google.protobuf.Timestamp created = 4;
+}

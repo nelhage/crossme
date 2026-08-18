@@ -47,13 +47,19 @@ func TestMigrateFromScratch(t *testing.T) {
 	if v := repo.Config.SchemaVersion; v != CurrentSchemaVersion {
 		t.Errorf("schema version %d, want %d", v, CurrentSchemaVersion)
 	}
-	for _, table := range []string{"config", "puzzles", "games", "puz_files"} {
+	for _, table := range []string{
+		"config", "puzzles", "games", "puz_files",
+		"users", "identities", "sessions",
+	} {
 		if len(tableColumns(t, repo, table)) == 0 {
 			t.Errorf("table %q is missing", table)
 		}
 	}
-	if cols := tableColumns(t, repo, "games"); !slices.Contains(cols, "completed_at") {
-		t.Errorf("games table lacks completed_at: %v", cols)
+	cols := tableColumns(t, repo, "games")
+	for _, col := range []string{"completed_at", "owner_id"} {
+		if !slices.Contains(cols, col) {
+			t.Errorf("games table lacks %s: %v", col, cols)
+		}
 	}
 }
 
@@ -73,9 +79,23 @@ func TestMigrateForward(t *testing.T) {
 	if cols := tableColumns(t, old, "games"); slices.Contains(cols, "completed_at") {
 		t.Fatalf("v1 games table already has completed_at: %v", cols)
 	}
-	game, err := old.NewGame("some-puzzle")
+	// Insert a game the way a v1 build would have: the current NewGame
+	// writes columns (owner_id) that don't exist yet at v1.
+	game := &pb.Game{
+		Id:       NewId(),
+		PuzzleId: "some-puzzle",
+		Fill:     &pb.Fill{},
+		Created:  &timestamp.Timestamp{Seconds: time.Now().Unix()},
+	}
+	protobytes, err := proto.Marshal(game)
 	if err != nil {
-		t.Fatalf("NewGame: %v", err)
+		t.Fatalf("marshal: %v", err)
+	}
+	if _, err := old.db.Exec(
+		`INSERT INTO games (proto, id, puzzle_id, created) VALUES (?, ?, ?, ?)`,
+		protobytes, game.Id, game.PuzzleId, formatTimestamp(game.Created),
+	); err != nil {
+		t.Fatalf("insert v1 game: %v", err)
 	}
 	if err := old.Close(); err != nil {
 		t.Fatalf("close: %v", err)
@@ -102,7 +122,14 @@ func TestMigrateForward(t *testing.T) {
 		t.Errorf("game did not survive migration: got %v want %v", got, game)
 	}
 
-	// The new column is writable, and NULL for rows that predate it.
+	// The new columns are writable, and NULL for rows that predate them.
+	var owner *string
+	if err := repo.db.Get(&owner, "SELECT owner_id FROM games WHERE id = ?", game.Id); err != nil {
+		t.Fatalf("select owner_id: %v", err)
+	}
+	if owner != nil {
+		t.Errorf("owner_id = %q, want NULL", *owner)
+	}
 	var completed *string
 	if err := repo.db.Get(&completed, "SELECT completed_at FROM games WHERE id = ?", game.Id); err != nil {
 		t.Fatalf("select completed_at: %v", err)
