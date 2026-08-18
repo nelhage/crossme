@@ -14,6 +14,28 @@ The SQL schema is defined by an ordered list of migrations in `repo/migrate.go`;
 
 Durable state is committed to the SQL database. Transient state about current connections and live games lives in-memory in the server. If the server restarts, we assume clients will reconnect if necessary. The server is assumed to be a single instance of the Go server process; there is no support for running across multiple processes or nodes.
 
+## Users and authentication
+
+Accounts are optional: every feature works anonymously, and signing in
+only attaches durable identity (e.g. game ownership) on top. There are no
+passwords; identity comes from external OIDC providers (currently
+Google), via the server-side authorization-code flow implemented in the
+`auth` package. The browser is redirected through
+`/api/auth/{provider}/login` and `.../callback` — plain HTTP endpoints,
+not RPCs — and comes back with an HttpOnly session cookie.
+
+A `User` is our own record, keyed by our own id; each external login is
+an `Identity` row keyed by (provider, subject) pointing at a user, so a
+user can accumulate providers later. Users are matched only by that pair,
+never by email. Sessions are durable (in sqlite, hashed) so restarts
+don't log anyone out, and expire after 30 days of inactivity (a sliding
+expiry, renewed at most daily).
+
+HTTP middleware resolves the session cookie to a `User` on the request
+context; RPC handlers read it with `auth.UserFromContext`, where a nil
+user simply means an anonymous caller. The SPA learns who is signed in
+via the `GetSelf` RPC, since it cannot read the cookie itself.
+
 ## The "Game" CRDT
 
 A core feature of the application is simultaneous collaboration on a puzzle between multiple users.

@@ -17,4 +17,8 @@ message Game {
     // for games still in progress. `fill.complete` is the CRDT-visible
     // flag; this records when the game froze.
     google.protobuf.Timestamp completed_at = 5;
+
+    // The User who created this game; empty for games created
+    // anonymously.
+    string owner_id = 6;
 }

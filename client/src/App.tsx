@@ -13,6 +13,7 @@ import { createConnectTransport } from "@connectrpc/connect-web";
 import { CrossMe } from "./pb/crossme_pb";
 
 import { ClientContext } from "./rpc";
+import { UserProvider } from "./user_provider";
 import { PreviewContainer } from "./components/preview_container";
 import { GameContainer } from "./components/game_container";
 import { HomePage } from "./components/home_page";
@@ -57,7 +58,9 @@ const App = () => {
   );
   return (
     <ClientContext value={client}>
-      <RouterProvider router={router} />
+      <UserProvider>
+        <RouterProvider router={router} />
+      </UserProvider>
     </ClientContext>
   );
 };

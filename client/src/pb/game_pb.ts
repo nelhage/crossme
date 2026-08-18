@@ -14,7 +14,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file game.proto.
  */
 export const file_game: GenFile = /*@__PURE__*/
-  fileDesc("CgpnYW1lLnByb3RvEgdjcm9zc21lIqEBCgRHYW1lEgoKAmlkGAEgASgJEhEKCXB1enpsZV9pZBgCIAEoCRIbCgRmaWxsGAMgASgLMg0uY3Jvc3NtZS5GaWxsEisKB2NyZWF0ZWQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_fill, file_google_protobuf_timestamp]);
+  fileDesc("CgpnYW1lLnByb3RvEgdjcm9zc21lIrMBCgRHYW1lEgoKAmlkGAEgASgJEhEKCXB1enpsZV9pZBgCIAEoCRIbCgRmaWxsGAMgASgLMg0uY3Jvc3NtZS5GaWxsEisKB2NyZWF0ZWQYBCABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASEAoIb3duZXJfaWQYBiABKAlCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_fill, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message crossme.Game
@@ -48,6 +48,14 @@ export type Game = Message<"crossme.Game"> & {
    * @generated from field: google.protobuf.Timestamp completed_at = 5;
    */
   completedAt?: Timestamp | undefined;
+
+  /**
+   * The User who created this game; empty for games created
+   * anonymously.
+   *
+   * @generated from field: string owner_id = 6;
+   */
+  ownerId: string;
 };
 
 /**

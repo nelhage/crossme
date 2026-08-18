@@ -10,13 +10,15 @@ import type { Fill } from "./fill_pb";
 import { file_fill } from "./fill_pb";
 import type { Game } from "./game_pb";
 import { file_game } from "./game_pb";
+import type { User } from "./user_pb";
+import { file_user } from "./user_pb";
 import type { Message } from "@bufbuild/protobuf";
 
 /**
  * Describes the file crossme.proto.
  */
 export const file_crossme: GenFile = /*@__PURE__*/
-  fileDesc("Cg1jcm9zc21lLnByb3RvEgdjcm9zc21lIhQKEkdldFB1enpsZUluZGV4QXJncyI/ChZHZXRQdXp6bGVJbmRleFJlc3BvbnNlEiUKB3B1enpsZXMYASADKAsyFC5jcm9zc21lLlB1enpsZUluZGV4Ih8KEUdldFB1enpsZUJ5SWRBcmdzEgoKAmlkGAEgASgJIjQKEUdldFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIiAKC05ld0dhbWVBcmdzEhEKCXB1enpsZV9pZBgBIAEoCSIuCg9OZXdHYW1lUmVzcG9uc2USGwoEZ2FtZRgBIAEoCzINLmNyb3NzbWUuR2FtZSIdCg9HZXRHYW1lQnlJZEFyZ3MSCgoCaWQYASABKAkiTwoPR2V0R2FtZVJlc3BvbnNlEhsKBGdhbWUYASABKAsyDS5jcm9zc21lLkdhbWUSHwoGcHV6emxlGAIgASgLMg8uY3Jvc3NtZS5QdXp6bGUiMgoQVXBsb2FkUHV6emxlQXJncxIQCghmaWxlbmFtZRgBIAEoCRIMCgRkYXRhGAIgASgMIjcKFFVwbG9hZFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIjEKDVN1YnNjcmliZUFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJIi0KDlN1YnNjcmliZUV2ZW50EhsKBGZpbGwYASABKAsyDS5jcm9zc21lLkZpbGwiTwoOVXBkYXRlRmlsbEFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJEhsKBGZpbGwYAyABKAsyDS5jcm9zc21lLkZpbGwiFAoSVXBkYXRlRmlsbFJlc3BvbnNlMu4DCgdDcm9zc01lEk4KDkdldFB1enpsZUluZGV4EhsuY3Jvc3NtZS5HZXRQdXp6bGVJbmRleEFyZ3MaHy5jcm9zc21lLkdldFB1enpsZUluZGV4UmVzcG9uc2USRwoNR2V0UHV6emxlQnlJZBIaLmNyb3NzbWUuR2V0UHV6emxlQnlJZEFyZ3MaGi5jcm9zc21lLkdldFB1enpsZVJlc3BvbnNlEjkKB05ld0dhbWUSFC5jcm9zc21lLk5ld0dhbWVBcmdzGhguY3Jvc3NtZS5OZXdHYW1lUmVzcG9uc2USQQoLR2V0R2FtZUJ5SWQSGC5jcm9zc21lLkdldEdhbWVCeUlkQXJncxoYLmNyb3NzbWUuR2V0R2FtZVJlc3BvbnNlEkgKDFVwbG9hZFB1enpsZRIZLmNyb3NzbWUuVXBsb2FkUHV6emxlQXJncxodLmNyb3NzbWUuVXBsb2FkUHV6emxlUmVzcG9uc2USQgoKVXBkYXRlRmlsbBIXLmNyb3NzbWUuVXBkYXRlRmlsbEFyZ3MaGy5jcm9zc21lLlVwZGF0ZUZpbGxSZXNwb25zZRI+CglTdWJzY3JpYmUSFi5jcm9zc21lLlN1YnNjcmliZUFyZ3MaFy5jcm9zc21lLlN1YnNjcmliZUV2ZW50MAFCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_puzzle, file_fill, file_game]);
+  fileDesc("Cg1jcm9zc21lLnByb3RvEgdjcm9zc21lIhQKEkdldFB1enpsZUluZGV4QXJncyI/ChZHZXRQdXp6bGVJbmRleFJlc3BvbnNlEiUKB3B1enpsZXMYASADKAsyFC5jcm9zc21lLlB1enpsZUluZGV4Ih8KEUdldFB1enpsZUJ5SWRBcmdzEgoKAmlkGAEgASgJIjQKEUdldFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIiAKC05ld0dhbWVBcmdzEhEKCXB1enpsZV9pZBgBIAEoCSIuCg9OZXdHYW1lUmVzcG9uc2USGwoEZ2FtZRgBIAEoCzINLmNyb3NzbWUuR2FtZSIdCg9HZXRHYW1lQnlJZEFyZ3MSCgoCaWQYASABKAkiTwoPR2V0R2FtZVJlc3BvbnNlEhsKBGdhbWUYASABKAsyDS5jcm9zc21lLkdhbWUSHwoGcHV6emxlGAIgASgLMg8uY3Jvc3NtZS5QdXp6bGUiMgoQVXBsb2FkUHV6emxlQXJncxIQCghmaWxlbmFtZRgBIAEoCRIMCgRkYXRhGAIgASgMIjcKFFVwbG9hZFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIjEKDVN1YnNjcmliZUFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJIi0KDlN1YnNjcmliZUV2ZW50EhsKBGZpbGwYASABKAsyDS5jcm9zc21lLkZpbGwiTwoOVXBkYXRlRmlsbEFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJEhsKBGZpbGwYAyABKAsyDS5jcm9zc21lLkZpbGwiFAoSVXBkYXRlRmlsbFJlc3BvbnNlIg0KC0dldFNlbGZBcmdzIi4KD0dldFNlbGZSZXNwb25zZRIbCgR1c2VyGAEgASgLMg0uY3Jvc3NtZS5Vc2VyMqkECgdDcm9zc01lEk4KDkdldFB1enpsZUluZGV4EhsuY3Jvc3NtZS5HZXRQdXp6bGVJbmRleEFyZ3MaHy5jcm9zc21lLkdldFB1enpsZUluZGV4UmVzcG9uc2USRwoNR2V0UHV6emxlQnlJZBIaLmNyb3NzbWUuR2V0UHV6emxlQnlJZEFyZ3MaGi5jcm9zc21lLkdldFB1enpsZVJlc3BvbnNlEjkKB05ld0dhbWUSFC5jcm9zc21lLk5ld0dhbWVBcmdzGhguY3Jvc3NtZS5OZXdHYW1lUmVzcG9uc2USQQoLR2V0R2FtZUJ5SWQSGC5jcm9zc21lLkdldEdhbWVCeUlkQXJncxoYLmNyb3NzbWUuR2V0R2FtZVJlc3BvbnNlEkgKDFVwbG9hZFB1enpsZRIZLmNyb3NzbWUuVXBsb2FkUHV6emxlQXJncxodLmNyb3NzbWUuVXBsb2FkUHV6emxlUmVzcG9uc2USQgoKVXBkYXRlRmlsbBIXLmNyb3NzbWUuVXBkYXRlRmlsbEFyZ3MaGy5jcm9zc21lLlVwZGF0ZUZpbGxSZXNwb25zZRI+CglTdWJzY3JpYmUSFi5jcm9zc21lLlN1YnNjcmliZUFyZ3MaFy5jcm9zc21lLlN1YnNjcmliZUV2ZW50MAESOQoHR2V0U2VsZhIULmNyb3NzbWUuR2V0U2VsZkFyZ3MaGC5jcm9zc21lLkdldFNlbGZSZXNwb25zZUIUWhJjcm9zc21lLmFwcC9zcmMvcGJiBnByb3RvMw", [file_puzzle, file_fill, file_game, file_user]);
 
 /**
  * @generated from message crossme.GetPuzzleIndexArgs
@@ -274,6 +276,39 @@ export const UpdateFillResponseSchema: GenMessage<UpdateFillResponse> = /*@__PUR
   messageDesc(file_crossme, 13);
 
 /**
+ * @generated from message crossme.GetSelfArgs
+ */
+export type GetSelfArgs = Message<"crossme.GetSelfArgs"> & {
+};
+
+/**
+ * Describes the message crossme.GetSelfArgs.
+ * Use `create(GetSelfArgsSchema)` to create a new message.
+ */
+export const GetSelfArgsSchema: GenMessage<GetSelfArgs> = /*@__PURE__*/
+  messageDesc(file_crossme, 14);
+
+/**
+ * @generated from message crossme.GetSelfResponse
+ */
+export type GetSelfResponse = Message<"crossme.GetSelfResponse"> & {
+  /**
+   * Unset if the request carried no (valid) session: the caller is
+   * anonymous.
+   *
+   * @generated from field: crossme.User user = 1;
+   */
+  user?: User | undefined;
+};
+
+/**
+ * Describes the message crossme.GetSelfResponse.
+ * Use `create(GetSelfResponseSchema)` to create a new message.
+ */
+export const GetSelfResponseSchema: GenMessage<GetSelfResponse> = /*@__PURE__*/
+  messageDesc(file_crossme, 15);
+
+/**
  * @generated from service crossme.CrossMe
  */
 export const CrossMe: GenService<{
@@ -332,6 +367,17 @@ export const CrossMe: GenService<{
     methodKind: "server_streaming";
     input: typeof SubscribeArgsSchema;
     output: typeof SubscribeEventSchema;
+  },
+  /**
+   * Who am I? Resolves the caller's session cookie; the session
+   * itself is managed by the HTTP endpoints under /api/auth/.
+   *
+   * @generated from rpc crossme.CrossMe.GetSelf
+   */
+  getSelf: {
+    methodKind: "unary";
+    input: typeof GetSelfArgsSchema;
+    output: typeof GetSelfResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_crossme, 0);

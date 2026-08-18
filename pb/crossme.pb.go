@@ -661,13 +661,96 @@ func (*UpdateFillResponse) Descriptor() ([]byte, []int) {
 	return file_crossme_proto_rawDescGZIP(), []int{13}
 }
 
+type GetSelfArgs struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSelfArgs) Reset() {
+	*x = GetSelfArgs{}
+	mi := &file_crossme_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSelfArgs) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSelfArgs) ProtoMessage() {}
+
+func (x *GetSelfArgs) ProtoReflect() protoreflect.Message {
+	mi := &file_crossme_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSelfArgs.ProtoReflect.Descriptor instead.
+func (*GetSelfArgs) Descriptor() ([]byte, []int) {
+	return file_crossme_proto_rawDescGZIP(), []int{14}
+}
+
+type GetSelfResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Unset if the request carried no (valid) session: the caller is
+	// anonymous.
+	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetSelfResponse) Reset() {
+	*x = GetSelfResponse{}
+	mi := &file_crossme_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetSelfResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetSelfResponse) ProtoMessage() {}
+
+func (x *GetSelfResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_crossme_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetSelfResponse.ProtoReflect.Descriptor instead.
+func (*GetSelfResponse) Descriptor() ([]byte, []int) {
+	return file_crossme_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GetSelfResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_crossme_proto protoreflect.FileDescriptor
 
 const file_crossme_proto_rawDesc = "" +
 	"\n" +
 	"\rcrossme.proto\x12\acrossme\x1a\fpuzzle.proto\x1a\n" +
 	"fill.proto\x1a\n" +
-	"game.proto\"\x14\n" +
+	"game.proto\x1a\n" +
+	"user.proto\"\x14\n" +
 	"\x12GetPuzzleIndexArgs\"H\n" +
 	"\x16GetPuzzleIndexResponse\x12.\n" +
 	"\apuzzles\x18\x01 \x03(\v2\x14.crossme.PuzzleIndexR\apuzzles\"#\n" +
@@ -698,7 +781,10 @@ const file_crossme_proto_rawDesc = "" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12\x17\n" +
 	"\anode_id\x18\x02 \x01(\tR\x06nodeId\x12!\n" +
 	"\x04fill\x18\x03 \x01(\v2\r.crossme.FillR\x04fill\"\x14\n" +
-	"\x12UpdateFillResponse2\xee\x03\n" +
+	"\x12UpdateFillResponse\"\r\n" +
+	"\vGetSelfArgs\"4\n" +
+	"\x0fGetSelfResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.crossme.UserR\x04user2\xa9\x04\n" +
 	"\aCrossMe\x12N\n" +
 	"\x0eGetPuzzleIndex\x12\x1b.crossme.GetPuzzleIndexArgs\x1a\x1f.crossme.GetPuzzleIndexResponse\x12G\n" +
 	"\rGetPuzzleById\x12\x1a.crossme.GetPuzzleByIdArgs\x1a\x1a.crossme.GetPuzzleResponse\x129\n" +
@@ -707,7 +793,8 @@ const file_crossme_proto_rawDesc = "" +
 	"\fUploadPuzzle\x12\x19.crossme.UploadPuzzleArgs\x1a\x1d.crossme.UploadPuzzleResponse\x12B\n" +
 	"\n" +
 	"UpdateFill\x12\x17.crossme.UpdateFillArgs\x1a\x1b.crossme.UpdateFillResponse\x12>\n" +
-	"\tSubscribe\x12\x16.crossme.SubscribeArgs\x1a\x17.crossme.SubscribeEvent0\x01B\x14Z\x12crossme.app/src/pbb\x06proto3"
+	"\tSubscribe\x12\x16.crossme.SubscribeArgs\x1a\x17.crossme.SubscribeEvent0\x01\x129\n" +
+	"\aGetSelf\x12\x14.crossme.GetSelfArgs\x1a\x18.crossme.GetSelfResponseB\x14Z\x12crossme.app/src/pbb\x06proto3"
 
 var (
 	file_crossme_proto_rawDescOnce sync.Once
@@ -721,7 +808,7 @@ func file_crossme_proto_rawDescGZIP() []byte {
 	return file_crossme_proto_rawDescData
 }
 
-var file_crossme_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_crossme_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_crossme_proto_goTypes = []any{
 	(*GetPuzzleIndexArgs)(nil),     // 0: crossme.GetPuzzleIndexArgs
 	(*GetPuzzleIndexResponse)(nil), // 1: crossme.GetPuzzleIndexResponse
@@ -737,39 +824,45 @@ var file_crossme_proto_goTypes = []any{
 	(*SubscribeEvent)(nil),         // 11: crossme.SubscribeEvent
 	(*UpdateFillArgs)(nil),         // 12: crossme.UpdateFillArgs
 	(*UpdateFillResponse)(nil),     // 13: crossme.UpdateFillResponse
-	(*PuzzleIndex)(nil),            // 14: crossme.PuzzleIndex
-	(*Puzzle)(nil),                 // 15: crossme.Puzzle
-	(*Game)(nil),                   // 16: crossme.Game
-	(*Fill)(nil),                   // 17: crossme.Fill
+	(*GetSelfArgs)(nil),            // 14: crossme.GetSelfArgs
+	(*GetSelfResponse)(nil),        // 15: crossme.GetSelfResponse
+	(*PuzzleIndex)(nil),            // 16: crossme.PuzzleIndex
+	(*Puzzle)(nil),                 // 17: crossme.Puzzle
+	(*Game)(nil),                   // 18: crossme.Game
+	(*Fill)(nil),                   // 19: crossme.Fill
+	(*User)(nil),                   // 20: crossme.User
 }
 var file_crossme_proto_depIdxs = []int32{
-	14, // 0: crossme.GetPuzzleIndexResponse.puzzles:type_name -> crossme.PuzzleIndex
-	15, // 1: crossme.GetPuzzleResponse.puzzle:type_name -> crossme.Puzzle
-	16, // 2: crossme.NewGameResponse.game:type_name -> crossme.Game
-	16, // 3: crossme.GetGameResponse.game:type_name -> crossme.Game
-	15, // 4: crossme.GetGameResponse.puzzle:type_name -> crossme.Puzzle
-	15, // 5: crossme.UploadPuzzleResponse.puzzle:type_name -> crossme.Puzzle
-	17, // 6: crossme.SubscribeEvent.fill:type_name -> crossme.Fill
-	17, // 7: crossme.UpdateFillArgs.fill:type_name -> crossme.Fill
-	0,  // 8: crossme.CrossMe.GetPuzzleIndex:input_type -> crossme.GetPuzzleIndexArgs
-	2,  // 9: crossme.CrossMe.GetPuzzleById:input_type -> crossme.GetPuzzleByIdArgs
-	4,  // 10: crossme.CrossMe.NewGame:input_type -> crossme.NewGameArgs
-	6,  // 11: crossme.CrossMe.GetGameById:input_type -> crossme.GetGameByIdArgs
-	8,  // 12: crossme.CrossMe.UploadPuzzle:input_type -> crossme.UploadPuzzleArgs
-	12, // 13: crossme.CrossMe.UpdateFill:input_type -> crossme.UpdateFillArgs
-	10, // 14: crossme.CrossMe.Subscribe:input_type -> crossme.SubscribeArgs
-	1,  // 15: crossme.CrossMe.GetPuzzleIndex:output_type -> crossme.GetPuzzleIndexResponse
-	3,  // 16: crossme.CrossMe.GetPuzzleById:output_type -> crossme.GetPuzzleResponse
-	5,  // 17: crossme.CrossMe.NewGame:output_type -> crossme.NewGameResponse
-	7,  // 18: crossme.CrossMe.GetGameById:output_type -> crossme.GetGameResponse
-	9,  // 19: crossme.CrossMe.UploadPuzzle:output_type -> crossme.UploadPuzzleResponse
-	13, // 20: crossme.CrossMe.UpdateFill:output_type -> crossme.UpdateFillResponse
-	11, // 21: crossme.CrossMe.Subscribe:output_type -> crossme.SubscribeEvent
-	15, // [15:22] is the sub-list for method output_type
-	8,  // [8:15] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	16, // 0: crossme.GetPuzzleIndexResponse.puzzles:type_name -> crossme.PuzzleIndex
+	17, // 1: crossme.GetPuzzleResponse.puzzle:type_name -> crossme.Puzzle
+	18, // 2: crossme.NewGameResponse.game:type_name -> crossme.Game
+	18, // 3: crossme.GetGameResponse.game:type_name -> crossme.Game
+	17, // 4: crossme.GetGameResponse.puzzle:type_name -> crossme.Puzzle
+	17, // 5: crossme.UploadPuzzleResponse.puzzle:type_name -> crossme.Puzzle
+	19, // 6: crossme.SubscribeEvent.fill:type_name -> crossme.Fill
+	19, // 7: crossme.UpdateFillArgs.fill:type_name -> crossme.Fill
+	20, // 8: crossme.GetSelfResponse.user:type_name -> crossme.User
+	0,  // 9: crossme.CrossMe.GetPuzzleIndex:input_type -> crossme.GetPuzzleIndexArgs
+	2,  // 10: crossme.CrossMe.GetPuzzleById:input_type -> crossme.GetPuzzleByIdArgs
+	4,  // 11: crossme.CrossMe.NewGame:input_type -> crossme.NewGameArgs
+	6,  // 12: crossme.CrossMe.GetGameById:input_type -> crossme.GetGameByIdArgs
+	8,  // 13: crossme.CrossMe.UploadPuzzle:input_type -> crossme.UploadPuzzleArgs
+	12, // 14: crossme.CrossMe.UpdateFill:input_type -> crossme.UpdateFillArgs
+	10, // 15: crossme.CrossMe.Subscribe:input_type -> crossme.SubscribeArgs
+	14, // 16: crossme.CrossMe.GetSelf:input_type -> crossme.GetSelfArgs
+	1,  // 17: crossme.CrossMe.GetPuzzleIndex:output_type -> crossme.GetPuzzleIndexResponse
+	3,  // 18: crossme.CrossMe.GetPuzzleById:output_type -> crossme.GetPuzzleResponse
+	5,  // 19: crossme.CrossMe.NewGame:output_type -> crossme.NewGameResponse
+	7,  // 20: crossme.CrossMe.GetGameById:output_type -> crossme.GetGameResponse
+	9,  // 21: crossme.CrossMe.UploadPuzzle:output_type -> crossme.UploadPuzzleResponse
+	13, // 22: crossme.CrossMe.UpdateFill:output_type -> crossme.UpdateFillResponse
+	11, // 23: crossme.CrossMe.Subscribe:output_type -> crossme.SubscribeEvent
+	15, // 24: crossme.CrossMe.GetSelf:output_type -> crossme.GetSelfResponse
+	17, // [17:25] is the sub-list for method output_type
+	9,  // [9:17] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_crossme_proto_init() }
@@ -780,13 +873,14 @@ func file_crossme_proto_init() {
 	file_puzzle_proto_init()
 	file_fill_proto_init()
 	file_game_proto_init()
+	file_user_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_crossme_proto_rawDesc), len(file_crossme_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   14,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

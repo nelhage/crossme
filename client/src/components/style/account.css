@@ -1,0 +1,11 @@
+.account-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+}
+
+.account-avatar {
+  width: 1.5em;
+  height: 1.5em;
+  border-radius: 50%;
+}

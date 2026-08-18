@@ -51,3 +51,14 @@ func formatTimestamp(proto *timestamp.Timestamp) string {
 	t := time.Unix(proto.Seconds, int64(proto.Nanos))
 	return t.Format(time.RFC3339)
 }
+
+// formatTime and parseTime store timestamps as RFC3339 pinned to UTC, so
+// that the stored strings compare (lexicographically, e.g. in SQL) the
+// same way the times do.
+func formatTime(t time.Time) string {
+	return t.UTC().Format(time.RFC3339)
+}
+
+func parseTime(s string) (time.Time, error) {
+	return time.Parse(time.RFC3339, s)
+}
