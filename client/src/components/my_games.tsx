@@ -32,9 +32,10 @@ const MyGameRow = ({ game }: { game: MyGame }) => (
   </tr>
 );
 
-// The signed-in user's play history, as recorded by the server. This is
-// distinct from the "Recent Games" menu, which is purely browser-local:
-// this list follows the account across browsers, and has no length cap.
+// The signed-in user's full play history, as recorded by the server.
+// The "Recent Games" menu draws on the same history (merged with the
+// browser-local list), but only shows the most recent few; this page is
+// the complete, uncapped view.
 export const MyGames = () => {
   const client = useClient();
   const { user } = useUser();
