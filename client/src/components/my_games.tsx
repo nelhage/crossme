@@ -6,6 +6,7 @@ import { Link } from "react-router";
 import { timestampDate } from "@bufbuild/protobuf/wkt";
 
 import type { MyGame } from "../pb/crossme_pb";
+import { ensureSynced } from "../recent_games_sync";
 import { useClient } from "../rpc";
 import { useUser } from "../user";
 
@@ -50,19 +51,24 @@ export const MyGames = () => {
   const userId = user?.id;
   useEffect(() => {
     let cancelled = false;
-    client.getMyGames({}).then(
-      (resp) => {
-        if (!cancelled) {
-          setResult({ userId, games: resp.games });
+    // Fold this browser's pre-sign-in games into the account before
+    // fetching, so they show up on a first visit.
+    const synced = userId ? ensureSynced(client, userId) : Promise.resolve();
+    synced
+      .then(() => client.getMyGames({}))
+      .then(
+        (resp) => {
+          if (!cancelled) {
+            setResult({ userId, games: resp.games });
+          }
+        },
+        (err) => {
+          console.log("error loading games: ", err);
+          if (!cancelled) {
+            setResult({ userId, error: true });
+          }
         }
-      },
-      (err) => {
-        console.log("error loading games: ", err);
-        if (!cancelled) {
-          setResult({ userId, error: true });
-        }
-      }
-    );
+      );
     return () => {
       cancelled = true;
     };

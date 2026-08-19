@@ -20,7 +20,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file crossme.proto.
  */
 export const file_crossme: GenFile = /*@__PURE__*/
-  fileDesc("Cg1jcm9zc21lLnByb3RvEgdjcm9zc21lIhQKEkdldFB1enpsZUluZGV4QXJncyI/ChZHZXRQdXp6bGVJbmRleFJlc3BvbnNlEiUKB3B1enpsZXMYASADKAsyFC5jcm9zc21lLlB1enpsZUluZGV4Ih8KEUdldFB1enpsZUJ5SWRBcmdzEgoKAmlkGAEgASgJIjQKEUdldFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIiAKC05ld0dhbWVBcmdzEhEKCXB1enpsZV9pZBgBIAEoCSIuCg9OZXdHYW1lUmVzcG9uc2USGwoEZ2FtZRgBIAEoCzINLmNyb3NzbWUuR2FtZSIdCg9HZXRHYW1lQnlJZEFyZ3MSCgoCaWQYASABKAkiTwoPR2V0R2FtZVJlc3BvbnNlEhsKBGdhbWUYASABKAsyDS5jcm9zc21lLkdhbWUSHwoGcHV6emxlGAIgASgLMg8uY3Jvc3NtZS5QdXp6bGUiMgoQVXBsb2FkUHV6emxlQXJncxIQCghmaWxlbmFtZRgBIAEoCRIMCgRkYXRhGAIgASgMIjcKFFVwbG9hZFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIjEKDVN1YnNjcmliZUFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJIi0KDlN1YnNjcmliZUV2ZW50EhsKBGZpbGwYASABKAsyDS5jcm9zc21lLkZpbGwiTwoOVXBkYXRlRmlsbEFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJEhsKBGZpbGwYAyABKAsyDS5jcm9zc21lLkZpbGwiFAoSVXBkYXRlRmlsbFJlc3BvbnNlIhAKDkdldE15R2FtZXNBcmdzIuABCgZNeUdhbWUSDwoHZ2FtZV9pZBgBIAEoCRIRCglwdXp6bGVfaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDgoGYXV0aG9yGAQgASgJEjAKDGZpcnN0X3BsYXllZBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLwoLbGFzdF9wbGF5ZWQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNAoSR2V0TXlHYW1lc1Jlc3BvbnNlEh4KBWdhbWVzGAEgAygLMg8uY3Jvc3NtZS5NeUdhbWUiDQoLR2V0U2VsZkFyZ3MiLgoPR2V0U2VsZlJlc3BvbnNlEhsKBHVzZXIYASABKAsyDS5jcm9zc21lLlVzZXIy7QQKB0Nyb3NzTWUSTgoOR2V0UHV6emxlSW5kZXgSGy5jcm9zc21lLkdldFB1enpsZUluZGV4QXJncxofLmNyb3NzbWUuR2V0UHV6emxlSW5kZXhSZXNwb25zZRJHCg1HZXRQdXp6bGVCeUlkEhouY3Jvc3NtZS5HZXRQdXp6bGVCeUlkQXJncxoaLmNyb3NzbWUuR2V0UHV6emxlUmVzcG9uc2USOQoHTmV3R2FtZRIULmNyb3NzbWUuTmV3R2FtZUFyZ3MaGC5jcm9zc21lLk5ld0dhbWVSZXNwb25zZRJBCgtHZXRHYW1lQnlJZBIYLmNyb3NzbWUuR2V0R2FtZUJ5SWRBcmdzGhguY3Jvc3NtZS5HZXRHYW1lUmVzcG9uc2USSAoMVXBsb2FkUHV6emxlEhkuY3Jvc3NtZS5VcGxvYWRQdXp6bGVBcmdzGh0uY3Jvc3NtZS5VcGxvYWRQdXp6bGVSZXNwb25zZRJCCgpVcGRhdGVGaWxsEhcuY3Jvc3NtZS5VcGRhdGVGaWxsQXJncxobLmNyb3NzbWUuVXBkYXRlRmlsbFJlc3BvbnNlEj4KCVN1YnNjcmliZRIWLmNyb3NzbWUuU3Vic2NyaWJlQXJncxoXLmNyb3NzbWUuU3Vic2NyaWJlRXZlbnQwARI5CgdHZXRTZWxmEhQuY3Jvc3NtZS5HZXRTZWxmQXJncxoYLmNyb3NzbWUuR2V0U2VsZlJlc3BvbnNlEkIKCkdldE15R2FtZXMSFy5jcm9zc21lLkdldE15R2FtZXNBcmdzGhsuY3Jvc3NtZS5HZXRNeUdhbWVzUmVzcG9uc2VCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_puzzle, file_fill, file_game, file_user, file_google_protobuf_timestamp]);
+  fileDesc("Cg1jcm9zc21lLnByb3RvEgdjcm9zc21lIhQKEkdldFB1enpsZUluZGV4QXJncyI/ChZHZXRQdXp6bGVJbmRleFJlc3BvbnNlEiUKB3B1enpsZXMYASADKAsyFC5jcm9zc21lLlB1enpsZUluZGV4Ih8KEUdldFB1enpsZUJ5SWRBcmdzEgoKAmlkGAEgASgJIjQKEUdldFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIiAKC05ld0dhbWVBcmdzEhEKCXB1enpsZV9pZBgBIAEoCSIuCg9OZXdHYW1lUmVzcG9uc2USGwoEZ2FtZRgBIAEoCzINLmNyb3NzbWUuR2FtZSIdCg9HZXRHYW1lQnlJZEFyZ3MSCgoCaWQYASABKAkiTwoPR2V0R2FtZVJlc3BvbnNlEhsKBGdhbWUYASABKAsyDS5jcm9zc21lLkdhbWUSHwoGcHV6emxlGAIgASgLMg8uY3Jvc3NtZS5QdXp6bGUiMgoQVXBsb2FkUHV6emxlQXJncxIQCghmaWxlbmFtZRgBIAEoCRIMCgRkYXRhGAIgASgMIjcKFFVwbG9hZFB1enpsZVJlc3BvbnNlEh8KBnB1enpsZRgBIAEoCzIPLmNyb3NzbWUuUHV6emxlIjEKDVN1YnNjcmliZUFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJIi0KDlN1YnNjcmliZUV2ZW50EhsKBGZpbGwYASABKAsyDS5jcm9zc21lLkZpbGwiTwoOVXBkYXRlRmlsbEFyZ3MSDwoHZ2FtZV9pZBgBIAEoCRIPCgdub2RlX2lkGAIgASgJEhsKBGZpbGwYAyABKAsyDS5jcm9zc21lLkZpbGwiFAoSVXBkYXRlRmlsbFJlc3BvbnNlIhAKDkdldE15R2FtZXNBcmdzIuABCgZNeUdhbWUSDwoHZ2FtZV9pZBgBIAEoCRIRCglwdXp6bGVfaWQYAiABKAkSDQoFdGl0bGUYAyABKAkSDgoGYXV0aG9yGAQgASgJEjAKDGZpcnN0X3BsYXllZBgFIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXASLwoLbGFzdF9wbGF5ZWQYBiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgHIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiNAoSR2V0TXlHYW1lc1Jlc3BvbnNlEh4KBWdhbWVzGAEgAygLMg8uY3Jvc3NtZS5NeUdhbWUihwEKD1JlY29yZFBsYXlzQXJncxIsCgVwbGF5cxgBIAMoCzIdLmNyb3NzbWUuUmVjb3JkUGxheXNBcmdzLlBsYXkaRgoEUGxheRIPCgdnYW1lX2lkGAEgASgJEi0KCXBsYXllZF9hdBgCIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXAiFQoTUmVjb3JkUGxheXNSZXNwb25zZSINCgtHZXRTZWxmQXJncyIuCg9HZXRTZWxmUmVzcG9uc2USGwoEdXNlchgBIAEoCzINLmNyb3NzbWUuVXNlcjK0BQoHQ3Jvc3NNZRJOCg5HZXRQdXp6bGVJbmRleBIbLmNyb3NzbWUuR2V0UHV6emxlSW5kZXhBcmdzGh8uY3Jvc3NtZS5HZXRQdXp6bGVJbmRleFJlc3BvbnNlEkcKDUdldFB1enpsZUJ5SWQSGi5jcm9zc21lLkdldFB1enpsZUJ5SWRBcmdzGhouY3Jvc3NtZS5HZXRQdXp6bGVSZXNwb25zZRI5CgdOZXdHYW1lEhQuY3Jvc3NtZS5OZXdHYW1lQXJncxoYLmNyb3NzbWUuTmV3R2FtZVJlc3BvbnNlEkEKC0dldEdhbWVCeUlkEhguY3Jvc3NtZS5HZXRHYW1lQnlJZEFyZ3MaGC5jcm9zc21lLkdldEdhbWVSZXNwb25zZRJICgxVcGxvYWRQdXp6bGUSGS5jcm9zc21lLlVwbG9hZFB1enpsZUFyZ3MaHS5jcm9zc21lLlVwbG9hZFB1enpsZVJlc3BvbnNlEkIKClVwZGF0ZUZpbGwSFy5jcm9zc21lLlVwZGF0ZUZpbGxBcmdzGhsuY3Jvc3NtZS5VcGRhdGVGaWxsUmVzcG9uc2USPgoJU3Vic2NyaWJlEhYuY3Jvc3NtZS5TdWJzY3JpYmVBcmdzGhcuY3Jvc3NtZS5TdWJzY3JpYmVFdmVudDABEjkKB0dldFNlbGYSFC5jcm9zc21lLkdldFNlbGZBcmdzGhguY3Jvc3NtZS5HZXRTZWxmUmVzcG9uc2USQgoKR2V0TXlHYW1lcxIXLmNyb3NzbWUuR2V0TXlHYW1lc0FyZ3MaGy5jcm9zc21lLkdldE15R2FtZXNSZXNwb25zZRJFCgtSZWNvcmRQbGF5cxIYLmNyb3NzbWUuUmVjb3JkUGxheXNBcmdzGhwuY3Jvc3NtZS5SZWNvcmRQbGF5c1Jlc3BvbnNlQhRaEmNyb3NzbWUuYXBwL3NyYy9wYmIGcHJvdG8z", [file_puzzle, file_fill, file_game, file_user, file_google_protobuf_timestamp]);
 
 /**
  * @generated from message crossme.GetPuzzleIndexArgs
@@ -362,6 +362,58 @@ export const GetMyGamesResponseSchema: GenMessage<GetMyGamesResponse> = /*@__PUR
   messageDesc(file_crossme, 16);
 
 /**
+ * @generated from message crossme.RecordPlaysArgs
+ */
+export type RecordPlaysArgs = Message<"crossme.RecordPlaysArgs"> & {
+  /**
+   * @generated from field: repeated crossme.RecordPlaysArgs.Play plays = 1;
+   */
+  plays: RecordPlaysArgs_Play[];
+};
+
+/**
+ * Describes the message crossme.RecordPlaysArgs.
+ * Use `create(RecordPlaysArgsSchema)` to create a new message.
+ */
+export const RecordPlaysArgsSchema: GenMessage<RecordPlaysArgs> = /*@__PURE__*/
+  messageDesc(file_crossme, 17);
+
+/**
+ * @generated from message crossme.RecordPlaysArgs.Play
+ */
+export type RecordPlaysArgs_Play = Message<"crossme.RecordPlaysArgs.Play"> & {
+  /**
+   * @generated from field: string game_id = 1;
+   */
+  gameId: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp played_at = 2;
+   */
+  playedAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message crossme.RecordPlaysArgs.Play.
+ * Use `create(RecordPlaysArgs_PlaySchema)` to create a new message.
+ */
+export const RecordPlaysArgs_PlaySchema: GenMessage<RecordPlaysArgs_Play> = /*@__PURE__*/
+  messageDesc(file_crossme, 17, 0);
+
+/**
+ * @generated from message crossme.RecordPlaysResponse
+ */
+export type RecordPlaysResponse = Message<"crossme.RecordPlaysResponse"> & {
+};
+
+/**
+ * Describes the message crossme.RecordPlaysResponse.
+ * Use `create(RecordPlaysResponseSchema)` to create a new message.
+ */
+export const RecordPlaysResponseSchema: GenMessage<RecordPlaysResponse> = /*@__PURE__*/
+  messageDesc(file_crossme, 18);
+
+/**
  * @generated from message crossme.GetSelfArgs
  */
 export type GetSelfArgs = Message<"crossme.GetSelfArgs"> & {
@@ -372,7 +424,7 @@ export type GetSelfArgs = Message<"crossme.GetSelfArgs"> & {
  * Use `create(GetSelfArgsSchema)` to create a new message.
  */
 export const GetSelfArgsSchema: GenMessage<GetSelfArgs> = /*@__PURE__*/
-  messageDesc(file_crossme, 17);
+  messageDesc(file_crossme, 19);
 
 /**
  * @generated from message crossme.GetSelfResponse
@@ -392,7 +444,7 @@ export type GetSelfResponse = Message<"crossme.GetSelfResponse"> & {
  * Use `create(GetSelfResponseSchema)` to create a new message.
  */
 export const GetSelfResponseSchema: GenMessage<GetSelfResponse> = /*@__PURE__*/
-  messageDesc(file_crossme, 18);
+  messageDesc(file_crossme, 20);
 
 /**
  * @generated from service crossme.CrossMe
@@ -476,6 +528,20 @@ export const CrossMe: GenService<{
     methodKind: "unary";
     input: typeof GetMyGamesArgsSchema;
     output: typeof GetMyGamesResponseSchema;
+  },
+  /**
+   * Merge a batch of plays into the signed-in caller's history. The
+   * client uses this to fold the browser-local "recent games" list —
+   * in particular, games played before signing in — into the account.
+   * Merging is idempotent: replayed entries only ever widen a game's
+   * first/last-played window. A no-op for anonymous callers.
+   *
+   * @generated from rpc crossme.CrossMe.RecordPlays
+   */
+  recordPlays: {
+    methodKind: "unary";
+    input: typeof RecordPlaysArgsSchema;
+    output: typeof RecordPlaysResponseSchema;
   },
 }> = /*@__PURE__*/
   serviceDesc(file_crossme, 0);

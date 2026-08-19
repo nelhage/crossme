@@ -90,6 +90,17 @@ message GetMyGamesResponse {
     repeated crossme.MyGame games = 1;
 }
 
+message RecordPlaysArgs {
+    message Play {
+        string game_id = 1;
+        google.protobuf.Timestamp played_at = 2;
+    }
+    repeated Play plays = 1;
+}
+
+message RecordPlaysResponse {
+}
+
 message GetSelfArgs {
 }
 
@@ -119,4 +130,11 @@ service CrossMe {
     // Anonymous callers have no server-side history and get an empty
     // list.
     rpc GetMyGames(GetMyGamesArgs) returns (GetMyGamesResponse);
+
+    // Merge a batch of plays into the signed-in caller's history. The
+    // client uses this to fold the browser-local "recent games" list —
+    // in particular, games played before signing in — into the account.
+    // Merging is idempotent: replayed entries only ever widen a game's
+    // first/last-played window. A no-op for anonymous callers.
+    rpc RecordPlays(RecordPlaysArgs) returns (RecordPlaysResponse);
 }

@@ -138,6 +138,29 @@ func (s *Server) GetMyGames(ctx context.Context, req *connect.Request[pb.GetMyGa
 	}), nil
 }
 
+// RecordPlays merges client-reported plays into the caller's history: the
+// browser-local "recent games" list is synced up on sign-in, so games
+// played before signing in follow the account. Anonymous callers have no
+// history to merge into, so their plays are dropped (successfully).
+func (s *Server) RecordPlays(ctx context.Context, req *connect.Request[pb.RecordPlaysArgs]) (*connect.Response[pb.RecordPlaysResponse], error) {
+	user := auth.UserFromContext(ctx)
+	if user == nil {
+		return connect.NewResponse(&pb.RecordPlaysResponse{}), nil
+	}
+	for _, play := range req.Msg.Plays {
+		if play.GameId == "" || play.PlayedAt == nil {
+			return nil, connect.NewError(connect.CodeInvalidArgument,
+				errors.New("play entries need a game_id and a played_at"))
+		}
+		// A game id we don't know is ignored by RecordPlayAt, not an
+		// error: the client's local list can outlive a game.
+		if err := s.repo.RecordPlayAt(play.GameId, user.Id, play.PlayedAt.AsTime()); err != nil {
+			return nil, connect.NewError(connect.CodeInternal, err)
+		}
+	}
+	return connect.NewResponse(&pb.RecordPlaysResponse{}), nil
+}
+
 func (s *Server) UploadPuzzle(ctx context.Context, req *connect.Request[pb.UploadPuzzleArgs]) (*connect.Response[pb.UploadPuzzleResponse], error) {
 	puzfile, err := puz.FromBytes(req.Msg.Data)
 	if err != nil {

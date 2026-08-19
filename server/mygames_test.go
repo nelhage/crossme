@@ -3,9 +3,11 @@ package server
 import (
 	"context"
 	"testing"
+	"time"
 
 	"connectrpc.com/connect"
 	"crossme.app/src/pb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestMyGames(t *testing.T) {
@@ -79,4 +81,61 @@ func TestMyGames(t *testing.T) {
 	if len(resp.Msg.Games) != 1 || resp.Msg.Games[0].CompletedAt == nil {
 		t.Errorf("completed game not marked in history: %v", resp.Msg.Games)
 	}
+}
+
+func TestRecordPlays(t *testing.T) {
+	ctx := context.Background()
+	ts, puz := makeServerWithPuzzle(t, "nyt_weekday_with_notes")
+	defer ts.Stop()
+
+	ada, _ := ts.DialAs("ada")
+	g, err := ada.NewGame(ctx, connect.NewRequest(&pb.NewGameArgs{PuzzleId: puz.Metadata.Id}))
+	must(t, "NewGame", err)
+	gameId := g.Msg.Game.Id
+
+	// Open the game (recording a play "now"), then sync in an older
+	// local play, the way the client folds in its pre-sign-in history.
+	_, err = ada.GetGameById(ctx, connect.NewRequest(&pb.GetGameByIdArgs{Id: gameId}))
+	must(t, "GetGameById", err)
+
+	past := time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC)
+	_, err = ada.RecordPlays(ctx, connect.NewRequest(&pb.RecordPlaysArgs{
+		Plays: []*pb.RecordPlaysArgs_Play{
+			{GameId: gameId, PlayedAt: timestamppb.New(past)},
+			// A game the client remembers but the server doesn't is
+			// dropped, not an error.
+			{GameId: "no-such-game", PlayedAt: timestamppb.New(past)},
+		},
+	}))
+	must(t, "RecordPlays", err)
+
+	resp, err := ada.GetMyGames(ctx, connect.NewRequest(&pb.GetMyGamesArgs{}))
+	must(t, "GetMyGames", err)
+	if len(resp.Msg.Games) != 1 {
+		t.Fatalf("expected 1 game, got %v", resp.Msg.Games)
+	}
+	got := resp.Msg.Games[0]
+	if !got.FirstPlayed.AsTime().Equal(past) {
+		t.Errorf("first_played = %v, want %v", got.FirstPlayed.AsTime(), past)
+	}
+	if !got.LastPlayed.AsTime().After(past) {
+		t.Errorf("last_played = %v, want later than %v", got.LastPlayed.AsTime(), past)
+	}
+
+	// Malformed entries are rejected.
+	_, err = ada.RecordPlays(ctx, connect.NewRequest(&pb.RecordPlaysArgs{
+		Plays: []*pb.RecordPlaysArgs_Play{{GameId: gameId}},
+	}))
+	if connect.CodeOf(err) != connect.CodeInvalidArgument {
+		t.Errorf("RecordPlays without played_at: %v", err)
+	}
+
+	// Anonymous callers succeed as a no-op: there's no history to merge
+	// into.
+	_, err = ts.Dial().RecordPlays(ctx, connect.NewRequest(&pb.RecordPlaysArgs{
+		Plays: []*pb.RecordPlaysArgs_Play{
+			{GameId: gameId, PlayedAt: timestamppb.New(past)},
+		},
+	}))
+	must(t, "anonymous RecordPlays", err)
 }

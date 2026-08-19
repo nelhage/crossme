@@ -51,6 +51,8 @@ const (
 	CrossMeGetSelfProcedure = "/crossme.CrossMe/GetSelf"
 	// CrossMeGetMyGamesProcedure is the fully-qualified name of the CrossMe's GetMyGames RPC.
 	CrossMeGetMyGamesProcedure = "/crossme.CrossMe/GetMyGames"
+	// CrossMeRecordPlaysProcedure is the fully-qualified name of the CrossMe's RecordPlays RPC.
+	CrossMeRecordPlaysProcedure = "/crossme.CrossMe/RecordPlays"
 )
 
 // CrossMeClient is a client for the crossme.CrossMe service.
@@ -69,6 +71,12 @@ type CrossMeClient interface {
 	// Anonymous callers have no server-side history and get an empty
 	// list.
 	GetMyGames(context.Context, *connect.Request[pb.GetMyGamesArgs]) (*connect.Response[pb.GetMyGamesResponse], error)
+	// Merge a batch of plays into the signed-in caller's history. The
+	// client uses this to fold the browser-local "recent games" list —
+	// in particular, games played before signing in — into the account.
+	// Merging is idempotent: replayed entries only ever widen a game's
+	// first/last-played window. A no-op for anonymous callers.
+	RecordPlays(context.Context, *connect.Request[pb.RecordPlaysArgs]) (*connect.Response[pb.RecordPlaysResponse], error)
 }
 
 // NewCrossMeClient constructs a client for the crossme.CrossMe service. By default, it uses the
@@ -136,6 +144,12 @@ func NewCrossMeClient(httpClient connect.HTTPClient, baseURL string, opts ...con
 			connect.WithSchema(crossMeMethods.ByName("GetMyGames")),
 			connect.WithClientOptions(opts...),
 		),
+		recordPlays: connect.NewClient[pb.RecordPlaysArgs, pb.RecordPlaysResponse](
+			httpClient,
+			baseURL+CrossMeRecordPlaysProcedure,
+			connect.WithSchema(crossMeMethods.ByName("RecordPlays")),
+			connect.WithClientOptions(opts...),
+		),
 	}
 }
 
@@ -150,6 +164,7 @@ type crossMeClient struct {
 	subscribe      *connect.Client[pb.SubscribeArgs, pb.SubscribeEvent]
 	getSelf        *connect.Client[pb.GetSelfArgs, pb.GetSelfResponse]
 	getMyGames     *connect.Client[pb.GetMyGamesArgs, pb.GetMyGamesResponse]
+	recordPlays    *connect.Client[pb.RecordPlaysArgs, pb.RecordPlaysResponse]
 }
 
 // GetPuzzleIndex calls crossme.CrossMe.GetPuzzleIndex.
@@ -197,6 +212,11 @@ func (c *crossMeClient) GetMyGames(ctx context.Context, req *connect.Request[pb.
 	return c.getMyGames.CallUnary(ctx, req)
 }
 
+// RecordPlays calls crossme.CrossMe.RecordPlays.
+func (c *crossMeClient) RecordPlays(ctx context.Context, req *connect.Request[pb.RecordPlaysArgs]) (*connect.Response[pb.RecordPlaysResponse], error) {
+	return c.recordPlays.CallUnary(ctx, req)
+}
+
 // CrossMeHandler is an implementation of the crossme.CrossMe service.
 type CrossMeHandler interface {
 	GetPuzzleIndex(context.Context, *connect.Request[pb.GetPuzzleIndexArgs]) (*connect.Response[pb.GetPuzzleIndexResponse], error)
@@ -213,6 +233,12 @@ type CrossMeHandler interface {
 	// Anonymous callers have no server-side history and get an empty
 	// list.
 	GetMyGames(context.Context, *connect.Request[pb.GetMyGamesArgs]) (*connect.Response[pb.GetMyGamesResponse], error)
+	// Merge a batch of plays into the signed-in caller's history. The
+	// client uses this to fold the browser-local "recent games" list —
+	// in particular, games played before signing in — into the account.
+	// Merging is idempotent: replayed entries only ever widen a game's
+	// first/last-played window. A no-op for anonymous callers.
+	RecordPlays(context.Context, *connect.Request[pb.RecordPlaysArgs]) (*connect.Response[pb.RecordPlaysResponse], error)
 }
 
 // NewCrossMeHandler builds an HTTP handler from the service implementation. It returns the path on
@@ -276,6 +302,12 @@ func NewCrossMeHandler(svc CrossMeHandler, opts ...connect.HandlerOption) (strin
 		connect.WithSchema(crossMeMethods.ByName("GetMyGames")),
 		connect.WithHandlerOptions(opts...),
 	)
+	crossMeRecordPlaysHandler := connect.NewUnaryHandler(
+		CrossMeRecordPlaysProcedure,
+		svc.RecordPlays,
+		connect.WithSchema(crossMeMethods.ByName("RecordPlays")),
+		connect.WithHandlerOptions(opts...),
+	)
 	return "/crossme.CrossMe/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case CrossMeGetPuzzleIndexProcedure:
@@ -296,6 +328,8 @@ func NewCrossMeHandler(svc CrossMeHandler, opts ...connect.HandlerOption) (strin
 			crossMeGetSelfHandler.ServeHTTP(w, r)
 		case CrossMeGetMyGamesProcedure:
 			crossMeGetMyGamesHandler.ServeHTTP(w, r)
+		case CrossMeRecordPlaysProcedure:
+			crossMeRecordPlaysHandler.ServeHTTP(w, r)
 		default:
 			http.NotFound(w, r)
 		}
@@ -339,4 +373,8 @@ func (UnimplementedCrossMeHandler) GetSelf(context.Context, *connect.Request[pb.
 
 func (UnimplementedCrossMeHandler) GetMyGames(context.Context, *connect.Request[pb.GetMyGamesArgs]) (*connect.Response[pb.GetMyGamesResponse], error) {
 	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crossme.CrossMe.GetMyGames is not implemented"))
+}
+
+func (UnimplementedCrossMeHandler) RecordPlays(context.Context, *connect.Request[pb.RecordPlaysArgs]) (*connect.Response[pb.RecordPlaysResponse], error) {
+	return nil, connect.NewError(connect.CodeUnimplemented, errors.New("crossme.CrossMe.RecordPlays is not implemented"))
 }

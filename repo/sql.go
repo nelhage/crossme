@@ -88,16 +88,24 @@ type update_game_args struct {
 	CompletedAt sql.NullString `db:"completed_at"`
 }
 
+// Merges one play into the history: a new (user, game) pair is inserted,
+// an existing one has its first/last-played window widened to include the
+// play. The SELECT (rather than VALUES) makes plays of nonexistent games
+// no-ops, which keeps client-supplied game ids (RecordPlays) from
+// littering the table. Timestamps compare as strings; see formatTime.
 const sql_record_play = `
 INSERT INTO game_players (user_id, game_id, first_played, last_played)
-VALUES (:user_id, :game_id, :now, :now)
-ON CONFLICT (user_id, game_id) DO UPDATE SET last_played = :now
+SELECT :user_id, id, :played_at, :played_at
+FROM games WHERE id = :game_id
+ON CONFLICT (user_id, game_id) DO UPDATE SET
+  first_played = min(first_played, excluded.first_played),
+  last_played  = max(last_played, excluded.last_played)
 `
 
 type record_play_args struct {
-	UserId string `db:"user_id"`
-	GameId string `db:"game_id"`
-	Now    string `db:"now"`
+	UserId   string `db:"user_id"`
+	GameId   string `db:"game_id"`
+	PlayedAt string `db:"played_at"`
 }
 
 const sql_query_games_for_user = `

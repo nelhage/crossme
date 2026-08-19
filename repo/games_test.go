@@ -4,9 +4,11 @@ import (
 	"os"
 	"path"
 	"testing"
+	"time"
 
 	_ "github.com/mattn/go-sqlite3"
 
+	"crossme.app/src/pb"
 	"crossme.app/src/puz"
 )
 
@@ -28,6 +30,15 @@ func insertTestPuzzle(t *testing.T, r *Repository, name string) string {
 	return id
 }
 
+func gamesForUser(t *testing.T, r *Repository, user string) []*pb.MyGame {
+	t.Helper()
+	games, err := r.GamesForUser(user)
+	if err != nil {
+		t.Fatalf("GamesForUser(%q): %v", user, err)
+	}
+	return games
+}
+
 func TestPlayHistory(t *testing.T) {
 	t.Parallel()
 	r, err := Open(":memory:")
@@ -47,32 +58,21 @@ func TestPlayHistory(t *testing.T) {
 	}
 
 	const user = "user-1"
-	games, err := r.GamesForUser(user)
-	if err != nil {
-		t.Fatalf("GamesForUser: %v", err)
-	}
-	if len(games) != 0 {
+	if games := gamesForUser(t, r, user); len(games) != 0 {
 		t.Fatalf("history for a fresh user: %v", games)
 	}
 
-	for _, id := range []string{game1.Id, game2.Id} {
-		if err := r.RecordPlay(id, user); err != nil {
-			t.Fatalf("RecordPlay(%q): %v", id, err)
-		}
+	// game1 was played a while ago, game2 just now. Explicit times,
+	// since RFC3339 only has second granularity.
+	past := time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC)
+	if err := r.RecordPlayAt(game1.Id, user, past); err != nil {
+		t.Fatalf("RecordPlayAt: %v", err)
+	}
+	if err := r.RecordPlay(game2.Id, user); err != nil {
+		t.Fatalf("RecordPlay: %v", err)
 	}
 
-	// Backdate game1 so the two plays have distinct times; RFC3339
-	// timestamps only have second granularity.
-	if _, err := r.db.Exec(
-		`UPDATE game_players SET first_played = '2001-01-01T00:00:00Z', last_played = '2001-01-01T00:00:00Z'
-		 WHERE game_id = ?`, game1.Id); err != nil {
-		t.Fatalf("backdating: %v", err)
-	}
-
-	games, err = r.GamesForUser(user)
-	if err != nil {
-		t.Fatalf("GamesForUser: %v", err)
-	}
+	games := gamesForUser(t, r, user)
 	if len(games) != 2 {
 		t.Fatalf("expected 2 games, got %d", len(games))
 	}
@@ -100,35 +100,59 @@ func TestPlayHistory(t *testing.T) {
 	if err := r.RecordPlay(game1.Id, user); err != nil {
 		t.Fatalf("RecordPlay: %v", err)
 	}
-	games, err = r.GamesForUser(user)
-	if err != nil {
-		t.Fatalf("GamesForUser: %v", err)
-	}
+	games = gamesForUser(t, r, user)
 	if len(games) != 2 {
 		t.Fatalf("replay duplicated the entry: %d games", len(games))
 	}
-	var replayed *struct{ first, last int64 }
+	var replayed *pb.MyGame
 	for _, g := range games {
 		if g.GameId == game1.Id {
-			replayed = &struct{ first, last int64 }{g.FirstPlayed.Seconds, g.LastPlayed.Seconds}
+			replayed = g
 		}
 	}
 	if replayed == nil {
 		t.Fatalf("game1 missing after replay")
 	}
-	if got, err := parseTime("2001-01-01T00:00:00Z"); err != nil || replayed.first != got.Unix() {
-		t.Errorf("first_played changed on replay: %d", replayed.first)
+	if got := replayed.FirstPlayed.AsTime(); !got.Equal(past) {
+		t.Errorf("first_played changed on replay: %v, want %v", got, past)
 	}
-	if replayed.last <= replayed.first {
-		t.Errorf("last_played not refreshed: first=%d last=%d", replayed.first, replayed.last)
+	if !replayed.LastPlayed.AsTime().After(past) {
+		t.Errorf("last_played not refreshed: %v", replayed.LastPlayed.AsTime())
+	}
+
+	// Merging an even older play widens first_played but not last_played
+	// (this is how pre-sign-in plays sync in from the browser).
+	older := past.Add(-24 * time.Hour)
+	if err := r.RecordPlayAt(game1.Id, user, older); err != nil {
+		t.Fatalf("RecordPlayAt: %v", err)
+	}
+	// A play inside the current window changes nothing.
+	if err := r.RecordPlayAt(game1.Id, user, past); err != nil {
+		t.Fatalf("RecordPlayAt: %v", err)
+	}
+	games = gamesForUser(t, r, user)
+	for _, g := range games {
+		if g.GameId != game1.Id {
+			continue
+		}
+		if got := g.FirstPlayed.AsTime(); !got.Equal(older) {
+			t.Errorf("first_played not widened: %v, want %v", got, older)
+		}
+		if !g.LastPlayed.AsTime().After(past) {
+			t.Errorf("last_played shrank: %v", g.LastPlayed.AsTime())
+		}
+	}
+
+	// Plays of games that don't exist are ignored, not recorded.
+	if err := r.RecordPlay("no-such-game", user); err != nil {
+		t.Fatalf("RecordPlay(no-such-game): %v", err)
+	}
+	if games := gamesForUser(t, r, user); len(games) != 2 {
+		t.Errorf("nonexistent game entered the history: %v", games)
 	}
 
 	// Other users' histories are unaffected.
-	games, err = r.GamesForUser("user-2")
-	if err != nil {
-		t.Fatalf("GamesForUser: %v", err)
-	}
-	if len(games) != 0 {
+	if games := gamesForUser(t, r, "user-2"); len(games) != 0 {
 		t.Fatalf("history leaked across users: %v", games)
 	}
 }
