@@ -104,6 +104,21 @@ CREATE INDEX sessions__user_id ON sessions (user_id);
 ALTER TABLE games ADD COLUMN owner_id text null;
 `,
 	},
+	{
+		// Per-user play history: one row per (user, game) a signed-in
+		// user has opened, powering the "My games" view. Anonymous
+		// play is never recorded here.
+		name: "game-players",
+		sql: `
+CREATE TABLE game_players (
+  user_id text not null references users(id),
+  game_id text not null references games(id),
+  first_played text not null,
+  last_played text not null,
+  primary key (user_id, game_id)
+) strict;
+`,
+	},
 }
 
 // CurrentSchemaVersion is the schema version this build expects. A database

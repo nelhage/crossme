@@ -5,6 +5,7 @@ import "puzzle.proto";
 import "fill.proto";
 import "game.proto";
 import "user.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "crossme.app/src/pb";
 
@@ -68,6 +69,38 @@ message UpdateFillArgs {
 message UpdateFillResponse {
 }
 
+message GetMyGamesArgs {
+}
+
+// One entry in the caller's play history: enough to render a row in the
+// "My games" list without further lookups.
+message MyGame {
+    string game_id = 1;
+    string puzzle_id = 2;
+    string title = 3;
+    string author = 4;
+    google.protobuf.Timestamp first_played = 5;
+    google.protobuf.Timestamp last_played = 6;
+    // Set once the game has been solved; unset while in progress.
+    google.protobuf.Timestamp completed_at = 7;
+}
+
+message GetMyGamesResponse {
+    // Most recently played first.
+    repeated crossme.MyGame games = 1;
+}
+
+message RecordPlaysArgs {
+    message Play {
+        string game_id = 1;
+        google.protobuf.Timestamp played_at = 2;
+    }
+    repeated Play plays = 1;
+}
+
+message RecordPlaysResponse {
+}
+
 message GetSelfArgs {
 }
 
@@ -92,4 +125,16 @@ service CrossMe {
     // Who am I? Resolves the caller's session cookie; the session
     // itself is managed by the HTTP endpoints under /api/auth/.
     rpc GetSelf(GetSelfArgs) returns (GetSelfResponse);
+
+    // The games the signed-in caller has played, most recent first.
+    // Anonymous callers have no server-side history and get an empty
+    // list.
+    rpc GetMyGames(GetMyGamesArgs) returns (GetMyGamesResponse);
+
+    // Merge a batch of plays into the signed-in caller's history. The
+    // client uses this to fold the browser-local "recent games" list —
+    // in particular, games played before signing in — into the account.
+    // Merging is idempotent: replayed entries only ever widen a game's
+    // first/last-played window. A no-op for anonymous callers.
+    rpc RecordPlays(RecordPlaysArgs) returns (RecordPlaysResponse);
 }

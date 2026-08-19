@@ -52,6 +52,51 @@ func (r *Repository) PuzzleById(id string) (*pb.Puzzle, error) {
 	return &out, nil
 }
 
+// GamesForUser returns the user's play history (as recorded by
+// RecordPlay), most recently played first.
+func (r *Repository) GamesForUser(user_id string) ([]*pb.MyGame, error) {
+	rows, err := r.db.NamedQuery(sql_query_games_for_user, query_games_for_user_args{
+		UserId: user_id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []*pb.MyGame
+	for rows.Next() {
+		var row games_for_user_row
+		if err := rows.StructScan(&row); err != nil {
+			return nil, err
+		}
+		var puzzle pb.Puzzle
+		if err := proto.Unmarshal(row.Puzzle, &puzzle); err != nil {
+			return nil, err
+		}
+		game := &pb.MyGame{
+			GameId:   row.GameId,
+			PuzzleId: row.PuzzleId,
+			Title:    puzzle.Title,
+			Author:   puzzle.Author,
+		}
+		if game.FirstPlayed, err = parseTimestamp(row.FirstPlayed); err != nil {
+			return nil, err
+		}
+		if game.LastPlayed, err = parseTimestamp(row.LastPlayed); err != nil {
+			return nil, err
+		}
+		if row.CompletedAt.Valid {
+			if game.CompletedAt, err = parseTimestamp(row.CompletedAt.String); err != nil {
+				return nil, err
+			}
+		}
+		out = append(out, game)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (r *Repository) GameById(id string) (*pb.Game, error) {
 	var data []byte
 	if err := namedGet(r.db, &data, sql_query_game_by_id, query_game_by_id_args{

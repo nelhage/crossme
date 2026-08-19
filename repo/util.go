@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jmoiron/sqlx"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type namedQueryer interface {
@@ -61,4 +62,12 @@ func formatTime(t time.Time) string {
 
 func parseTime(s string) (time.Time, error) {
 	return time.Parse(time.RFC3339, s)
+}
+
+func parseTimestamp(s string) (*timestamppb.Timestamp, error) {
+	t, err := parseTime(s)
+	if err != nil {
+		return nil, err
+	}
+	return timestamppb.New(t), nil
 }

@@ -1,8 +1,10 @@
 import { useSyncExternalStore } from "react";
 
-// The list of recently-played games lives entirely in the browser; the
-// server has no notion of a user identity, so "your" games are just the
-// ones this browser has opened.
+// The games this browser has opened, kept in localStorage so the list
+// works without an account. For signed-in users this is only half the
+// story: the server keeps a per-account history too, and the two are
+// merged for display (mergeRecentGames) and synced upward on sign-in
+// (recent_games_sync.ts).
 
 const STORAGE_KEY = "crossme.recent-games";
 
@@ -113,4 +115,23 @@ export function recordRecentGame(game: Omit<RecentGame, "playedAt">) {
 
 export function useRecentGames(): RecentGame[] {
   return useSyncExternalStore(subscribe, getRecentGames);
+}
+
+// Merges recent-game lists — in practice the browser-local list and the
+// signed-in account's server-side history — deduplicating by game and
+// keeping each game's most recent play. Most recently played first,
+// capped like the local list.
+export function mergeRecentGames(...lists: RecentGame[][]): RecentGame[] {
+  const byId = new Map<string, RecentGame>();
+  for (const list of lists) {
+    for (const game of list) {
+      const seen = byId.get(game.gameId);
+      if (!seen || game.playedAt > seen.playedAt) {
+        byId.set(game.gameId, game);
+      }
+    }
+  }
+  return [...byId.values()]
+    .sort((a, b) => b.playedAt - a.playedAt)
+    .slice(0, MAX_RECENT_GAMES);
 }

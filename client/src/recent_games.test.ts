@@ -1,7 +1,9 @@
 import {
   MAX_RECENT_GAMES,
   getRecentGames,
+  mergeRecentGames,
   recordRecentGame,
+  type RecentGame,
 } from "./recent_games";
 
 const STORAGE_KEY = "crossme.recent-games";
@@ -82,6 +84,39 @@ it("persists across reloads", () => {
   reloadFromStorage();
 
   expect(getRecentGames().map((g) => g.gameId)).toEqual(["b", "a"]);
+});
+
+function game(gameId: string, playedAt: number): RecentGame {
+  return {
+    gameId,
+    puzzleId: `puzzle-${gameId}`,
+    title: `Puzzle ${gameId}`,
+    author: "Anonymous",
+    playedAt,
+  };
+}
+
+it("merges lists by recency, deduplicating by game", () => {
+  const merged = mergeRecentGames(
+    [game("a", 3000), game("b", 1000)],
+    [game("b", 2000), game("c", 2500)]
+  );
+  expect(merged.map((g) => g.gameId)).toEqual(["a", "c", "b"]);
+  // The fresher of the two "b" entries survives.
+  expect(merged[2].playedAt).toEqual(2000);
+});
+
+it("caps the merged list", () => {
+  const local = [];
+  const server = [];
+  for (let i = 0; i < MAX_RECENT_GAMES; i++) {
+    local.push(game(`local-${i}`, 10000 + i));
+    server.push(game(`server-${i}`, 20000 + i));
+  }
+  const merged = mergeRecentGames(local, server);
+  expect(merged).toHaveLength(MAX_RECENT_GAMES);
+  // All the server games out-recent all the local ones.
+  expect(merged.every((g) => g.gameId.startsWith("server-"))).toBe(true);
 });
 
 it("ignores junk in storage", () => {

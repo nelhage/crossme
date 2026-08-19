@@ -49,7 +49,7 @@ func TestMigrateFromScratch(t *testing.T) {
 	}
 	for _, table := range []string{
 		"config", "puzzles", "games", "puz_files",
-		"users", "identities", "sessions",
+		"users", "identities", "sessions", "game_players",
 	} {
 		if len(tableColumns(t, repo, table)) == 0 {
 			t.Errorf("table %q is missing", table)
