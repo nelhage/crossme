@@ -108,9 +108,33 @@ func (s *Server) GetGameById(ctx context.Context, req *connect.Request[pb.GetGam
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInternal, err)
 	}
+	// Every route into a game loads it here, so this is where a
+	// signed-in user's play history gets recorded. History is a
+	// convenience: failure to record shouldn't fail the load.
+	if user := auth.UserFromContext(ctx); user != nil {
+		if err := s.repo.RecordPlay(game.Id, user.Id); err != nil {
+			log.Printf("recording play game=%q user=%q: %v", game.Id, user.Id, err)
+		}
+	}
 	return connect.NewResponse(&pb.GetGameResponse{
 		Game:   game,
 		Puzzle: puz,
+	}), nil
+}
+
+// GetMyGames lists the caller's play history. Anonymous callers have no
+// server-side history, so they get an empty list rather than an error.
+func (s *Server) GetMyGames(ctx context.Context, req *connect.Request[pb.GetMyGamesArgs]) (*connect.Response[pb.GetMyGamesResponse], error) {
+	user := auth.UserFromContext(ctx)
+	if user == nil {
+		return connect.NewResponse(&pb.GetMyGamesResponse{}), nil
+	}
+	games, err := s.repo.GamesForUser(user.Id)
+	if err != nil {
+		return nil, connect.NewError(connect.CodeInternal, err)
+	}
+	return connect.NewResponse(&pb.GetMyGamesResponse{
+		Games: games,
 	}), nil
 }
 

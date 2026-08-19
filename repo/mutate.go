@@ -113,6 +113,17 @@ func (r *Repository) NewGame(puzzle_id string, owner_id string) (*pb.Game, error
 
 }
 
+// RecordPlay notes that a signed-in user opened a game, creating their
+// play-history entry or refreshing its last-played time.
+func (r *Repository) RecordPlay(game_id, user_id string) error {
+	_, err := r.db.NamedExec(sql_record_play, &record_play_args{
+		UserId: user_id,
+		GameId: game_id,
+		Now:    formatTime(time.Now()),
+	})
+	return err
+}
+
 func (r *Repository) UpdateGame(game *pb.Game) error {
 	protobytes, err := proto.Marshal(game)
 	if err != nil {

@@ -88,6 +88,45 @@ type update_game_args struct {
 	CompletedAt sql.NullString `db:"completed_at"`
 }
 
+const sql_record_play = `
+INSERT INTO game_players (user_id, game_id, first_played, last_played)
+VALUES (:user_id, :game_id, :now, :now)
+ON CONFLICT (user_id, game_id) DO UPDATE SET last_played = :now
+`
+
+type record_play_args struct {
+	UserId string `db:"user_id"`
+	GameId string `db:"game_id"`
+	Now    string `db:"now"`
+}
+
+const sql_query_games_for_user = `
+SELECT games.id AS game_id,
+       games.puzzle_id AS puzzle_id,
+       puzzles.proto AS puzzle,
+       game_players.first_played AS first_played,
+       game_players.last_played AS last_played,
+       games.completed_at AS completed_at
+FROM game_players
+JOIN games ON games.id = game_players.game_id
+JOIN puzzles ON puzzles.meta__id = games.puzzle_id
+WHERE game_players.user_id = :user_id
+ORDER BY game_players.last_played DESC, games.id
+`
+
+type query_games_for_user_args struct {
+	UserId string `db:"user_id"`
+}
+
+type games_for_user_row struct {
+	GameId      string         `db:"game_id"`
+	PuzzleId    string         `db:"puzzle_id"`
+	Puzzle      []byte         `db:"puzzle"`
+	FirstPlayed string         `db:"first_played"`
+	LastPlayed  string         `db:"last_played"`
+	CompletedAt sql.NullString `db:"completed_at"`
+}
+
 const sql_insert_user = `
 INSERT INTO users (proto, id, created)
 VALUES (:proto, :id, :created)

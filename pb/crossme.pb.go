@@ -9,6 +9,7 @@ package pb
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -661,6 +662,182 @@ func (*UpdateFillResponse) Descriptor() ([]byte, []int) {
 	return file_crossme_proto_rawDescGZIP(), []int{13}
 }
 
+type GetMyGamesArgs struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMyGamesArgs) Reset() {
+	*x = GetMyGamesArgs{}
+	mi := &file_crossme_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMyGamesArgs) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMyGamesArgs) ProtoMessage() {}
+
+func (x *GetMyGamesArgs) ProtoReflect() protoreflect.Message {
+	mi := &file_crossme_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMyGamesArgs.ProtoReflect.Descriptor instead.
+func (*GetMyGamesArgs) Descriptor() ([]byte, []int) {
+	return file_crossme_proto_rawDescGZIP(), []int{14}
+}
+
+// One entry in the caller's play history: enough to render a row in the
+// "My games" list without further lookups.
+type MyGame struct {
+	state       protoimpl.MessageState `protogen:"open.v1"`
+	GameId      string                 `protobuf:"bytes,1,opt,name=game_id,json=gameId,proto3" json:"game_id,omitempty"`
+	PuzzleId    string                 `protobuf:"bytes,2,opt,name=puzzle_id,json=puzzleId,proto3" json:"puzzle_id,omitempty"`
+	Title       string                 `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`
+	Author      string                 `protobuf:"bytes,4,opt,name=author,proto3" json:"author,omitempty"`
+	FirstPlayed *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=first_played,json=firstPlayed,proto3" json:"first_played,omitempty"`
+	LastPlayed  *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=last_played,json=lastPlayed,proto3" json:"last_played,omitempty"`
+	// Set once the game has been solved; unset while in progress.
+	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MyGame) Reset() {
+	*x = MyGame{}
+	mi := &file_crossme_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MyGame) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MyGame) ProtoMessage() {}
+
+func (x *MyGame) ProtoReflect() protoreflect.Message {
+	mi := &file_crossme_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MyGame.ProtoReflect.Descriptor instead.
+func (*MyGame) Descriptor() ([]byte, []int) {
+	return file_crossme_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *MyGame) GetGameId() string {
+	if x != nil {
+		return x.GameId
+	}
+	return ""
+}
+
+func (x *MyGame) GetPuzzleId() string {
+	if x != nil {
+		return x.PuzzleId
+	}
+	return ""
+}
+
+func (x *MyGame) GetTitle() string {
+	if x != nil {
+		return x.Title
+	}
+	return ""
+}
+
+func (x *MyGame) GetAuthor() string {
+	if x != nil {
+		return x.Author
+	}
+	return ""
+}
+
+func (x *MyGame) GetFirstPlayed() *timestamppb.Timestamp {
+	if x != nil {
+		return x.FirstPlayed
+	}
+	return nil
+}
+
+func (x *MyGame) GetLastPlayed() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastPlayed
+	}
+	return nil
+}
+
+func (x *MyGame) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
+type GetMyGamesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Most recently played first.
+	Games         []*MyGame `protobuf:"bytes,1,rep,name=games,proto3" json:"games,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMyGamesResponse) Reset() {
+	*x = GetMyGamesResponse{}
+	mi := &file_crossme_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMyGamesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMyGamesResponse) ProtoMessage() {}
+
+func (x *GetMyGamesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_crossme_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMyGamesResponse.ProtoReflect.Descriptor instead.
+func (*GetMyGamesResponse) Descriptor() ([]byte, []int) {
+	return file_crossme_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GetMyGamesResponse) GetGames() []*MyGame {
+	if x != nil {
+		return x.Games
+	}
+	return nil
+}
+
 type GetSelfArgs struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	unknownFields protoimpl.UnknownFields
@@ -669,7 +846,7 @@ type GetSelfArgs struct {
 
 func (x *GetSelfArgs) Reset() {
 	*x = GetSelfArgs{}
-	mi := &file_crossme_proto_msgTypes[14]
+	mi := &file_crossme_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -681,7 +858,7 @@ func (x *GetSelfArgs) String() string {
 func (*GetSelfArgs) ProtoMessage() {}
 
 func (x *GetSelfArgs) ProtoReflect() protoreflect.Message {
-	mi := &file_crossme_proto_msgTypes[14]
+	mi := &file_crossme_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -694,7 +871,7 @@ func (x *GetSelfArgs) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSelfArgs.ProtoReflect.Descriptor instead.
 func (*GetSelfArgs) Descriptor() ([]byte, []int) {
-	return file_crossme_proto_rawDescGZIP(), []int{14}
+	return file_crossme_proto_rawDescGZIP(), []int{17}
 }
 
 type GetSelfResponse struct {
@@ -708,7 +885,7 @@ type GetSelfResponse struct {
 
 func (x *GetSelfResponse) Reset() {
 	*x = GetSelfResponse{}
-	mi := &file_crossme_proto_msgTypes[15]
+	mi := &file_crossme_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +897,7 @@ func (x *GetSelfResponse) String() string {
 func (*GetSelfResponse) ProtoMessage() {}
 
 func (x *GetSelfResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_crossme_proto_msgTypes[15]
+	mi := &file_crossme_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +910,7 @@ func (x *GetSelfResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSelfResponse.ProtoReflect.Descriptor instead.
 func (*GetSelfResponse) Descriptor() ([]byte, []int) {
-	return file_crossme_proto_rawDescGZIP(), []int{15}
+	return file_crossme_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetSelfResponse) GetUser() *User {
@@ -750,7 +927,7 @@ const file_crossme_proto_rawDesc = "" +
 	"\rcrossme.proto\x12\acrossme\x1a\fpuzzle.proto\x1a\n" +
 	"fill.proto\x1a\n" +
 	"game.proto\x1a\n" +
-	"user.proto\"\x14\n" +
+	"user.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x14\n" +
 	"\x12GetPuzzleIndexArgs\"H\n" +
 	"\x16GetPuzzleIndexResponse\x12.\n" +
 	"\apuzzles\x18\x01 \x03(\v2\x14.crossme.PuzzleIndexR\apuzzles\"#\n" +
@@ -781,10 +958,22 @@ const file_crossme_proto_rawDesc = "" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12\x17\n" +
 	"\anode_id\x18\x02 \x01(\tR\x06nodeId\x12!\n" +
 	"\x04fill\x18\x03 \x01(\v2\r.crossme.FillR\x04fill\"\x14\n" +
-	"\x12UpdateFillResponse\"\r\n" +
+	"\x12UpdateFillResponse\"\x10\n" +
+	"\x0eGetMyGamesArgs\"\xa7\x02\n" +
+	"\x06MyGame\x12\x17\n" +
+	"\agame_id\x18\x01 \x01(\tR\x06gameId\x12\x1b\n" +
+	"\tpuzzle_id\x18\x02 \x01(\tR\bpuzzleId\x12\x14\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\x12\x16\n" +
+	"\x06author\x18\x04 \x01(\tR\x06author\x12=\n" +
+	"\ffirst_played\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\vfirstPlayed\x12;\n" +
+	"\vlast_played\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"lastPlayed\x12=\n" +
+	"\fcompleted_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\vcompletedAt\";\n" +
+	"\x12GetMyGamesResponse\x12%\n" +
+	"\x05games\x18\x01 \x03(\v2\x0f.crossme.MyGameR\x05games\"\r\n" +
 	"\vGetSelfArgs\"4\n" +
 	"\x0fGetSelfResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.crossme.UserR\x04user2\xa9\x04\n" +
+	"\x04user\x18\x01 \x01(\v2\r.crossme.UserR\x04user2\xed\x04\n" +
 	"\aCrossMe\x12N\n" +
 	"\x0eGetPuzzleIndex\x12\x1b.crossme.GetPuzzleIndexArgs\x1a\x1f.crossme.GetPuzzleIndexResponse\x12G\n" +
 	"\rGetPuzzleById\x12\x1a.crossme.GetPuzzleByIdArgs\x1a\x1a.crossme.GetPuzzleResponse\x129\n" +
@@ -794,7 +983,9 @@ const file_crossme_proto_rawDesc = "" +
 	"\n" +
 	"UpdateFill\x12\x17.crossme.UpdateFillArgs\x1a\x1b.crossme.UpdateFillResponse\x12>\n" +
 	"\tSubscribe\x12\x16.crossme.SubscribeArgs\x1a\x17.crossme.SubscribeEvent0\x01\x129\n" +
-	"\aGetSelf\x12\x14.crossme.GetSelfArgs\x1a\x18.crossme.GetSelfResponseB\x14Z\x12crossme.app/src/pbb\x06proto3"
+	"\aGetSelf\x12\x14.crossme.GetSelfArgs\x1a\x18.crossme.GetSelfResponse\x12B\n" +
+	"\n" +
+	"GetMyGames\x12\x17.crossme.GetMyGamesArgs\x1a\x1b.crossme.GetMyGamesResponseB\x14Z\x12crossme.app/src/pbb\x06proto3"
 
 var (
 	file_crossme_proto_rawDescOnce sync.Once
@@ -808,7 +999,7 @@ func file_crossme_proto_rawDescGZIP() []byte {
 	return file_crossme_proto_rawDescData
 }
 
-var file_crossme_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_crossme_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_crossme_proto_goTypes = []any{
 	(*GetPuzzleIndexArgs)(nil),     // 0: crossme.GetPuzzleIndexArgs
 	(*GetPuzzleIndexResponse)(nil), // 1: crossme.GetPuzzleIndexResponse
@@ -824,45 +1015,55 @@ var file_crossme_proto_goTypes = []any{
 	(*SubscribeEvent)(nil),         // 11: crossme.SubscribeEvent
 	(*UpdateFillArgs)(nil),         // 12: crossme.UpdateFillArgs
 	(*UpdateFillResponse)(nil),     // 13: crossme.UpdateFillResponse
-	(*GetSelfArgs)(nil),            // 14: crossme.GetSelfArgs
-	(*GetSelfResponse)(nil),        // 15: crossme.GetSelfResponse
-	(*PuzzleIndex)(nil),            // 16: crossme.PuzzleIndex
-	(*Puzzle)(nil),                 // 17: crossme.Puzzle
-	(*Game)(nil),                   // 18: crossme.Game
-	(*Fill)(nil),                   // 19: crossme.Fill
-	(*User)(nil),                   // 20: crossme.User
+	(*GetMyGamesArgs)(nil),         // 14: crossme.GetMyGamesArgs
+	(*MyGame)(nil),                 // 15: crossme.MyGame
+	(*GetMyGamesResponse)(nil),     // 16: crossme.GetMyGamesResponse
+	(*GetSelfArgs)(nil),            // 17: crossme.GetSelfArgs
+	(*GetSelfResponse)(nil),        // 18: crossme.GetSelfResponse
+	(*PuzzleIndex)(nil),            // 19: crossme.PuzzleIndex
+	(*Puzzle)(nil),                 // 20: crossme.Puzzle
+	(*Game)(nil),                   // 21: crossme.Game
+	(*Fill)(nil),                   // 22: crossme.Fill
+	(*timestamppb.Timestamp)(nil),  // 23: google.protobuf.Timestamp
+	(*User)(nil),                   // 24: crossme.User
 }
 var file_crossme_proto_depIdxs = []int32{
-	16, // 0: crossme.GetPuzzleIndexResponse.puzzles:type_name -> crossme.PuzzleIndex
-	17, // 1: crossme.GetPuzzleResponse.puzzle:type_name -> crossme.Puzzle
-	18, // 2: crossme.NewGameResponse.game:type_name -> crossme.Game
-	18, // 3: crossme.GetGameResponse.game:type_name -> crossme.Game
-	17, // 4: crossme.GetGameResponse.puzzle:type_name -> crossme.Puzzle
-	17, // 5: crossme.UploadPuzzleResponse.puzzle:type_name -> crossme.Puzzle
-	19, // 6: crossme.SubscribeEvent.fill:type_name -> crossme.Fill
-	19, // 7: crossme.UpdateFillArgs.fill:type_name -> crossme.Fill
-	20, // 8: crossme.GetSelfResponse.user:type_name -> crossme.User
-	0,  // 9: crossme.CrossMe.GetPuzzleIndex:input_type -> crossme.GetPuzzleIndexArgs
-	2,  // 10: crossme.CrossMe.GetPuzzleById:input_type -> crossme.GetPuzzleByIdArgs
-	4,  // 11: crossme.CrossMe.NewGame:input_type -> crossme.NewGameArgs
-	6,  // 12: crossme.CrossMe.GetGameById:input_type -> crossme.GetGameByIdArgs
-	8,  // 13: crossme.CrossMe.UploadPuzzle:input_type -> crossme.UploadPuzzleArgs
-	12, // 14: crossme.CrossMe.UpdateFill:input_type -> crossme.UpdateFillArgs
-	10, // 15: crossme.CrossMe.Subscribe:input_type -> crossme.SubscribeArgs
-	14, // 16: crossme.CrossMe.GetSelf:input_type -> crossme.GetSelfArgs
-	1,  // 17: crossme.CrossMe.GetPuzzleIndex:output_type -> crossme.GetPuzzleIndexResponse
-	3,  // 18: crossme.CrossMe.GetPuzzleById:output_type -> crossme.GetPuzzleResponse
-	5,  // 19: crossme.CrossMe.NewGame:output_type -> crossme.NewGameResponse
-	7,  // 20: crossme.CrossMe.GetGameById:output_type -> crossme.GetGameResponse
-	9,  // 21: crossme.CrossMe.UploadPuzzle:output_type -> crossme.UploadPuzzleResponse
-	13, // 22: crossme.CrossMe.UpdateFill:output_type -> crossme.UpdateFillResponse
-	11, // 23: crossme.CrossMe.Subscribe:output_type -> crossme.SubscribeEvent
-	15, // 24: crossme.CrossMe.GetSelf:output_type -> crossme.GetSelfResponse
-	17, // [17:25] is the sub-list for method output_type
-	9,  // [9:17] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	19, // 0: crossme.GetPuzzleIndexResponse.puzzles:type_name -> crossme.PuzzleIndex
+	20, // 1: crossme.GetPuzzleResponse.puzzle:type_name -> crossme.Puzzle
+	21, // 2: crossme.NewGameResponse.game:type_name -> crossme.Game
+	21, // 3: crossme.GetGameResponse.game:type_name -> crossme.Game
+	20, // 4: crossme.GetGameResponse.puzzle:type_name -> crossme.Puzzle
+	20, // 5: crossme.UploadPuzzleResponse.puzzle:type_name -> crossme.Puzzle
+	22, // 6: crossme.SubscribeEvent.fill:type_name -> crossme.Fill
+	22, // 7: crossme.UpdateFillArgs.fill:type_name -> crossme.Fill
+	23, // 8: crossme.MyGame.first_played:type_name -> google.protobuf.Timestamp
+	23, // 9: crossme.MyGame.last_played:type_name -> google.protobuf.Timestamp
+	23, // 10: crossme.MyGame.completed_at:type_name -> google.protobuf.Timestamp
+	15, // 11: crossme.GetMyGamesResponse.games:type_name -> crossme.MyGame
+	24, // 12: crossme.GetSelfResponse.user:type_name -> crossme.User
+	0,  // 13: crossme.CrossMe.GetPuzzleIndex:input_type -> crossme.GetPuzzleIndexArgs
+	2,  // 14: crossme.CrossMe.GetPuzzleById:input_type -> crossme.GetPuzzleByIdArgs
+	4,  // 15: crossme.CrossMe.NewGame:input_type -> crossme.NewGameArgs
+	6,  // 16: crossme.CrossMe.GetGameById:input_type -> crossme.GetGameByIdArgs
+	8,  // 17: crossme.CrossMe.UploadPuzzle:input_type -> crossme.UploadPuzzleArgs
+	12, // 18: crossme.CrossMe.UpdateFill:input_type -> crossme.UpdateFillArgs
+	10, // 19: crossme.CrossMe.Subscribe:input_type -> crossme.SubscribeArgs
+	17, // 20: crossme.CrossMe.GetSelf:input_type -> crossme.GetSelfArgs
+	14, // 21: crossme.CrossMe.GetMyGames:input_type -> crossme.GetMyGamesArgs
+	1,  // 22: crossme.CrossMe.GetPuzzleIndex:output_type -> crossme.GetPuzzleIndexResponse
+	3,  // 23: crossme.CrossMe.GetPuzzleById:output_type -> crossme.GetPuzzleResponse
+	5,  // 24: crossme.CrossMe.NewGame:output_type -> crossme.NewGameResponse
+	7,  // 25: crossme.CrossMe.GetGameById:output_type -> crossme.GetGameResponse
+	9,  // 26: crossme.CrossMe.UploadPuzzle:output_type -> crossme.UploadPuzzleResponse
+	13, // 27: crossme.CrossMe.UpdateFill:output_type -> crossme.UpdateFillResponse
+	11, // 28: crossme.CrossMe.Subscribe:output_type -> crossme.SubscribeEvent
+	18, // 29: crossme.CrossMe.GetSelf:output_type -> crossme.GetSelfResponse
+	16, // 30: crossme.CrossMe.GetMyGames:output_type -> crossme.GetMyGamesResponse
+	22, // [22:31] is the sub-list for method output_type
+	13, // [13:22] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_crossme_proto_init() }
@@ -880,7 +1081,7 @@ func file_crossme_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_crossme_proto_rawDesc), len(file_crossme_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
