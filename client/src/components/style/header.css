@@ -1,0 +1,38 @@
+/* Responsive behavior for the nav bar. All of our responsive layout
+   uses explicit media queries rather than Bootstrap's responsive
+   classes; the breakpoints are documented in style/puzzle.css.
+
+   With no `expand` prop, Bootstrap leaves the navbar permanently
+   collapsed behind the hamburger toggle. These rules are Bootstrap's
+   own navbar-expand-* declarations (minus the offcanvas ones, which we
+   don't use), applied at our desktop breakpoint: they hide the toggler
+   and lay the nav out as a single row. The !important matches
+   Bootstrap's, needed to beat its `.collapse:not(.show)`. */
+@media (width >= 768px) {
+  .navbar {
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+  }
+
+  .navbar .navbar-nav {
+    flex-direction: row;
+  }
+
+  .navbar .navbar-nav .dropdown-menu {
+    position: absolute;
+  }
+
+  .navbar .navbar-nav .nav-link {
+    padding-right: var(--bs-navbar-nav-link-padding-x);
+    padding-left: var(--bs-navbar-nav-link-padding-x);
+  }
+
+  .navbar .navbar-collapse {
+    display: flex !important;
+    flex-basis: auto;
+  }
+
+  .navbar .navbar-toggler {
+    display: none;
+  }
+}

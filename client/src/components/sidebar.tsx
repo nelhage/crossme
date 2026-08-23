@@ -20,7 +20,7 @@ interface SidebarProps {
 export const Sidebar = (props: SidebarProps) => {
   return (
     <div id="controls">
-      <Nav className="flex-lg-column">
+      <Nav>
         <Nav.Item>
           <Reveal doReveal={props.doReveal} />
         </Nav.Item>

@@ -290,7 +290,28 @@
   display: block;
 }
 
-@media (max-width: 768px) {
+/* Responsive layout. All responsive behavior lives in explicit media
+   queries (here and in style/header.css) — we don't use Bootstrap's
+   responsive utility classes. Two breakpoints:
+
+   - Below 768px ("mobile"): the clue box is hidden, the current clue
+     is pinned to the bottom of the screen, and the nav bar (see
+     header.css) collapses behind a hamburger toggle.
+   - At 992px and up ("wide"): the controls stack as a column beside
+     the clue box. In between, they stay in a row, which wraps below
+     the grid on its own when it runs out of room. */
+
+@media (width >= 992px) {
+  #controls .nav {
+    flex-direction: column;
+  }
+}
+
+@media (width < 768px) {
+  #clues {
+    display: none;
+  }
+
   #theclue {
     position: fixed;
     bottom: 0px;

@@ -1,3 +1,5 @@
+import "./style/header.css";
+
 import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
@@ -13,7 +15,11 @@ import { RecentGames } from "./recent_games";
 export const Header = () => {
   const { user } = useUser();
   return (
-    <Navbar bg="dark" variant="dark" expand="md">
+    // expand={false} keeps react-bootstrap from emitting any of its
+    // responsive navbar-expand-* classes (the default is a navbar that
+    // is always expanded); style/header.css expands the navbar at our
+    // own desktop breakpoint instead.
+    <Navbar bg="dark" variant="dark" expand={false}>
       <Container fluid>
         <Navbar.Brand href="/">CrossMe</Navbar.Brand>
         <Navbar.Toggle aria-controls="main-navbar" />

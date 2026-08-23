@@ -11,7 +11,7 @@ export interface ClueBoxProps {
 }
 
 export const ClueBox = (props: ClueBoxProps) => (
-  <div id="clues" className="d-none d-md-inline-block">
+  <div id="clues">
     <div className="section across">
       <div className="title"> Across </div>
       <ClueGroup
