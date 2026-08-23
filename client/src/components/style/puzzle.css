@@ -290,11 +290,7 @@
   display: block;
 }
 
-/* Responsive layout. All of the puzzle page's responsive behavior
-   lives in these explicit media queries — no Bootstrap responsive
-   utility classes. (The nav bar is the exception: it's a stock
-   Bootstrap navbar with expand="md", which happens to share our
-   768px breakpoint.) Two breakpoints:
+/* Responsive layout, at two breakpoints:
 
    - Below 768px ("mobile"): the clue box is hidden and the current
      clue is pinned to the bottom of the screen.
