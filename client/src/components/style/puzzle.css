@@ -290,13 +290,14 @@
   display: block;
 }
 
-/* Responsive layout. All responsive behavior lives in explicit media
-   queries (here and in style/header.css) — we don't use Bootstrap's
-   responsive utility classes. Two breakpoints:
+/* Responsive layout. All of the puzzle page's responsive behavior
+   lives in these explicit media queries — no Bootstrap responsive
+   utility classes. (The nav bar is the exception: it's a stock
+   Bootstrap navbar with expand="md", which happens to share our
+   768px breakpoint.) Two breakpoints:
 
-   - Below 768px ("mobile"): the clue box is hidden, the current clue
-     is pinned to the bottom of the screen, and the nav bar (see
-     header.css) collapses behind a hamburger toggle.
+   - Below 768px ("mobile"): the clue box is hidden and the current
+     clue is pinned to the bottom of the screen.
    - At 992px and up ("wide"): the controls stack as a column beside
      the clue box. In between, they stay in a row, which wraps below
      the grid on its own when it runs out of room. */
