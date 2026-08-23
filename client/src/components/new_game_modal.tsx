@@ -146,8 +146,8 @@ export const NewGameModal = ({ show, onClose }: NewGameModalProps) => {
           <div className="mb-3">
             <Form.Label htmlFor="puzfile">
               Or upload new{" "}
-              <a href="https://code.google.com/p/puz/wiki/FileFormat">.puz</a> or
-              .jpz:
+              <a href="https://code.google.com/p/puz/wiki/FileFormat">.puz</a>{" "}
+              or .jpz:
             </Form.Label>
             <Form.Control
               id="puzfile"
