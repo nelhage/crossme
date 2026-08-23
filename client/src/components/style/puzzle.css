@@ -290,7 +290,25 @@
   display: block;
 }
 
-@media (max-width: 768px) {
+/* Responsive layout, at two breakpoints:
+
+   - Below 768px ("mobile"): the clue box is hidden and the current
+     clue is pinned to the bottom of the screen.
+   - At 992px and up ("wide"): the controls stack as a column beside
+     the clue box. In between, they stay in a row, which wraps below
+     the grid on its own when it runs out of room. */
+
+@media (width >= 992px) {
+  #controls .nav {
+    flex-direction: column;
+  }
+}
+
+@media (width < 768px) {
+  #clues {
+    display: none;
+  }
+
   #theclue {
     position: fixed;
     bottom: 0px;
