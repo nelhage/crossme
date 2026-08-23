@@ -1,0 +1,71 @@
+#!/usr/bin/env python3
+"""Sanitize a .jpz: keep the grid geometry, numbering, words, and XML
+structure exactly as produced by the constructing tool, but replace all
+authored content (solutions, clue text, identifying metadata) with
+dummy values."""
+import re
+import sys
+import zipfile
+
+
+def dummy_letter(x, y, i=0):
+    return chr(ord("A") + (3 * x + 5 * y + i) % 26)
+
+
+def sanitize_cell(m):
+    attrs = m.group(1)
+    xm = re.search(r'\bx="(\d+)"', attrs)
+    ym = re.search(r'\by="(\d+)"', attrs)
+    x, y = int(xm.group(1)), int(ym.group(1))
+
+    def repl_solution(sm):
+        n = len(sm.group(1))
+        return 'solution="%s"' % "".join(dummy_letter(x, y, i) for i in range(n))
+
+    attrs = re.sub(r'solution="([^"]*)"', repl_solution, attrs)
+    return "<cell %s/>" % attrs
+
+
+def sanitize_clue(m):
+    tag, text, close = m.groups()
+    nm = re.search(r'number="([^"]*)"', tag)
+    dummy = "Dummy clue for %s" % nm.group(1) if nm else "Dummy clue"
+    # Keep a cryptic-style enumeration suffix like "(8,8)": it reveals
+    # only word lengths, which the grid shows anyway.
+    em = re.search(r"\((\d+(?:[,-]\d+)*)\)\s*$", text)
+    if em:
+        dummy += " (%s)" % em.group(1)
+    return tag + dummy + close
+
+
+def sanitize(xml, title, creator):
+    xml = re.sub(r"<cell ([^>]*?)/>", sanitize_cell, xml)
+    xml = re.sub(r"(<clue\b[^>]*><span>)(.*?)(</span></clue>)", sanitize_clue, xml)
+    n = [0]
+
+    def count(m):
+        n[0] += 1
+        return m.group(0)
+
+    xml = re.sub(r"<clue\b[^>]*><span>", count, xml)  # count for reporting
+    xml = re.sub(r"<metadata>.*?</metadata>",
+                 "<metadata><title>%s</title><creator>%s</creator>"
+                 "<description></description><copyright>© 2026</copyright>"
+                 "</metadata>" % (title, creator), xml, flags=re.S)
+    return xml
+
+
+def main():
+    src, dst, inner, title, creator = sys.argv[1:6]
+    with zipfile.ZipFile(src) as z:
+        xml = z.read(z.namelist()[0]).decode("utf-8")
+    out = sanitize(xml, title, creator)
+    # The real files' zip entry is itself named *.jpz (not *.xml);
+    # keep that quirk so the fixtures exercise it.
+    with zipfile.ZipFile(dst, "w", zipfile.ZIP_DEFLATED) as z:
+        z.writestr(inner, out)
+    print("wrote", dst)
+
+
+if __name__ == "__main__":
+    main()

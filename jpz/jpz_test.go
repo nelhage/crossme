@@ -71,6 +71,15 @@ func checkMini(t *testing.T, p *puz.PuzFile) {
 }
 
 func TestFromFile(t *testing.T) {
+	// daily.jpz and cryptic.jpz are real published puzzles run through
+	// scripts/sanitize-jpz, which keeps the grid, numbering, and XML
+	// structure but replaces solutions and clue text with dummy content.
+	shapes := map[string]struct{ w, h, across, down int }{
+		"mini.xml":    {5, 5, 5, 5},
+		"mini.jpz":    {5, 5, 5, 5},
+		"daily.jpz":   {14, 11, 19, 22},
+		"cryptic.jpz": {15, 15, 14, 14},
+	}
 	dents, err := os.ReadDir("testdata")
 	if err != nil {
 		t.Fatal(err)
@@ -80,6 +89,17 @@ func TestFromFile(t *testing.T) {
 		if err != nil {
 			t.Errorf("FromFile(%q): %v", ent.Name(), err)
 			continue
+		}
+		want, ok := shapes[ent.Name()]
+		if !ok {
+			t.Errorf("no expected shape for testdata/%s; add one", ent.Name())
+			continue
+		}
+		if p.Width != want.w || p.Height != want.h ||
+			len(p.CluesAcross) != want.across || len(p.CluesDown) != want.down {
+			t.Errorf("%s: got %dx%d with %d across/%d down clues, want %dx%d %d/%d",
+				ent.Name(), p.Width, p.Height, len(p.CluesAcross), len(p.CluesDown),
+				want.w, want.h, want.across, want.down)
 		}
 		if strings.HasPrefix(ent.Name(), "mini.") {
 			checkMini(t, p)
