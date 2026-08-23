@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<crossword-compiler-applet xmlns="http://crossword.info/xml/crossword-compiler-applet">
+  <applet-settings width="720" height="600">
+    <completion friendly-submit="false" only-if-correct="true">Congratulations, the puzzle is solved correctly!</completion>
+  </applet-settings>
+  <rectangular-puzzle xmlns="http://crossword.info/xml/rectangular-puzzle" alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZ">
+    <metadata>
+      <title>Test Mini</title>
+      <creator>A. Constructor</creator>
+      <copyright>&#169; 2026 Testers</copyright>
+      <description>A tiny test puzzle.</description>
+    </metadata>
+    <crossword>
+      <grid width="5" height="5">
+        <grid-look numbering-scheme="normal" cell-size-in-pixels="26"/>
+        <cell x="1" y="1" solution="A" number="1"/>
+        <cell x="2" y="1" solution="BEE" number="2"/>
+        <cell x="3" y="1" solution="C" number="3"/>
+        <cell x="4" y="1" solution="D" number="4"/>
+        <cell x="5" y="1" type="block"/>
+        <cell x="1" y="2" solution="F" number="5"/>
+        <cell x="2" y="2" solution="G"/>
+        <cell x="3" y="2" solution="H"/>
+        <cell x="4" y="2" solution="I"/>
+        <cell x="5" y="2" solution="J" number="6"/>
+        <cell x="1" y="3" solution="K" number="7"/>
+        <cell x="2" y="3" solution="L"/>
+        <cell x="3" y="3" solution="m" background-shape="circle"/>
+        <cell x="4" y="3" solution="N"/>
+        <cell x="5" y="3" solution="O"/>
+        <cell x="1" y="4" solution="P" number="8"/>
+        <cell x="2" y="4" solution="Q"/>
+        <cell x="3" y="4" solution="R"/>
+        <cell x="4" y="4" solution="S"/>
+        <cell x="5" y="4" solution="T"/>
+        <cell x="1" y="5" type="block"/>
+        <cell x="2" y="5" solution="V" number="9"/>
+        <cell x="3" y="5" solution="W"/>
+        <cell x="4" y="5" solution="X"/>
+        <cell x="5" y="5" solution="Y"/>
+      </grid>
+      <word id="1" x="1-4" y="1"/>
+      <word id="2" x="1-5" y="2"/>
+      <word id="3" x="1-5" y="3"/>
+      <word id="4" x="1-5" y="4"/>
+      <word id="5">
+        <cells x="2" y="5"/>
+        <cells x="3" y="5"/>
+        <cells x="4" y="5"/>
+        <cells x="5" y="5"/>
+      </word>
+      <word id="6" x="1" y="1-4"/>
+      <word id="7" x="2" y="1-5"/>
+      <word id="8" x="3" y="1-5"/>
+      <word id="9" x="4" y="1-5"/>
+      <word id="10" x="5" y="2-5"/>
+      <clues ordering="normal">
+        <title><b>Across</b></title>
+        <clue word="1" number="1">First across</clue>
+        <clue word="2" number="5">Second across</clue>
+        <clue word="3" number="7">Clue with <b>bold</b> &amp; entity</clue>
+        <clue word="4" number="8">Fourth across</clue>
+        <clue word="5" number="9">Fifth across</clue>
+      </clues>
+      <clues ordering="normal">
+        <title><b>Down</b></title>
+        <clue word="6" number="1">First down</clue>
+        <clue word="7" number="2">Second down</clue>
+        <clue word="8" number="3">Third down</clue>
+        <clue word="9" number="4">Fourth down</clue>
+        <clue word="10" number="6">Fifth down</clue>
+      </clues>
+    </crossword>
+  </rectangular-puzzle>
+</crossword-compiler-applet>
