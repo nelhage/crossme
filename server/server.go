@@ -9,9 +9,9 @@ import (
 	"connectrpc.com/connect"
 	"crossme.app/src/auth"
 	"crossme.app/src/crdt"
+	"crossme.app/src/formats"
 	"crossme.app/src/pb"
 	"crossme.app/src/pb/pbconnect"
-	"crossme.app/src/puz"
 	"crossme.app/src/repo"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -162,7 +162,7 @@ func (s *Server) RecordPlays(ctx context.Context, req *connect.Request[pb.Record
 }
 
 func (s *Server) UploadPuzzle(ctx context.Context, req *connect.Request[pb.UploadPuzzleArgs]) (*connect.Response[pb.UploadPuzzleResponse], error) {
-	puzfile, err := puz.FromBytes(req.Msg.Data)
+	puzfile, err := formats.Parse(req.Msg.Data)
 	if err != nil {
 		return nil, connect.NewError(connect.CodeInvalidArgument, err)
 	}

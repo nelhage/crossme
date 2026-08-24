@@ -5,7 +5,7 @@ import (
 	"log"
 	"os"
 
-	"crossme.app/src/puz"
+	"crossme.app/src/formats"
 	"crossme.app/src/repo"
 )
 
@@ -25,7 +25,7 @@ func main() {
 			log.Fatalf("Reading puzzle: %v", err)
 		}
 
-		puzzle, err := puz.FromBytes(data)
+		puzzle, err := formats.Parse(data)
 		if err != nil {
 			log.Fatalf("Loading puzzle: %v", err)
 		}
