@@ -56,6 +56,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.setPencil = this.setPencil.bind(this);
     this.doReveal = this.doReveal.bind(this);
     this.doCheck = this.doCheck.bind(this);
+    this.prevClue = this.prevClue.bind(this);
+    this.nextClue = this.nextClue.bind(this);
+    this.toggleDirection = this.toggleDirection.bind(this);
   }
 
   updateGame(op: (g: Crossword.Game) => Crossword.GameUpdate) {
@@ -205,6 +208,18 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.updateGame((game) => Crossword.selectClue(game, evt));
   }
 
+  prevClue() {
+    this.updateGame((game) => Crossword.adjacentClue(game, true));
+  }
+
+  nextClue() {
+    this.updateGame((game) => Crossword.adjacentClue(game));
+  }
+
+  toggleDirection() {
+    this.updateGame(Crossword.swapDirection);
+  }
+
   doReveal(target: Crossword.Target) {
     this.updateGame((game) => Crossword.revealAnswers(game, target));
   }
@@ -328,6 +343,9 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           <CurrentClue
             clue={this.selectedClue()}
             direction={this.direction()}
+            onPrev={this.prevClue}
+            onNext={this.nextClue}
+            onToggle={this.toggleDirection}
           />
         )}
         <PuzzleGrid

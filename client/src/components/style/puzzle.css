@@ -43,9 +43,21 @@
   margin: 5px 0px;
 }
 
-#theclue > span {
+#theclue .body > span {
   padding: 5px;
   font-weight: bold;
+}
+
+/* Tapping the clue swaps direction. */
+#theclue .body {
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Previous/next-clue arrows; only shown on mobile, where the clue
+   list is hidden and there's no other way to browse clues. */
+#theclue .clue-nav {
+  display: none;
 }
 
 #theclue .label {
@@ -316,9 +328,34 @@
     right: 0px;
     background-color: white;
     border-top: 2px solid black;
-    padding: 10px;
+    padding: 10px 0px;
     margin: 0;
     z-index: 5;
+    display: flex;
+    align-items: center;
+  }
+
+  #theclue .body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #theclue .clue-nav {
+    display: block;
+    flex: none;
+    align-self: stretch;
+    width: 2em;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    font-size: 160%;
+    line-height: 1;
+    touch-action: manipulation;
+  }
+
+  #theclue .clue-nav:active {
+    background-color: #ccf;
   }
 
   /* While the clue is pinned, scroll inside .App instead of the

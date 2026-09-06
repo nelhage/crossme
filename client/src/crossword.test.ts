@@ -437,6 +437,78 @@ describe("crossword operations", () => {
 # . . . #
 `,
     ],
+    [
+      "Next clue moves to the start of the following clue",
+      `
+# . .>. #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      (g) => Crossword.adjacentClue(g),
+      `
+# . . . #
+.>. . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+    ],
+    [
+      "Next clue continues from the last across into the first down",
+      `
+# . . . #
+. . . . .
+. . # . .
+. . . . .
+# . .>. #
+`,
+      (g) => Crossword.adjacentClue(g),
+      `
+# .v. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+    ],
+    [
+      "Previous clue moves to the start of the preceding clue",
+      `
+# . . . #
+. .>. . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      (g) => Crossword.adjacentClue(g, true),
+      `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+    ],
+    [
+      "Previous clue wraps from the first across to the last down",
+      `
+# .>. . #
+. . . . .
+. . # . .
+. . . . .
+# . . . #
+`,
+      (g) => Crossword.adjacentClue(g, true),
+      `
+# . . . #
+. . . . .
+. . # . .
+. . .v. .
+# . . . #
+`,
+    ],
   ];
   testCases.forEach(([name, before, op, after], i) => {
     it(`${name} [index: ${i}]`, () => {
