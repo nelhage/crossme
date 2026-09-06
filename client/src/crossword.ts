@@ -582,6 +582,17 @@ export function nextBlank(g: Game, reverse?: boolean): GameUpdate {
   );
 }
 
+// Moves the cursor to the start of the next (or, with `reverse`, the
+// previous) clue in puzzle order: through the rest of the current
+// direction's clues, then the other direction's, wrapping around.
+export function adjacentClue(g: Game, reverse?: boolean): GameUpdate {
+  return nextClue(
+    g,
+    (direction, clue) => ({ ...g.by_clue[clue.number], direction }),
+    reverse
+  );
+}
+
 export function keypress(g: Game, text: string): GameUpdate {
   const oldFill = fillAt(g, g.cursor);
   const update = fillSquare(g, text);
