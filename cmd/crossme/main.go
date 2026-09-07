@@ -33,6 +33,13 @@ func main() {
 		baseURL = flag.String("base-url",
 			envDefault("CROSSME_BASE_URL", "http://localhost:3000"),
 			"external base URL the browser reaches us at, for OAuth redirects")
+
+		// In production nginx serves the built client and proxies /api/ here.
+		// Preview instances run everything in one container instead, so we can
+		// optionally serve the bundle ourselves; empty means we don't.
+		staticDir = flag.String("static-dir",
+			os.Getenv("CROSSME_STATIC_DIR"),
+			"directory of built client assets to serve at /; empty disables static serving")
 	)
 	flag.Parse()
 
@@ -84,6 +91,19 @@ func main() {
 	// calling.
 	mux.Handle("/api"+path, http.StripPrefix("/api", authHandler.Middleware(handler)))
 
+	if *staticDir != "" {
+		spa, err := newSPAHandler(*staticDir)
+		if err != nil {
+			log.Fatal("-static-dir: ", err)
+		}
+		// An unmatched path under /api/ is an API error, not a client-side
+		// route; without this it would fall through to the catch-all below and
+		// answer with the app shell. The API and /healthz patterns registered
+		// above are more specific, so they still win.
+		mux.Handle("/api/", http.NotFoundHandler())
+		mux.Handle("/", spa)
+	}
+
 	// h2c lets HTTP/2 clients (gRPC, and Connect over HTTP/2) talk to us
 	// without TLS; browsers use the Connect protocol over HTTP/1.1.
 	httpServer := &http.Server{
@@ -91,7 +111,11 @@ func main() {
 		Handler: h2c.NewHandler(mux, &http2.Server{}),
 	}
 
-	log.Printf("listening on %s", *bind)
+	if *staticDir != "" {
+		log.Printf("listening on %s (serving %s at /)", *bind, *staticDir)
+	} else {
+		log.Printf("listening on %s", *bind)
+	}
 	if err := httpServer.ListenAndServe(); err != nil {
 		log.Fatal("ListenAndServe: ", err)
 	}
