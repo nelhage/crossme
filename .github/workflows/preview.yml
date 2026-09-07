@@ -1,0 +1,54 @@
+name: Preview
+
+# Deploys every pull request as its own Fly.io app, built from
+# Dockerfile.preview (see fly.toml), and destroys the app when the PR closes.
+# The preview runs the whole app in one container on an empty database.
+#
+# Needs the FLY_API_TOKEN repository secret: an org-scoped Fly token, since the
+# action creates and destroys apps (`fly tokens create org`).
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+env:
+  FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+  FLY_ORG: personal
+  FLY_REGION: sjc
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+
+    # Forks don't get repository secrets, so a fork PR can't deploy anyway;
+    # skip rather than fail.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+
+    # One deploy at a time per PR. Deliberately not cancel-in-progress: a
+    # destroy on close must not race a half-finished deploy.
+    concurrency:
+      group: preview-pr-${{ github.event.number }}
+
+    # A GitHub deployment environment per PR, so the preview URL shows up in
+    # the pull request's sidebar.
+    environment:
+      name: preview-pr-${{ github.event.number }}
+      url: ${{ steps.deploy.outputs.url }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Deploy preview
+        id: deploy
+        uses: superfly/fly-pr-review-apps@1.5.0
+        with:
+          name: crossme-pr-${{ github.event.number }}
+          # The app has no way to learn its own public URL, and needs it for
+          # OAuth redirects. Google login itself stays off in previews until
+          # each preview host can be authorized somehow; this just keeps the
+          # base URL correct for when it is.
+          secrets: CROSSME_BASE_URL=https://crossme-pr-${{ github.event.number }}.fly.dev

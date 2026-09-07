@@ -53,3 +53,9 @@ is off by default and enabled exactly as in production, with
 `CROSSME_BASE_URL` (the last being the URL the browser reaches the
 preview at, whose `/api/auth/google/callback` must be a registered
 redirect URI).
+
+Every pull request is deployed as a preview from this image by
+`.github/workflows/preview.yml`, as a Fly.io app named
+`crossme-pr-<number>` (config in `fly.toml`), destroyed when the PR
+closes. The workflow needs an org-scoped Fly API token in the
+`FLY_API_TOKEN` repository secret.
