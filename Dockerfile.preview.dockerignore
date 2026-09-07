@@ -1,0 +1,15 @@
+# Applies only to Dockerfile.preview: BuildKit prefers
+# <Dockerfile-name>.dockerignore over .dockerignore when it exists, so this
+# file requires BuildKit (the default builder since Docker 23).
+#
+# The root .dockerignore excludes client/, which the two-image production build
+# doesn't need but this one does; hence the separate list.
+.git/
+.github/
+bin/
+data/
+docs/
+*.md
+client/node_modules/
+client/dist/
+client/coverage/

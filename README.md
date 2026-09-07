@@ -33,3 +33,23 @@ registered as an authorized redirect URI — e.g.
 `http://localhost:3000/api/auth/google/callback` for development.
 
 [3]: https://console.cloud.google.com/apis/credentials
+
+Preview image
+-------------
+
+`Dockerfile.preview` builds the client and the server into a single
+image, for throwaway per-PR preview instances. (Production keeps the two
+apart: `Dockerfile` for the Go server, and `client/Dockerfile` +
+`client/nginx.conf` for the bundle behind nginx.) The server serves the
+built client itself here, via `-static-dir` / `CROSSME_STATIC_DIR`.
+
+    docker build -f Dockerfile.preview -t crossme-preview .
+    docker run -p 4000:4000 crossme-preview
+
+The app is then at `http://localhost:4000`. Each container starts on an
+empty database, and that database dies with the container. Google login
+is off by default and enabled exactly as in production, with
+`CROSSME_GOOGLE_CLIENT_ID`, `CROSSME_GOOGLE_CLIENT_SECRET` and
+`CROSSME_BASE_URL` (the last being the URL the browser reaches the
+preview at, whose `/api/auth/google/callback` must be a registered
+redirect URI).

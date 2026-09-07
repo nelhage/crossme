@@ -1,0 +1,77 @@
+# syntax=docker/dockerfile:1
+
+# A single image running the whole app — the Go server, serving the built SPA
+# itself — for transient per-PR preview instances.
+#
+# Production does not use this. There the client and the server ship as two
+# images: client/Dockerfile puts the bundle behind nginx (client/nginx.conf),
+# which proxies /api/ to the Go server from the root Dockerfile. This image
+# exists so a preview is one container with nothing to wire together; the
+# server reproduces nginx's SPA fallback and response headers behind
+# -static-dir.
+
+# Keep GO_VERSION in sync with go.mod, and NODE_VERSION with client/Dockerfile.
+# The builder and the runtime pin the same Alpine release so the cgo build and
+# the runtime agree on musl.
+ARG GO_VERSION=1.25
+ARG ALPINE_VERSION=3.22
+ARG NODE_VERSION=24
+
+FROM node:${NODE_VERSION}-alpine AS client
+
+WORKDIR /src
+
+# Install dependencies in their own layer, keyed only on the lockfile.
+COPY client/package.json client/package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm \
+    npm ci
+
+COPY client/ ./
+RUN npm run build
+
+FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS build
+
+# github.com/mattn/go-sqlite3 is a cgo package, so we need a C toolchain.
+RUN apk add --no-cache build-base
+
+WORKDIR /src
+
+# Download modules in their own layer so editing source doesn't refetch them.
+COPY go.mod go.sum ./
+RUN --mount=type=cache,target=/go/pkg/mod \
+    go mod download
+
+COPY . .
+
+# Link statically so the resulting binary doesn't care what's in the runtime
+# image. sqlite_omit_load_extension drops sqlite's extension loader, which we
+# never use and don't want to expose. Only the server is built here; a preview
+# has no use for the crossme-build-db tool.
+RUN --mount=type=cache,target=/go/pkg/mod \
+    --mount=type=cache,target=/root/.cache/go-build \
+    CGO_ENABLED=1 go build \
+      -trimpath \
+      -tags sqlite_omit_load_extension \
+      -ldflags '-s -w -extldflags "-static"' \
+      -o /out/ ./cmd/crossme
+
+FROM alpine:${ALPINE_VERSION}
+
+RUN apk add --no-cache ca-certificates tzdata \
+ && adduser -S -D -H -u 10001 crossme \
+ && mkdir -p /data \
+ && chown crossme /data
+
+COPY --from=build /out/crossme /usr/local/bin/
+COPY --from=client /src/dist /crossme/dist
+
+# No VOLUME for /data on purpose: a preview instance starts from an empty
+# database and its state is meant to die with the container.
+USER crossme
+EXPOSE 4000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
+  CMD wget -q -O /dev/null http://127.0.0.1:4000/healthz
+
+ENTRYPOINT ["crossme"]
+CMD ["-bind", "0.0.0.0:4000", "-db", "/data/crossme.db", "-static-dir", "/crossme/dist"]
