@@ -191,6 +191,17 @@ type query_user_by_identity_args struct {
 	Subject  string `db:"subject"`
 }
 
+const sql_query_identities_by_user = `
+SELECT proto
+FROM identities
+WHERE user_id = :user_id
+ORDER BY provider, subject
+`
+
+type query_identities_by_user_args struct {
+	UserId string `db:"user_id"`
+}
+
 const sql_insert_session = `
 INSERT INTO sessions (token_hash, user_id, created, expires)
 VALUES (:token_hash, :user_id, :created, :expires)

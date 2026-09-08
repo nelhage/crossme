@@ -108,6 +108,11 @@ message GetSelfResponse {
     // Unset if the request carried no (valid) session: the caller is
     // anonymous.
     crossme.User user = 1;
+    // The login providers this server offers, by the slug used in
+    // /api/auth/{provider}/login ("google", or "crossme" on a preview
+    // that signs users in through production). Empty means accounts are
+    // off and the client should offer no sign-in.
+    repeated string login_providers = 2;
 }
 
 service CrossMe {
