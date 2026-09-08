@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"crossme.app/src/auth"
+	"crossme.app/src/fly"
 	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
 	"crossme.app/src/seed"
@@ -35,6 +36,24 @@ func main() {
 		baseURL = flag.String("base-url",
 			envDefault("CROSSME_BASE_URL", "http://localhost:3000"),
 			"external base URL the browser reaches us at, for OAuth redirects")
+
+		// Preview login (auth/broker.go). A preview instance signs users
+		// in through production instead of Google: -login-via names the
+		// production deployment to go through, and needs the Fly agent
+		// socket to prove which preview we are. Production, in turn,
+		// enables the brokering side with -preview-login-issuer, the Fly
+		// OIDC issuer for the organization the previews run in; it then
+		// hands identities to any Machine of an app matching
+		// -preview-login-apps, reachable at https://<app>.fly.dev.
+		loginVia = flag.String("login-via",
+			os.Getenv("CROSSME_LOGIN_VIA"),
+			"base URL of a crossme deployment to sign users in through (previews only); empty disables")
+		previewLoginIssuer = flag.String("preview-login-issuer",
+			os.Getenv("CROSSME_PREVIEW_LOGIN_ISSUER"),
+			"Fly OIDC issuer (https://oidc.fly.io/<org>) whose preview Machines may sign users in through us; empty disables")
+		previewLoginApps = flag.String("preview-login-apps",
+			envDefault("CROSSME_PREVIEW_LOGIN_APPS", "crossme-pr-*"),
+			"pattern the Fly app name of a preview must match for -preview-login-issuer")
 
 		// In production nginx serves the built client and proxies /api/ here.
 		// Preview instances run everything in one container instead, so we can
@@ -87,11 +106,38 @@ func main() {
 		providers = append(providers, google)
 		log.Printf("Google login enabled (redirect base %s)", *baseURL)
 	}
+	if *loginVia != "" {
+		tokens := func(ctx context.Context, audience string) (string, error) {
+			return fly.OIDCToken(ctx, fly.DefaultSocket, audience)
+		}
+		providers = append(providers,
+			auth.NewCrossMe(*loginVia, *baseURL+"/api/auth/"+auth.CrossMeProviderName+"/callback", tokens))
+		log.Printf("login via %s enabled (redirect base %s)", *loginVia, *baseURL)
+	}
 	authHandler := auth.NewHandler(r, providers...)
+	srv.SetLoginProviders(authHandler.ProviderNames())
 
 	mux := http.NewServeMux()
 	if len(providers) > 0 {
 		authHandler.Register(mux)
+	}
+	if *previewLoginIssuer != "" {
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+		clients, err := fly.NewVerifier(ctx, *previewLoginIssuer, *baseURL)
+		cancel()
+		if err != nil {
+			log.Fatal("configuring preview login: ", err)
+		}
+		broker, err := authHandler.NewBroker(auth.BrokerConfig{
+			BaseURL:    *baseURL,
+			AppPattern: *previewLoginApps,
+			Clients:    clients,
+		})
+		if err != nil {
+			log.Fatal("configuring preview login: ", err)
+		}
+		broker.Register(mux)
+		log.Printf("preview login enabled for %s apps %s", *previewLoginIssuer, *previewLoginApps)
 	}
 
 	// Health check for the container runtime. It lives outside /api/ so nginx

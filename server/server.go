@@ -34,6 +34,16 @@ type Server struct {
 
 	// Guarded by Mutex
 	games map[string]*gameState
+
+	// The login providers the auth handler offers, reported by GetSelf.
+	// Set once at startup.
+	loginProviders []string
+}
+
+// SetLoginProviders records which login providers are enabled, by slug,
+// for GetSelf to report.
+func (s *Server) SetLoginProviders(names []string) {
+	s.loginProviders = names
 }
 
 type gameState struct {
@@ -182,7 +192,8 @@ func (s *Server) UploadPuzzle(ctx context.Context, req *connect.Request[pb.Uploa
 // and destroyed by the HTTP endpoints in the auth package.
 func (s *Server) GetSelf(ctx context.Context, req *connect.Request[pb.GetSelfArgs]) (*connect.Response[pb.GetSelfResponse], error) {
 	return connect.NewResponse(&pb.GetSelfResponse{
-		User: auth.UserFromContext(ctx),
+		User:           auth.UserFromContext(ctx),
+		LoginProviders: s.loginProviders,
 	}), nil
 }
 

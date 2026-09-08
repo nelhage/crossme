@@ -21,12 +21,53 @@ function renderAccount(getSelf: CrossMeClient["getSelf"]) {
 }
 
 it("offers Google sign-in to anonymous visitors", async () => {
+  const getSelf = vi
+    .fn()
+    .mockResolvedValue(
+      create(GetSelfResponseSchema, { loginProviders: ["google"] })
+    );
+  renderAccount(getSelf);
+
+  const link = await screen.findByRole("link", { name: "Sign in" });
+  expect(link).toHaveAttribute("href", "/api/auth/google/login");
+});
+
+it("links to whichever provider the server offers", async () => {
+  // A preview instance signs in through production instead of Google.
+  const getSelf = vi
+    .fn()
+    .mockResolvedValue(
+      create(GetSelfResponseSchema, { loginProviders: ["crossme"] })
+    );
+  renderAccount(getSelf);
+
+  const link = await screen.findByRole("link", { name: "Sign in" });
+  expect(link).toHaveAttribute("href", "/api/auth/crossme/login");
+});
+
+it("names the providers when there is a choice", async () => {
+  const getSelf = vi
+    .fn()
+    .mockResolvedValue(
+      create(GetSelfResponseSchema, { loginProviders: ["crossme", "google"] })
+    );
+  renderAccount(getSelf);
+
+  const viaProd = await screen.findByRole("link", {
+    name: "Sign in with crossme.app",
+  });
+  expect(viaProd).toHaveAttribute("href", "/api/auth/crossme/login");
+  expect(
+    screen.getByRole("link", { name: "Sign in with Google" })
+  ).toHaveAttribute("href", "/api/auth/google/login");
+});
+
+it("offers no sign-in when the server has no login providers", async () => {
   const getSelf = vi.fn().mockResolvedValue(create(GetSelfResponseSchema, {}));
   renderAccount(getSelf);
 
   await waitFor(() => expect(getSelf).toHaveBeenCalled());
-  const link = screen.getByRole("link", { name: "Sign in" });
-  expect(link).toHaveAttribute("href", "/api/auth/google/login");
+  expect(screen.queryByRole("link")).toBeNull();
 });
 
 it("shows the signed-in user, and signs them out", async () => {
@@ -37,6 +78,7 @@ it("shows the signed-in user, and signs them out", async () => {
         email: "ada@example.com",
         displayName: "Ada Lovelace",
       },
+      loginProviders: ["google"],
     })
   );
   const fetch = vi

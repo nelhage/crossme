@@ -61,9 +61,9 @@ jobs:
         with:
           name: crossme-pr-${{ github.event.number }}
           # The app has no way to learn its own public URL, and needs it for
-          # OAuth redirects. Google login itself stays off in previews until
-          # each preview host can be authorized somehow; this just keeps the
-          # base URL correct for when it is.
+          # OAuth redirects: previews sign users in through production (see
+          # CROSSME_LOGIN_VIA in fly.toml), which only redirects back to a
+          # https://crossme-pr-*.fly.dev callback.
           secrets: >-
             CROSSME_BASE_URL=https://crossme-pr-${{ github.event.number }}.fly.dev
             CROSSME_GCP_IDENTITY_PROVIDER=${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}

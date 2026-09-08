@@ -1,19 +1,27 @@
 import Nav from "react-bootstrap/Nav";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
-import { useUser } from "../user";
+import { loginUrl, providerLabel, useUser } from "../user";
 
 import "./style/account.css";
 
 // The header's account corner: a sign-in link when anonymous, or the
 // signed-in user with a sign-out menu.
 export const Account = () => {
-  const { user, clearUser } = useUser();
+  const { user, loginProviders, clearUser } = useUser();
 
   if (!user) {
-    // A plain link, not a router navigation: signing in is a full-page
-    // redirect through the server's OAuth flow.
-    return <Nav.Link href="/api/auth/google/login">Sign in</Nav.Link>;
+    // Plain links, not router navigations: signing in is a full-page
+    // redirect through the server's OAuth flow. One link per provider,
+    // named only when there is a choice to make; none at all on a server
+    // without accounts.
+    return loginProviders.map((provider) => (
+      <Nav.Link key={provider} href={loginUrl(provider)}>
+        {loginProviders.length > 1
+          ? `Sign in with ${providerLabel(provider)}`
+          : "Sign in"}
+      </Nav.Link>
+    ));
   }
 
   const signOut = async () => {
