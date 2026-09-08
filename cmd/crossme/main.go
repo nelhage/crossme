@@ -7,11 +7,13 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"crossme.app/src/auth"
 	"crossme.app/src/pb/pbconnect"
 	"crossme.app/src/repo"
+	"crossme.app/src/seed"
 	"crossme.app/src/server"
 	"golang.org/x/net/http2"
 	"golang.org/x/net/http2/h2c"
@@ -40,8 +42,32 @@ func main() {
 		staticDir = flag.String("static-dir",
 			os.Getenv("CROSSME_STATIC_DIR"),
 			"directory of built client assets to serve at /; empty disables static serving")
+
+		// Preview instances have no durable storage and start from a
+		// snapshot of production instead, fetched from GCS on first boot;
+		// see the seed package. Both are empty outside previews.
+		seedFrom = flag.String("seed-from",
+			os.Getenv("CROSSME_SEED_FROM"),
+			"gs://bucket/object to copy the database from if it doesn't exist yet; empty disables seeding")
+		gcpIdentityProvider = flag.String("gcp-identity-provider",
+			os.Getenv("CROSSME_GCP_IDENTITY_PROVIDER"),
+			"Workload Identity Federation provider (//iam.googleapis.com/projects/...) that trusts this Fly app, for -seed-from")
 	)
 	flag.Parse()
+
+	if *seedFrom != "" {
+		// The DSN is a path with optional ?options; seeding wants the path.
+		dbPath, _, _ := strings.Cut(*db, "?")
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		err := seed.Ensure(ctx, dbPath, seed.Options{
+			Source:           *seedFrom,
+			IdentityProvider: *gcpIdentityProvider,
+		})
+		cancel()
+		if err != nil {
+			log.Fatal("seeding database: ", err)
+		}
+	}
 
 	r, err := repo.Open(*db)
 	if err != nil {

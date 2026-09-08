@@ -46,9 +46,9 @@ built client itself here, via `-static-dir` / `CROSSME_STATIC_DIR`.
     docker build -f Dockerfile.preview -t crossme-preview .
     docker run -p 4000:4000 crossme-preview
 
-The app is then at `http://localhost:4000`. Each container starts on an
-empty database, and that database dies with the container. Google login
-is off by default and enabled exactly as in production, with
+The app is then at `http://localhost:4000`. Run like this, a container
+starts on an empty database that dies with it. Google login is off by
+default and enabled exactly as in production, with
 `CROSSME_GOOGLE_CLIENT_ID`, `CROSSME_GOOGLE_CLIENT_SECRET` and
 `CROSSME_BASE_URL` (the last being the URL the browser reaches the
 preview at, whose `/api/auth/google/callback` must be a registered
@@ -59,3 +59,27 @@ Every pull request is deployed as a preview from this image by
 `crossme-pr-<number>` (config in `fly.toml`), destroyed when the PR
 closes. The workflow needs an org-scoped Fly API token in the
 `FLY_API_TOKEN` repository secret.
+
+A preview starts from a snapshot of the production database rather than
+empty: on first boot, if the database file doesn't exist, the server
+downloads `-seed-from` / `CROSSME_SEED_FROM` (a `gs://` URL, set in
+`fly.toml`; a `.zst` object is decompressed) and starts from that. Reading
+the bucket is keyless. Every Fly Machine can mint an OIDC token about
+itself, and a Google Cloud Workload Identity Federation provider trusts
+those tokens for apps named `crossme-pr-*`; the server exchanges the Fly
+token for a Google access token and fetches the object. The provider's
+full resource name is passed as `-gcp-identity-provider` /
+`CROSSME_GCP_IDENTITY_PROVIDER`, which the workflow takes from the
+`GCP_WORKLOAD_IDENTITY_PROVIDER` repository variable:
+
+    //iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/fly-io/providers/fly-io
+
+That provider was created against issuer `https://oidc.fly.io/nelson-elhage`
+(the Fly org's real slug; the CLI shows a personal org as `personal`, but
+tokens carry the slug)
+with allowed audience `crossme-preview` (the audience the server
+requests) and an attribute condition restricting it to `crossme-pr-*`
+apps, and the pool was granted `roles/storage.objectViewer` on the
+snapshot's prefix. A seeding failure is fatal, so a misconfigured
+preview shows up as an unhealthy Machine with the reason in its logs,
+not as a working app with no data.

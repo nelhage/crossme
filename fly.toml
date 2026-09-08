@@ -9,6 +9,14 @@
   # The root .dockerignore excludes client/, which this image needs.
   ignorefile = "Dockerfile.preview.dockerignore"
 
+[env]
+  # A new Machine starts from this snapshot of production (see the seed
+  # package). Reading it needs no stored credential: the Machine's own Fly
+  # OIDC token is exchanged through Google's Workload Identity Federation,
+  # whose provider name the deploy workflow passes in as
+  # CROSSME_GCP_IDENTITY_PROVIDER.
+  CROSSME_SEED_FROM = "gs://nelhage-data/crossme/crossme.db.zst"
+
 [http_service]
   internal_port = 4000
   force_https = true
