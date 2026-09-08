@@ -16,4 +16,6 @@ tmux neww -t crossme:1 -k -c "$crossme" -n golang
 tmux send -t crossme:golang 'mkdir -p bin && go build -o bin/ ./cmd/... && bin/crossme -bind 0.0.0.0:4000 -db data/crossme.db' C-m
 
 tmux neww -t crossme:2 -c "$crossme"
-exec tmux a -dt crossme
+if [ -z "$TMUX" ]; then
+    exec tmux a -dt crossme
+fi
