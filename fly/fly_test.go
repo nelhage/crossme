@@ -88,10 +88,7 @@ func flyClaims(app, aud string) map[string]any {
 func TestVerifier(t *testing.T) {
 	issuer := newFakeIssuer(t)
 	ctx := context.Background()
-	v, err := NewVerifier(ctx, issuer.URL, "https://crossme.test")
-	if err != nil {
-		t.Fatal(err)
-	}
+	v := NewVerifier(issuer.URL, "https://crossme.test")
 
 	app, err := v.VerifyClient(ctx, issuer.mint(t, flyClaims("crossme-pr-42", "https://crossme.test")))
 	if err != nil || app != "crossme-pr-42" {
@@ -127,12 +124,45 @@ func TestVerifier(t *testing.T) {
 	}
 }
 
-func TestNewVerifierBadIssuer(t *testing.T) {
-	srv := httptest.NewServer(http.NotFoundHandler())
-	defer srv.Close()
-	if _, err := NewVerifier(context.Background(), srv.URL, "aud"); err == nil {
-		t.Errorf("issuer without discovery: accepted")
+// Discovery happens on first use and is retried after a failure, so an
+// issuer that was unreachable at startup doesn't stay broken.
+func TestVerifierDiscoversLazily(t *testing.T) {
+	issuer := newFakeIssuer(t)
+	down := true
+	front := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if down {
+			http.Error(w, "outage", http.StatusBadGateway)
+			return
+		}
+		// Serve the issuer's documents as our own.
+		if r.URL.Path == "/.well-known/openid-configuration" {
+			json.NewEncoder(w).Encode(map[string]any{
+				"issuer":   frontURL(r),
+				"jwks_uri": issuer.URL + "/.well-known/jwks",
+			})
+			return
+		}
+		http.NotFound(w, r)
+	}))
+	defer front.Close()
+
+	ctx := context.Background()
+	v := NewVerifier(front.URL, "aud")
+	claims := flyClaims("crossme-pr-1", "aud")
+	claims["iss"] = front.URL
+	token := issuer.mint(t, claims)
+
+	if _, err := v.VerifyClient(ctx, token); err == nil || !strings.Contains(err.Error(), "discovering") {
+		t.Errorf("during outage: %v", err)
 	}
+	down = false
+	if app, err := v.VerifyClient(ctx, token); err != nil || app != "crossme-pr-1" {
+		t.Errorf("after outage: app %q, err %v", app, err)
+	}
+}
+
+func frontURL(r *http.Request) string {
+	return "http://" + r.Host
 }
 
 func TestOIDCToken(t *testing.T) {

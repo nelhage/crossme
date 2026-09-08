@@ -19,6 +19,8 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"sync"
+	"time"
 
 	"github.com/coreos/go-oidc/v3/oidc"
 )
@@ -80,28 +82,48 @@ func OIDCToken(ctx context.Context, socket, audience string) (string, error) {
 // audience, using the org's published keys.
 type Verifier struct {
 	issuer   string
-	verifier *oidc.IDTokenVerifier
+	audience string
+
+	mu       sync.Mutex
+	verifier *oidc.IDTokenVerifier // nil until discovery succeeds
 }
 
-// NewVerifier discovers the signing keys for issuer, an organization's
-// issuer URL like https://oidc.fly.io/my-org, and accepts only tokens
-// minted for audience.
-func NewVerifier(ctx context.Context, issuer, audience string) (*Verifier, error) {
-	provider, err := oidc.NewProvider(ctx, issuer)
-	if err != nil {
-		return nil, fmt.Errorf("discovering Fly OIDC config at %s: %w", issuer, err)
+// NewVerifier prepares to verify tokens from issuer, an organization's
+// issuer URL like https://oidc.fly.io/my-org, minted for audience. The
+// issuer's configuration and keys are fetched on first use, not here, so
+// that a Fly outage can't keep a server from starting.
+func NewVerifier(issuer, audience string) *Verifier {
+	return &Verifier{issuer: issuer, audience: audience}
+}
+
+// load returns the underlying verifier, discovering the issuer's
+// configuration if that hasn't succeeded yet.
+func (v *Verifier) load(ctx context.Context) (*oidc.IDTokenVerifier, error) {
+	v.mu.Lock()
+	defer v.mu.Unlock()
+	if v.verifier != nil {
+		return v.verifier, nil
 	}
-	return &Verifier{
-		issuer:   issuer,
-		verifier: provider.Verifier(&oidc.Config{ClientID: audience}),
-	}, nil
+	// The provider keeps this context for its later key fetches too, so it
+	// must outlive the request; the client's timeout bounds each fetch.
+	ctx = oidc.ClientContext(context.WithoutCancel(ctx), &http.Client{Timeout: 15 * time.Second})
+	provider, err := oidc.NewProvider(ctx, v.issuer)
+	if err != nil {
+		return nil, fmt.Errorf("discovering Fly OIDC config at %s: %w", v.issuer, err)
+	}
+	v.verifier = provider.Verifier(&oidc.Config{ClientID: v.audience})
+	return v.verifier, nil
 }
 
 // VerifyClient checks that token is a valid, unexpired Machine token from
 // the verifier's organization for its audience, and returns the name of
 // the Fly app the Machine belongs to.
 func (v *Verifier) VerifyClient(ctx context.Context, token string) (appName string, err error) {
-	idToken, err := v.verifier.Verify(ctx, token)
+	verifier, err := v.load(ctx)
+	if err != nil {
+		return "", err
+	}
+	idToken, err := verifier.Verify(ctx, token)
 	if err != nil {
 		return "", fmt.Errorf("verifying Fly token: %w", err)
 	}

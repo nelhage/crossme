@@ -122,16 +122,10 @@ func main() {
 		authHandler.Register(mux)
 	}
 	if *previewLoginIssuer != "" {
-		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-		clients, err := fly.NewVerifier(ctx, *previewLoginIssuer, *baseURL)
-		cancel()
-		if err != nil {
-			log.Fatal("configuring preview login: ", err)
-		}
 		broker, err := authHandler.NewBroker(auth.BrokerConfig{
 			BaseURL:    *baseURL,
 			AppPattern: *previewLoginApps,
-			Clients:    clients,
+			Clients:    fly.NewVerifier(*previewLoginIssuer, *baseURL),
 		})
 		if err != nil {
 			log.Fatal("configuring preview login: ", err)
