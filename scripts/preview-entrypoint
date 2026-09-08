@@ -1,0 +1,14 @@
+#!/bin/sh
+# Entrypoint for Dockerfile.preview. The server runs unprivileged, like
+# production, but seeding the database needs the Fly agent's socket, which
+# the Machine creates readable by root only. So we start as root, open up
+# the socket, and drop to the crossme user before the server runs. Outside
+# Fly there is no socket and this is just the privilege drop.
+set -e
+
+if [ -S /.fly/api ]; then
+  chmod o+x /.fly
+  chmod o+rw /.fly/api
+fi
+
+exec su-exec crossme crossme "$@"

@@ -57,22 +57,24 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 
 FROM alpine:${ALPINE_VERSION}
 
-RUN apk add --no-cache ca-certificates tzdata \
+# su-exec is for the entrypoint, which drops privileges itself instead of
+# via USER: see scripts/preview-entrypoint for why.
+RUN apk add --no-cache ca-certificates tzdata su-exec \
  && adduser -S -D -H -u 10001 crossme \
  && mkdir -p /data \
  && chown crossme /data
 
 COPY --from=build /out/crossme /usr/local/bin/
+COPY --chmod=755 scripts/preview-entrypoint /usr/local/bin/
 COPY --from=client /src/dist /crossme/dist
 
 # No VOLUME for /data on purpose: a preview instance seeds its database from
 # a snapshot on first boot (CROSSME_SEED_FROM; see the seed package), and its
 # state is meant to die with the container.
-USER crossme
 EXPOSE 4000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s \
   CMD wget -q -O /dev/null http://127.0.0.1:4000/healthz
 
-ENTRYPOINT ["crossme"]
+ENTRYPOINT ["preview-entrypoint"]
 CMD ["-bind", "0.0.0.0:4000", "-db", "/data/crossme.db", "-static-dir", "/crossme/dist"]
