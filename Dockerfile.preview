@@ -65,8 +65,9 @@ RUN apk add --no-cache ca-certificates tzdata \
 COPY --from=build /out/crossme /usr/local/bin/
 COPY --from=client /src/dist /crossme/dist
 
-# No VOLUME for /data on purpose: a preview instance starts from an empty
-# database and its state is meant to die with the container.
+# No VOLUME for /data on purpose: a preview instance seeds its database from
+# a snapshot on first boot (CROSSME_SEED_FROM; see the seed package), and its
+# state is meant to die with the container.
 USER crossme
 EXPOSE 4000
 

@@ -5,7 +5,10 @@ name: Preview
 # The preview runs the whole app in one container on an empty database.
 #
 # Needs the FLY_API_TOKEN repository secret: an org-scoped Fly token, since the
-# action creates and destroys apps (`fly tokens create org`).
+# action creates and destroys apps (`fly tokens create org`). Also needs the
+# GCP_WORKLOAD_IDENTITY_PROVIDER repository variable, the full resource name
+# of the Workload Identity Federation provider that trusts Fly's OIDC tokens,
+# which the preview uses to fetch its database snapshot (see README).
 
 on:
   pull_request:
@@ -42,6 +45,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
+      - name: Check configuration
+        if: github.event.action != 'closed'
+        env:
+          PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        run: |
+          if [ -z "$PROVIDER" ]; then
+            echo "::error::Set the GCP_WORKLOAD_IDENTITY_PROVIDER repository variable; the preview can't fetch its database without it."
+            exit 1
+          fi
+
       - name: Deploy preview
         id: deploy
         uses: superfly/fly-pr-review-apps@1.5.0
@@ -51,4 +64,6 @@ jobs:
           # OAuth redirects. Google login itself stays off in previews until
           # each preview host can be authorized somehow; this just keeps the
           # base URL correct for when it is.
-          secrets: CROSSME_BASE_URL=https://crossme-pr-${{ github.event.number }}.fly.dev
+          secrets: >-
+            CROSSME_BASE_URL=https://crossme-pr-${{ github.event.number }}.fly.dev
+            CROSSME_GCP_IDENTITY_PROVIDER=${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
