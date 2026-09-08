@@ -74,7 +74,9 @@ full resource name is passed as `-gcp-identity-provider` /
 
     //iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/fly-io/providers/fly-io
 
-That provider was created against issuer `https://oidc.fly.io/personal`
+That provider was created against issuer `https://oidc.fly.io/nelson-elhage`
+(the Fly org's real slug; the CLI shows a personal org as `personal`, but
+tokens carry the slug)
 with allowed audience `crossme-preview` (the audience the server
 requests) and an attribute condition restricting it to `crossme-pr-*`
 apps, and the pool was granted `roles/storage.objectViewer` on the
