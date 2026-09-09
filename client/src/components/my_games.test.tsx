@@ -24,7 +24,11 @@ function renderMyGames(client: Partial<CrossMeClient>) {
 }
 
 const anonymousSelf = () =>
-  vi.fn().mockResolvedValue(create(GetSelfResponseSchema, {}));
+  vi
+    .fn()
+    .mockResolvedValue(
+      create(GetSelfResponseSchema, { loginProviders: ["google"] })
+    );
 
 const signedInSelf = () =>
   vi.fn().mockResolvedValue(
@@ -43,6 +47,17 @@ it("prompts anonymous visitors to sign in", async () => {
     "href",
     "/api/auth/google/login"
   );
+});
+
+it("skips the sign-in prompt when the server has no login", async () => {
+  const getMyGames = vi
+    .fn()
+    .mockResolvedValue(create(GetMyGamesResponseSchema, {}));
+  const getSelf = vi.fn().mockResolvedValue(create(GetSelfResponseSchema, {}));
+  renderMyGames({ getSelf, getMyGames });
+
+  expect(await screen.findByText(/haven.t played any games yet/)).toBeVisible();
+  expect(screen.queryByRole("link", { name: "Sign in" })).toBeNull();
 });
 
 it("shows an empty state for a signed-in user with no games", async () => {

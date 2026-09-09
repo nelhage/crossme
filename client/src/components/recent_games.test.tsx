@@ -15,7 +15,9 @@ function renderMenu(client: Partial<CrossMeClient> = {}, userId?: string) {
   const user = userId ? create(UserSchema, { id: userId }) : null;
   render(
     <ClientContext.Provider value={client as CrossMeClient}>
-      <UserContext.Provider value={{ user, clearUser: () => {} }}>
+      <UserContext.Provider
+        value={{ user, loginProviders: [], clearUser: () => {} }}
+      >
         <MemoryRouter>
           <RecentGames />
         </MemoryRouter>

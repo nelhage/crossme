@@ -297,3 +297,47 @@ func TestMiddleware(t *testing.T) {
 	}
 }
 
+// A login started with ?next= returns the browser there afterwards, but
+// only for same-origin paths.
+func TestLoginNext(t *testing.T) {
+	t.Parallel()
+	ta := newTestAuth(t)
+
+	w := ta.do(httptest.NewRequest("GET", "/api/auth/fake/login?next=/somewhere%3Fa%3D1", nil))
+	resp := w.Result()
+	state, next := cookieNamed(t, resp, stateCookie), cookieNamed(t, resp, nextCookie)
+	if next == nil || next.Value != "/somewhere?a=1" {
+		t.Fatalf("next cookie = %v", next)
+	}
+	req := callbackRequest(state.Value, "state="+state.Value+"&code=good-code")
+	req.AddCookie(next)
+	w = ta.do(req)
+	if loc := w.Header().Get("Location"); w.Code != http.StatusFound || loc != "/somewhere?a=1" {
+		t.Errorf("callback: %d -> %q", w.Code, loc)
+	}
+	if c := cookieNamed(t, w.Result(), nextCookie); c == nil || c.MaxAge >= 0 {
+		t.Errorf("next cookie not cleared: %v", c)
+	}
+
+	// Off-site targets are ignored at both ends. (The backslash form,
+	// which browsers read as //, can't ride in a cookie, so it is only
+	// checked directly.)
+	if got := safeNext("/\\evil.example"); got != "" {
+		t.Errorf("safeNext(/\\evil.example) = %q", got)
+	}
+	for _, bad := range []string{"https://evil.example/", "//evil.example/x", "evil", ""} {
+		if got := safeNext(bad); got != "" {
+			t.Errorf("safeNext(%q) = %q", bad, got)
+		}
+		w := ta.do(httptest.NewRequest("GET", "/api/auth/fake/login?next="+url.QueryEscape(bad), nil))
+		if c := cookieNamed(t, w.Result(), nextCookie); c != nil {
+			t.Errorf("login with next=%q set a next cookie %q", bad, c.Value)
+		}
+		req := callbackRequest(state.Value, "state="+state.Value+"&code=good-code")
+		req.AddCookie(&http.Cookie{Name: nextCookie, Value: bad})
+		w = ta.do(req)
+		if loc := w.Header().Get("Location"); loc != "/" {
+			t.Errorf("callback with next cookie %q redirected to %q", bad, loc)
+		}
+	}
+}

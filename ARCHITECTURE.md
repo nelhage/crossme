@@ -33,8 +33,20 @@ expiry, renewed at most daily).
 
 HTTP middleware resolves the session cookie to a `User` on the request
 context; RPC handlers read it with `auth.UserFromContext`, where a nil
-user simply means an anonymous caller. The SPA learns who is signed in
-via the `GetSelf` RPC, since it cannot read the cookie itself.
+user simply means an anonymous caller. The SPA learns who is signed in,
+and which login providers exist, via the `GetSelf` RPC, since it cannot
+read the cookie itself.
+
+Per-PR preview instances start from a snapshot of production, so their
+users are production's users. Rather than register every preview host
+with Google, a preview signs users in *through* production: production
+exposes a small authorization-code broker (`/api/auth/preview/...`) that,
+with the user's consent, tells a preview which external identities the
+signed-in user has, and the preview logs those in as if the original
+provider had. Trust is strictly one-way — a preview learns who the user
+is and receives nothing usable against production — and a preview proves
+which Fly app it is with its Machine's Fly OIDC token, so codes can only
+be redeemed by the preview they were issued to. See `auth/broker.go`.
 
 ## The "Game" CRDT
 

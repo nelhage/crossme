@@ -10,6 +10,7 @@ import { UserContext } from "./user";
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const client = useClient();
   const [user, setUser] = useState<User | null>(null);
+  const [loginProviders, setLoginProviders] = useState<string[]>([]);
 
   useEffect(() => {
     let cancelled = false;
@@ -17,6 +18,7 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
       (resp) => {
         if (!cancelled) {
           setUser(resp.user ?? null);
+          setLoginProviders(resp.loginProviders);
         }
       },
       () => {
@@ -29,7 +31,9 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
   }, [client]);
 
   return (
-    <UserContext value={{ user, clearUser: () => setUser(null) }}>
+    <UserContext
+      value={{ user, loginProviders, clearUser: () => setUser(null) }}
+    >
       {children}
     </UserContext>
   );

@@ -265,3 +265,32 @@ func TestSweepSessions(t *testing.T) {
 		t.Errorf("live session swept: %v", err)
 	}
 }
+
+func TestIdentitiesByUser(t *testing.T) {
+	t.Parallel()
+	repo := openTestRepo(t)
+
+	user, err := repo.LoginUser("google", "sub-ada", &pb.User{Email: "ada@example.com"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	other, err := repo.LoginUser("google", "sub-bob", &pb.User{Email: "bob@example.com"})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	idents, err := repo.IdentitiesByUser(user.Id)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(idents) != 1 || idents[0].Provider != "google" || idents[0].Subject != "sub-ada" || idents[0].UserId != user.Id {
+		t.Errorf("identities = %v", idents)
+	}
+
+	if idents, err := repo.IdentitiesByUser(other.Id); err != nil || len(idents) != 1 || idents[0].Subject != "sub-bob" {
+		t.Errorf("other's identities = %v, %v", idents, err)
+	}
+	if idents, err := repo.IdentitiesByUser("nobody"); err != nil || len(idents) != 0 {
+		t.Errorf("unknown user's identities = %v, %v", idents, err)
+	}
+}

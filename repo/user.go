@@ -27,6 +27,31 @@ func (r *Repository) UserById(id string) (*pb.User, error) {
 	return &out, nil
 }
 
+// IdentitiesByUser lists the external logins attached to a user, in a
+// stable order. An unknown user simply has none.
+func (r *Repository) IdentitiesByUser(userID string) ([]*pb.Identity, error) {
+	rows, err := r.db.NamedQuery(sql_query_identities_by_user, query_identities_by_user_args{
+		UserId: userID,
+	})
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var out []*pb.Identity
+	for rows.Next() {
+		var data []byte
+		if err := rows.Scan(&data); err != nil {
+			return nil, err
+		}
+		var ident pb.Identity
+		if err := proto.Unmarshal(data, &ident); err != nil {
+			return nil, err
+		}
+		out = append(out, &ident)
+	}
+	return out, rows.Err()
+}
+
 // LoginUser resolves an external identity to a User, creating the user on
 // first login. `profile` carries the provider's current claims (email,
 // display name, avatar); on a returning user those fields are refreshed,

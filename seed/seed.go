@@ -22,21 +22,19 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"net"
 	"net/http"
 	"net/url"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"crossme.app/src/fly"
 	"github.com/klauspost/compress/zstd"
 )
 
 // Defaults, overridable through Options for tests.
 const (
 	DefaultAudience = "crossme-preview"
-	flySocket       = "/.fly/api"
-	flyTokenURL     = "http://localhost/v1/tokens/oidc"
 	stsURL          = "https://sts.googleapis.com/v1/token"
 	storageURL      = "https://storage.googleapis.com"
 	storageScope    = "https://www.googleapis.com/auth/devstorage.read_only"
@@ -86,7 +84,11 @@ func Ensure(ctx context.Context, dbPath string, opts Options) error {
 		return errors.New("seed: no identity provider configured")
 	}
 
-	flyToken, err := fetchFlyToken(ctx, opts)
+	aud := opts.Audience
+	if aud == "" {
+		aud = DefaultAudience
+	}
+	flyToken, err := fly.OIDCToken(ctx, opts.FlySocket, aud)
 	if err != nil {
 		return fmt.Errorf("getting Fly OIDC token: %w", err)
 	}
@@ -109,58 +111,6 @@ func parseGSURL(s string) (bucket, object string, err error) {
 		return "", "", fmt.Errorf("seed: source %q is not a gs://bucket/object URL", s)
 	}
 	return u.Host, strings.TrimPrefix(u.Path, "/"), nil
-}
-
-// fetchFlyToken asks the Fly agent, listening on a unix socket inside every
-// Machine, for an OIDC token identifying this Machine to the given audience.
-// The response body is the bare JWT.
-func fetchFlyToken(ctx context.Context, opts Options) (string, error) {
-	socket := opts.FlySocket
-	if socket == "" {
-		socket = flySocket
-	}
-	aud := opts.Audience
-	if aud == "" {
-		aud = DefaultAudience
-	}
-	client := &http.Client{
-		Transport: &http.Transport{
-			DialContext: func(ctx context.Context, _, _ string) (net.Conn, error) {
-				var d net.Dialer
-				return d.DialContext(ctx, "unix", socket)
-			},
-		},
-	}
-
-	body, _ := json.Marshal(map[string]string{"aud": aud})
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, flyTokenURL, bytes.NewReader(body))
-	if err != nil {
-		return "", err
-	}
-	req.Header.Set("Content-Type", "application/json")
-	resp, err := client.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	raw, err := io.ReadAll(io.LimitReader(resp.Body, 1<<20))
-	if err != nil {
-		return "", err
-	}
-	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("%s: %s", resp.Status, strings.TrimSpace(string(raw)))
-	}
-	// Be tolerant of the token arriving as a JSON string rather than bare.
-	token := strings.TrimSpace(string(raw))
-	if strings.HasPrefix(token, `"`) {
-		if err := json.Unmarshal([]byte(token), &token); err != nil {
-			return "", fmt.Errorf("unexpected token response %q", token)
-		}
-	}
-	if strings.Count(token, ".") != 2 {
-		return "", errors.New("response does not look like a JWT")
-	}
-	return token, nil
 }
 
 // exchangeToken trades the Fly JWT for a Google access token via the

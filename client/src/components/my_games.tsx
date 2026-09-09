@@ -8,7 +8,7 @@ import { timestampDate } from "@bufbuild/protobuf/wkt";
 import type { MyGame } from "../pb/crossme_pb";
 import { ensureSynced } from "../recent_games_sync";
 import { useClient } from "../rpc";
-import { useUser } from "../user";
+import { loginUrl, useUser } from "../user";
 
 function formatPlayed(game: MyGame): string {
   if (!game.lastPlayed) {
@@ -38,7 +38,7 @@ const MyGameRow = ({ game }: { game: MyGame }) => (
 // the complete, uncapped view.
 export const MyGames = () => {
   const client = useClient();
-  const { user } = useUser();
+  const { user, loginProviders } = useUser();
   // The result is tagged with the user it was fetched for, so a stale
   // response never renders as the current user's history.
   const [result, setResult] = useState<null | {
@@ -84,9 +84,9 @@ export const MyGames = () => {
         <p>Something went wrong loading your games. Try reloading?</p>
       ) : games === null ? (
         <p>Loading…</p>
-      ) : !user && games.length === 0 ? (
+      ) : !user && games.length === 0 && loginProviders.length > 0 ? (
         <p>
-          <a href="/api/auth/google/login">Sign in</a> to keep track of the
+          <a href={loginUrl(loginProviders[0])}>Sign in</a> to keep track of the
           games you play across browsers and devices.
         </p>
       ) : games.length === 0 ? (

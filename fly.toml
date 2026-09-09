@@ -16,6 +16,12 @@
   # whose provider name the deploy workflow passes in as
   # CROSSME_GCP_IDENTITY_PROVIDER.
   CROSSME_SEED_FROM = "gs://nelhage-data/crossme/crossme.db.zst"
+  # Sign users in through production rather than Google (auth/broker.go):
+  # the snapshot's users are production's, and this way each preview host
+  # needn't be registered with Google. The preview proves which app it is
+  # with the same Fly OIDC token, so production must be running with
+  # CROSSME_PREVIEW_LOGIN_ISSUER set to this Fly org's issuer.
+  CROSSME_LOGIN_VIA = "https://crossme.app"
 
 [http_service]
   internal_port = 4000

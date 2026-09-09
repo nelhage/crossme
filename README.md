@@ -47,12 +47,13 @@ built client itself here, via `-static-dir` / `CROSSME_STATIC_DIR`.
     docker run -p 4000:4000 crossme-preview
 
 The app is then at `http://localhost:4000`. Run like this, a container
-starts on an empty database that dies with it. Google login is off by
-default and enabled exactly as in production, with
+starts on an empty database that dies with it, and with no way to sign
+in. Google login can be enabled exactly as in production, with
 `CROSSME_GOOGLE_CLIENT_ID`, `CROSSME_GOOGLE_CLIENT_SECRET` and
 `CROSSME_BASE_URL` (the last being the URL the browser reaches the
 preview at, whose `/api/auth/google/callback` must be a registered
-redirect URI).
+redirect URI); the deployed previews sign in through production instead,
+see below.
 
 Every pull request is deployed as a preview from this image by
 `.github/workflows/preview.yml`, as a Fly.io app named
@@ -83,3 +84,31 @@ apps, and the pool was granted `roles/storage.objectViewer` on the
 snapshot's prefix. A seeding failure is fatal, so a misconfigured
 preview shows up as an unhealthy Machine with the reason in its logs,
 not as a working app with no data.
+
+Preview login
+-------------
+
+Since a preview's users are production's users, a preview signs people in
+through production rather than Google (whose redirect URIs would have to
+be registered per preview host). `CROSSME_LOGIN_VIA=https://crossme.app`
+in `fly.toml` enables a `crossme` login provider on the preview: "Sign
+in" sends the browser to production's `/api/auth/preview/authorize`,
+which signs the user in there if needed, asks them to confirm that the
+named preview may learn who they are, and redirects back with a one-shot
+code. The preview redeems the code at production's
+`/api/auth/preview/token` for the user's external identities and logs
+them in as it would after a Google login, landing on the user row it
+inherited from the snapshot. Nothing the preview receives works against
+production. See `auth/broker.go` for the protocol and its checks.
+
+Production enables its side with `CROSSME_PREVIEW_LOGIN_ISSUER` set to
+the Fly org's OIDC issuer, `https://oidc.fly.io/nelson-elhage`, and only
+deals with apps matching `CROSSME_PREVIEW_LOGIN_APPS` (default
+`crossme-pr-*`) at `https://<app>.fly.dev`. Redeeming a code requires the
+preview Machine's own Fly OIDC token, minted for audience
+`https://crossme.app` (production's `CROSSME_BASE_URL`) and naming the
+same app the code was issued to; production verifies it against the
+issuer's published keys. That is what stops anyone from registering a
+free `crossme-pr-N` app name of their own and collecting codes. No
+secret is shared with previews, and nothing else needs configuring on
+either side.

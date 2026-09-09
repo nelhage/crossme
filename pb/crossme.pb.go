@@ -958,9 +958,14 @@ type GetSelfResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Unset if the request carried no (valid) session: the caller is
 	// anonymous.
-	User          *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	User *User `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	// The login providers this server offers, by the slug used in
+	// /api/auth/{provider}/login ("google", or "crossme" on a preview
+	// that signs users in through production). Empty means accounts are
+	// off and the client should offer no sign-in.
+	LoginProviders []string `protobuf:"bytes,2,rep,name=login_providers,json=loginProviders,proto3" json:"login_providers,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetSelfResponse) Reset() {
@@ -996,6 +1001,13 @@ func (*GetSelfResponse) Descriptor() ([]byte, []int) {
 func (x *GetSelfResponse) GetUser() *User {
 	if x != nil {
 		return x.User
+	}
+	return nil
+}
+
+func (x *GetSelfResponse) GetLoginProviders() []string {
+	if x != nil {
+		return x.LoginProviders
 	}
 	return nil
 }
@@ -1109,9 +1121,10 @@ const file_crossme_proto_rawDesc = "" +
 	"\agame_id\x18\x01 \x01(\tR\x06gameId\x127\n" +
 	"\tplayed_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\bplayedAt\"\x15\n" +
 	"\x13RecordPlaysResponse\"\r\n" +
-	"\vGetSelfArgs\"4\n" +
+	"\vGetSelfArgs\"]\n" +
 	"\x0fGetSelfResponse\x12!\n" +
-	"\x04user\x18\x01 \x01(\v2\r.crossme.UserR\x04user2\xb4\x05\n" +
+	"\x04user\x18\x01 \x01(\v2\r.crossme.UserR\x04user\x12'\n" +
+	"\x0flogin_providers\x18\x02 \x03(\tR\x0eloginProviders2\xb4\x05\n" +
 	"\aCrossMe\x12N\n" +
 	"\x0eGetPuzzleIndex\x12\x1b.crossme.GetPuzzleIndexArgs\x1a\x1f.crossme.GetPuzzleIndexResponse\x12G\n" +
 	"\rGetPuzzleById\x12\x1a.crossme.GetPuzzleByIdArgs\x1a\x1a.crossme.GetPuzzleResponse\x129\n" +
