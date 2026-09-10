@@ -53,4 +53,19 @@ message PuzzleIndex {
     string title = 2;
     string date = 3;
     string author = 4;
+
+    // The caller's own game of this puzzle, so the list can link back
+    // to it. Unset for anonymous callers, and for puzzles the caller has
+    // not played. A user who has played a puzzle more than once gets a
+    // single game here: a solved one if there is one, otherwise the most
+    // recently played.
+    Game game = 5;
+
+    message Game {
+        string id = 1;
+        // When the caller last opened the game.
+        google.protobuf.Timestamp last_played = 2;
+        // Set once the game has been solved; unset while in progress.
+        google.protobuf.Timestamp completed_at = 3;
+    }
 }

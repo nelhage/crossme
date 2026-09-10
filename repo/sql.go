@@ -28,11 +28,52 @@ type insert_puzzle_args struct {
 	Created string         `db:"created"`
 }
 
+// The index, with the caller's own game of each puzzle attached where
+// there is one. A user who has played a puzzle more than once gets a single
+// game: a solved one if there is one, otherwise the most recently played,
+// with the game id as a tiebreak so the choice is stable. An empty user id
+// (an anonymous caller) matches no plays, so every game column is NULL.
 const sql_query_puzzle_index = `
-SELECT meta__id as id, title, author, meta__date as date
+WITH my_games AS (
+  SELECT games.puzzle_id AS puzzle_id,
+         games.id AS game_id,
+         game_players.last_played AS last_played,
+         games.completed_at AS completed_at,
+         row_number() OVER (
+           PARTITION BY games.puzzle_id
+           ORDER BY games.completed_at IS NOT NULL DESC,
+                    game_players.last_played DESC,
+                    games.id
+         ) AS rank
+  FROM game_players
+  JOIN games ON games.id = game_players.game_id
+  WHERE game_players.user_id = :user_id
+)
+SELECT puzzles.meta__id AS id,
+       puzzles.title AS title,
+       puzzles.author AS author,
+       puzzles.meta__date AS date,
+       my_games.game_id AS game_id,
+       my_games.last_played AS last_played,
+       my_games.completed_at AS completed_at
 FROM puzzles
+LEFT JOIN my_games ON my_games.puzzle_id = puzzles.meta__id AND my_games.rank = 1
 ORDER BY date DESC, title
 `
+
+type query_puzzle_index_args struct {
+	UserId string `db:"user_id"`
+}
+
+type puzzle_index_row struct {
+	Id          string         `db:"id"`
+	Title       string         `db:"title"`
+	Author      string         `db:"author"`
+	Date        string         `db:"date"`
+	GameId      sql.NullString `db:"game_id"`
+	LastPlayed  sql.NullString `db:"last_played"`
+	CompletedAt sql.NullString `db:"completed_at"`
+}
 
 const sql_query_puzzle_by_id = `
 SELECT proto

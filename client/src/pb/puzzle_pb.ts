@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file puzzle.proto.
  */
 export const file_puzzle: GenFile = /*@__PURE__*/
-  fileDesc("CgxwdXp6bGUucHJvdG8SB2Nyb3NzbWUi/wMKBlB1enpsZRINCgV0aXRsZRgBIAEoCRIOCgZhdXRob3IYAiABKAkSEQoJY29weXJpZ2h0GAMgASgJEgwKBG5vdGUYBCABKAkSDQoFd2lkdGgYBSABKAUSDgoGaGVpZ2h0GAYgASgFEiUKB3NxdWFyZXMYCCADKAsyFC5jcm9zc21lLlB1enpsZS5DZWxsEioKDGFjcm9zc19jbHVlcxgJIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSKAoKZG93bl9jbHVlcxgKIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSJgoIbWV0YWRhdGEYCyABKAsyFC5jcm9zc21lLlB1enpsZS5NZXRhGmwKBENlbGwSDgoGbnVtYmVyGAEgASgFEg0KBWJsYWNrGAIgASgIEg8KB2NpcmNsZWQYAyABKAgSDAoEZmlsbBgEIAEoCRITCgtjbHVlX2Fjcm9zcxgFIAEoBRIRCgljbHVlX2Rvd24YBiABKAUaJAoEQ2x1ZRIOCgZudW1iZXIYASABKAUSDAoEdGV4dBgDIAEoCRpdCgRNZXRhEisKB2NyZWF0ZWQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg4KBnNoYTI1NhgCIAEoCRIKCgJpZBgFIAEoCRIMCgRkYXRlGAMgASgJIkYKC1B1enpsZUluZGV4EgoKAmlkGAEgASgJEg0KBXRpdGxlGAIgASgJEgwKBGRhdGUYAyABKAkSDgoGYXV0aG9yGAQgASgJQhRaEmNyb3NzbWUuYXBwL3NyYy9wYmIGcHJvdG8z", [file_google_protobuf_timestamp]);
+  fileDesc("CgxwdXp6bGUucHJvdG8SB2Nyb3NzbWUi/wMKBlB1enpsZRINCgV0aXRsZRgBIAEoCRIOCgZhdXRob3IYAiABKAkSEQoJY29weXJpZ2h0GAMgASgJEgwKBG5vdGUYBCABKAkSDQoFd2lkdGgYBSABKAUSDgoGaGVpZ2h0GAYgASgFEiUKB3NxdWFyZXMYCCADKAsyFC5jcm9zc21lLlB1enpsZS5DZWxsEioKDGFjcm9zc19jbHVlcxgJIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSKAoKZG93bl9jbHVlcxgKIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSJgoIbWV0YWRhdGEYCyABKAsyFC5jcm9zc21lLlB1enpsZS5NZXRhGmwKBENlbGwSDgoGbnVtYmVyGAEgASgFEg0KBWJsYWNrGAIgASgIEg8KB2NpcmNsZWQYAyABKAgSDAoEZmlsbBgEIAEoCRITCgtjbHVlX2Fjcm9zcxgFIAEoBRIRCgljbHVlX2Rvd24YBiABKAUaJAoEQ2x1ZRIOCgZudW1iZXIYASABKAUSDAoEdGV4dBgDIAEoCRpdCgRNZXRhEisKB2NyZWF0ZWQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg4KBnNoYTI1NhgCIAEoCRIKCgJpZBgFIAEoCRIMCgRkYXRlGAMgASgJIuYBCgtQdXp6bGVJbmRleBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRkYXRlGAMgASgJEg4KBmF1dGhvchgEIAEoCRInCgRnYW1lGAUgASgLMhkuY3Jvc3NtZS5QdXp6bGVJbmRleC5HYW1lGnUKBEdhbWUSCgoCaWQYASABKAkSLwoLbGFzdF9wbGF5ZWQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message crossme.Puzzle
@@ -202,6 +202,17 @@ export type PuzzleIndex = Message<"crossme.PuzzleIndex"> & {
    * @generated from field: string author = 4;
    */
   author: string;
+
+  /**
+   * The caller's own game of this puzzle, so the list can link back
+   * to it. Unset for anonymous callers, and for puzzles the caller has
+   * not played. A user who has played a puzzle more than once gets a
+   * single game here: a solved one if there is one, otherwise the most
+   * recently played.
+   *
+   * @generated from field: crossme.PuzzleIndex.Game game = 5;
+   */
+  game?: PuzzleIndex_Game | undefined;
 };
 
 /**
@@ -210,4 +221,35 @@ export type PuzzleIndex = Message<"crossme.PuzzleIndex"> & {
  */
 export const PuzzleIndexSchema: GenMessage<PuzzleIndex> = /*@__PURE__*/
   messageDesc(file_puzzle, 1);
+
+/**
+ * @generated from message crossme.PuzzleIndex.Game
+ */
+export type PuzzleIndex_Game = Message<"crossme.PuzzleIndex.Game"> & {
+  /**
+   * @generated from field: string id = 1;
+   */
+  id: string;
+
+  /**
+   * When the caller last opened the game.
+   *
+   * @generated from field: google.protobuf.Timestamp last_played = 2;
+   */
+  lastPlayed?: Timestamp | undefined;
+
+  /**
+   * Set once the game has been solved; unset while in progress.
+   *
+   * @generated from field: google.protobuf.Timestamp completed_at = 3;
+   */
+  completedAt?: Timestamp | undefined;
+};
+
+/**
+ * Describes the message crossme.PuzzleIndex.Game.
+ * Use `create(PuzzleIndex_GameSchema)` to create a new message.
+ */
+export const PuzzleIndex_GameSchema: GenMessage<PuzzleIndex_Game> = /*@__PURE__*/
+  messageDesc(file_puzzle, 1, 0);
 

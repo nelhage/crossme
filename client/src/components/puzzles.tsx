@@ -4,10 +4,14 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import { Link, NavigateFunction, useNavigate } from "react-router";
 
+import { timestampDate, type Timestamp } from "@bufbuild/protobuf/wkt";
+
 import type { UploadPuzzleResponse } from "../pb/crossme_pb";
-import type { PuzzleIndex } from "../pb/puzzle_pb";
+import type { PuzzleIndex, PuzzleIndex_Game } from "../pb/puzzle_pb";
 import { dayParts, groupByMonth, matchesQuery } from "../puzzle_index";
+import { ensureSynced } from "../recent_games_sync";
 import { useClient, type CrossMeClient } from "../rpc";
+import { useUser } from "../user";
 
 import "./style/puzzles.css";
 
@@ -108,6 +112,91 @@ const PuzzleDay = ({ date }: { date: string }) => {
   );
 };
 
+// A 4x4 crossword grid, 16 units square. `filled` marks the cells (by
+// index, row-major) that read as written in; the rest are blank, and two
+// are black squares so it reads as a crossword rather than a table.
+const GridIcon = ({ filled }: { filled: number[] }) => {
+  const black = [5, 10];
+  const cells = [];
+  for (let i = 0; i < 16; i++) {
+    const x = (i % 4) * 4;
+    const y = Math.floor(i / 4) * 4;
+    if (black.includes(i)) {
+      cells.push(
+        <rect key={i} className="black" x={x} y={y} width="4" height="4" />
+      );
+    } else if (filled.includes(i)) {
+      cells.push(
+        <rect key={i} className="filled" x={x} y={y} width="4" height="4" />
+      );
+    }
+  }
+  return (
+    <>
+      {cells}
+      <path
+        className="lines"
+        d="M4 0v16M8 0v16M12 0v16M0 4h16M0 8h16M0 12h16M0.5 0.5h15v15h-15z"
+      />
+    </>
+  );
+};
+
+function formatDate(ts: Timestamp): string {
+  return timestampDate(ts).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+}
+
+// The caller's game of a puzzle: a grid with a green check for a solved
+// game, or a half-filled grid for one in progress. Links to the game.
+const GameStatus = ({
+  game,
+  title,
+}: {
+  game: PuzzleIndex_Game;
+  title: string;
+}) => {
+  const solved = game.completedAt !== undefined;
+  const label = solved ? `Solved: ${title}` : `In progress: ${title}`;
+  const when = game.completedAt
+    ? `Solved ${formatDate(game.completedAt)}`
+    : game.lastPlayed
+      ? `In progress, last played ${formatDate(game.lastPlayed)}`
+      : undefined;
+  return (
+    <Link
+      to={`/game/${game.id}`}
+      className={`game-status ${solved ? "solved" : "in-progress"}`}
+      aria-label={label}
+      title={when}
+    >
+      <svg viewBox="0 0 20 20" width="1.5em" height="1.5em" aria-hidden="true">
+        {solved ? (
+          <>
+            <GridIcon
+              filled={[0, 1, 2, 3, 4, 6, 7, 8, 9, 11, 12, 13, 14, 15]}
+            />
+            <circle className="check-bg" cx="15" cy="15" r="5" />
+            <path
+              className="check"
+              d="M12.2 15.2l1.9 1.9 3.7-3.9"
+              fill="none"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </>
+        ) : (
+          <GridIcon filled={[0, 1, 2, 4, 8, 9, 12]} />
+        )}
+      </svg>
+    </Link>
+  );
+};
+
 const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
   const client = useClient();
   const navigate = useNavigate();
@@ -141,6 +230,12 @@ const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
           <span className="author">{byline(puzzle.author)}</span>
         )}
       </span>
+      {puzzle.game && (
+        <GameStatus
+          game={puzzle.game}
+          title={puzzle.title || "Untitled puzzle"}
+        />
+      )}
       <Button
         size="sm"
         variant="primary"
@@ -156,32 +251,42 @@ const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
 
 // Every puzzle on the server, newest first and grouped by month, with a
 // search box that narrows the list as you type. Each row links to the
-// puzzle's preview and can start a game directly.
+// puzzle's preview and can start a game directly; for a signed-in user,
+// rows for puzzles they have played also link to their game.
 export const Puzzles = () => {
   const client = useClient();
+  const { user } = useUser();
   const [index, setIndex] = useState<null | PuzzleIndex[]>(null);
   const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
 
+  // Refetch on sign-in/sign-out: the index carries the caller's games,
+  // so the same RPC answers differently depending on the session.
+  const userId = user?.id;
   useEffect(() => {
     let cancelled = false;
-    client.getPuzzleIndex({}).then(
-      (resp) => {
-        if (!cancelled) {
-          setIndex(resp.puzzles);
+    // Fold this browser's pre-sign-in games into the account first, so
+    // they show up on the list right away.
+    const synced = userId ? ensureSynced(client, userId) : Promise.resolve();
+    synced
+      .then(() => client.getPuzzleIndex({}))
+      .then(
+        (resp) => {
+          if (!cancelled) {
+            setIndex(resp.puzzles);
+          }
+        },
+        (err) => {
+          console.log("unable to load puzzle index: ", err);
+          if (!cancelled) {
+            setError(true);
+          }
         }
-      },
-      (err) => {
-        console.log("unable to load puzzle index: ", err);
-        if (!cancelled) {
-          setError(true);
-        }
-      }
-    );
+      );
     return () => {
       cancelled = true;
     };
-  }, [client]);
+  }, [client, userId]);
 
   const groups = useMemo(
     () => groupByMonth((index ?? []).filter((puz) => matchesQuery(puz, query))),

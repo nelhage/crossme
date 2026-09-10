@@ -61,6 +61,44 @@
   white-space: nowrap;
 }
 
+/* The caller's own game of the puzzle: a little crossword grid, half
+   filled while the game is in progress, fully filled with a green check
+   once solved. */
+#puzzles .puzzle-row .game-status {
+  flex: 0 0 auto;
+  display: flex;
+  color: #555;
+}
+
+#puzzles .puzzle-row .game-status:hover {
+  color: var(--bs-primary);
+}
+
+#puzzles .puzzle-row .game-status .lines {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+}
+
+#puzzles .puzzle-row .game-status .black {
+  fill: currentColor;
+}
+
+#puzzles .puzzle-row .game-status .filled {
+  fill: currentColor;
+  opacity: 0.25;
+}
+
+#puzzles .puzzle-row .game-status .check-bg {
+  fill: var(--bs-success);
+  stroke: #fff;
+  stroke-width: 1.5;
+}
+
+#puzzles .puzzle-row .game-status .check {
+  stroke: #fff;
+}
+
 #puzzles .puzzle-row .author {
   font-size: 90%;
   color: #666;

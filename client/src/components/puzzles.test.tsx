@@ -1,14 +1,17 @@
 import { fireEvent, render, screen, within } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { create } from "@bufbuild/protobuf";
+import { timestampFromDate } from "@bufbuild/protobuf/wkt";
 
 import {
   GetPuzzleIndexResponseSchema,
+  GetSelfResponseSchema,
   NewGameResponseSchema,
 } from "../pb/crossme_pb";
-import { PuzzleIndexSchema } from "../pb/puzzle_pb";
+import { PuzzleIndexSchema, PuzzleIndex_GameSchema } from "../pb/puzzle_pb";
 import { ClientContext, type CrossMeClient } from "../rpc";
 import { groupByMonth, matchesQuery } from "../puzzle_index";
+import { UserProvider } from "../user_provider";
 import { Puzzles } from "./puzzles";
 
 const puzzle = (id: string, title: string, author: string, date: string) =>
@@ -128,4 +131,68 @@ it("explains an empty server", async () => {
       .mockResolvedValue(create(GetPuzzleIndexResponseSchema, {})),
   });
   expect(await screen.findByText(/no puzzles yet/)).toBeVisible();
+});
+
+describe("signed in", () => {
+  const signedInSelf = () =>
+    vi.fn().mockResolvedValue(
+      create(GetSelfResponseSchema, {
+        user: { id: "user-1", displayName: "Ada" },
+      })
+    );
+
+  function renderSignedIn(client: Partial<CrossMeClient>) {
+    render(
+      <ClientContext.Provider value={client as CrossMeClient}>
+        <UserProvider>
+          <MemoryRouter initialEntries={["/puzzles"]}>
+            <Routes>
+              <Route path="/puzzles" element={<Puzzles />} />
+            </Routes>
+          </MemoryRouter>
+        </UserProvider>
+      </ClientContext.Provider>
+    );
+  }
+
+  it("links each played puzzle to the caller's game", async () => {
+    const played = [
+      create(PuzzleIndexSchema, {
+        ...index[0],
+        game: create(PuzzleIndex_GameSchema, {
+          id: "g-solved",
+          lastPlayed: timestampFromDate(new Date("2026-09-04T12:00:00Z")),
+          completedAt: timestampFromDate(new Date("2026-09-04T13:00:00Z")),
+        }),
+      }),
+      create(PuzzleIndexSchema, {
+        ...index[1],
+        game: create(PuzzleIndex_GameSchema, {
+          id: "g-open",
+          lastPlayed: timestampFromDate(new Date("2026-09-02T12:00:00Z")),
+        }),
+      }),
+      index[2],
+    ];
+    const getPuzzleIndex = vi
+      .fn()
+      .mockResolvedValue(
+        create(GetPuzzleIndexResponseSchema, { puzzles: played })
+      );
+    renderSignedIn({ getSelf: signedInSelf(), getPuzzleIndex });
+
+    expect(
+      await screen.findByRole("link", { name: "Solved: Thursday Themeless" })
+    ).toHaveAttribute("href", "/game/g-solved");
+    expect(
+      screen.getByRole("link", { name: "In progress: Labor Day Special" })
+    ).toHaveAttribute("href", "/game/g-open");
+    // Unplayed puzzles get no game link.
+    const row = screen.getByRole("link", { name: "Summer Fun" }).closest("li")!;
+    expect(
+      within(row).queryByRole("link", { name: /Solved|In progress/ })
+    ).toBeNull();
+    // The "Solve" button still starts a fresh game on every row.
+    expect(screen.getAllByRole("button", { name: /^Solve/ })).toHaveLength(3);
+  });
 });

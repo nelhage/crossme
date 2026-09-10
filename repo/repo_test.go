@@ -88,7 +88,7 @@ func TestInsertQuery(t *testing.T) {
 		t.Fatalf("duplicate ids: %#v", ids)
 	}
 
-	index, err := repo.PuzzleIndex()
+	index, err := repo.PuzzleIndex("")
 	if err != nil {
 		t.Fatalf("PuzzleIndex: %v", err)
 	}

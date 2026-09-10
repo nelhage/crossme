@@ -7,6 +7,7 @@ import (
 
 	"connectrpc.com/connect"
 	"crossme.app/src/pb"
+	"crossme.app/src/pb/pbconnect"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -138,4 +139,52 @@ func TestRecordPlays(t *testing.T) {
 		},
 	}))
 	must(t, "anonymous RecordPlays", err)
+}
+
+func TestPuzzleIndexGames(t *testing.T) {
+	ctx := context.Background()
+	ts, puz := makeServerWithPuzzle(t, "nyt_weekday_with_notes")
+	defer ts.Stop()
+
+	indexGame := func(client pbconnect.CrossMeClient) *pb.PuzzleIndex_Game {
+		t.Helper()
+		resp, err := client.GetPuzzleIndex(ctx, connect.NewRequest(&pb.GetPuzzleIndexArgs{}))
+		must(t, "GetPuzzleIndex", err)
+		if len(resp.Msg.Puzzles) != 1 {
+			t.Fatalf("index: %v", resp.Msg.Puzzles)
+		}
+		return resp.Msg.Puzzles[0].Game
+	}
+
+	anon := ts.Dial()
+	ada, _ := ts.DialAs("ada")
+	g, err := ada.NewGame(ctx, connect.NewRequest(&pb.NewGameArgs{PuzzleId: puz.Metadata.Id}))
+	must(t, "NewGame", err)
+	gameId := g.Msg.Game.Id
+	_, err = ada.GetGameById(ctx, connect.NewRequest(&pb.GetGameByIdArgs{Id: gameId}))
+	must(t, "GetGameById", err)
+
+	// The player sees their in-progress game; an anonymous caller sees
+	// no games at all.
+	got := indexGame(ada)
+	if got == nil || got.Id != gameId {
+		t.Fatalf("ada's index game = %v, want %s", got, gameId)
+	}
+	if got.CompletedAt != nil || got.LastPlayed == nil {
+		t.Errorf("ada's index game: %v", got)
+	}
+	if got := indexGame(anon); got != nil {
+		t.Errorf("anonymous index carries a game: %v", got)
+	}
+
+	// Solving it flips the entry to completed.
+	_, err = ada.UpdateFill(ctx, connect.NewRequest(&pb.UpdateFillArgs{
+		GameId: gameId,
+		NodeId: "node1",
+		Fill:   solvedFill(puz, 1),
+	}))
+	must(t, "UpdateFill", err)
+	if got := indexGame(ada); got == nil || got.Id != gameId || got.CompletedAt == nil {
+		t.Errorf("solved game not marked in the index: %v", got)
+	}
 }

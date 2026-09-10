@@ -73,7 +73,9 @@ type clientState struct {
 }
 
 func (s *Server) GetPuzzleIndex(ctx context.Context, req *connect.Request[pb.GetPuzzleIndexArgs]) (*connect.Response[pb.GetPuzzleIndexResponse], error) {
-	index, err := s.repo.PuzzleIndex()
+	// A signed-in caller gets their own game of each puzzle attached;
+	// an anonymous one just gets the index.
+	index, err := s.repo.PuzzleIndex(auth.UserFromContext(ctx).GetId())
 	if err != nil {
 		return nil, err
 	}

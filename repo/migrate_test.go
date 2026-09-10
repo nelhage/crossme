@@ -136,7 +136,7 @@ func TestMigrateForward(t *testing.T) {
 		t.Errorf("games table lacks completed_at after migration: %v", cols)
 	}
 
-	index, err := repo.PuzzleIndex()
+	index, err := repo.PuzzleIndex("")
 	if err != nil {
 		t.Fatalf("PuzzleIndex: %v", err)
 	}
