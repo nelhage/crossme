@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Clue, Direction } from "../types";
 
 export interface CurrentClueProps {
@@ -9,10 +7,6 @@ export interface CurrentClueProps {
   onNext: () => void;
   onToggle: () => void;
 }
-
-// Keep the grid's hidden input focused: a control that took focus on
-// tap would dismiss the mobile keyboard.
-const keepFocus = (e: React.PointerEvent) => e.preventDefault();
 
 export const CurrentClue = ({
   clue,
@@ -26,17 +20,11 @@ export const CurrentClue = ({
       type="button"
       className="clue-nav prev"
       aria-label="Previous clue"
-      onPointerDown={keepFocus}
       onClick={onPrev}
     >
       &lsaquo;
     </button>
-    <span
-      className="body"
-      title="Switch direction"
-      onPointerDown={keepFocus}
-      onClick={onToggle}
-    >
+    <span className="body" title="Switch direction" onClick={onToggle}>
       <span className="badge bg-secondary">
         <span className="number">{clue.number}</span>
         <span className="direction"> {direction}</span>
@@ -47,7 +35,6 @@ export const CurrentClue = ({
       type="button"
       className="clue-nav next"
       aria-label="Next clue"
-      onPointerDown={keepFocus}
       onClick={onNext}
     >
       &rsaquo;

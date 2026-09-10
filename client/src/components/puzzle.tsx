@@ -11,6 +11,7 @@ import { ClientContext, type CrossMeClient } from "../rpc";
 import { Metadata } from "./metadata";
 import { PuzzleGrid } from "./puzzle_grid";
 import { CurrentClue } from "./current_clue";
+import { Keyboard } from "./keyboard";
 import { ClueBox } from "./clue_box";
 import { Sidebar } from "./sidebar";
 
@@ -40,6 +41,7 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
   reconnectDelay: number = 0;
 
   grid: React.RefObject<PuzzleGrid | null>;
+  keyboard: React.RefObject<Keyboard | null>;
 
   constructor(props: PuzzleProps) {
     super(props);
@@ -47,11 +49,13 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       game: Crossword.newGame(props.puzzle),
     };
     this.grid = React.createRef();
+    this.keyboard = React.createRef();
 
     this.onClickCell = this.onClickCell.bind(this);
     this.onSelectClue = this.onSelectClue.bind(this);
     this.keyDown = this.keyDown.bind(this);
     this.onInput = this.onInput.bind(this);
+    this.onDelete = this.onDelete.bind(this);
     this.openRebus = this.openRebus.bind(this);
     this.setPencil = this.setPencil.bind(this);
     this.doReveal = this.doReveal.bind(this);
@@ -99,7 +103,15 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     );
   }
 
+  // Opens free-text entry for the selected cell: on a touch screen,
+  // the on-screen keyboard's text box (which is sized for the device
+  // keyboard); otherwise, an input inside the cell itself.
   openRebus() {
+    const keyboard = this.keyboard.current;
+    if (keyboard && keyboard.isVisible()) {
+      keyboard.openEntry();
+      return;
+    }
     if (this.grid.current && this.grid.current.activeCell.current) {
       this.grid.current.activeCell.current.setState({ rebus: true });
     }
@@ -113,6 +125,12 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.updateGame((game) => Crossword.keypress(game, fill.toUpperCase()));
   }
 
+  onDelete() {
+    this.updateGame(Crossword.deleteKey);
+  }
+
+  // Physical-keyboard input. Letters (and any other printable
+  // character) fill the selected cell; the rest of the keys navigate.
   keyDown(e: KeyboardEvent) {
     if (!this.props.gameId) {
       return;
@@ -120,8 +138,10 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
 
     const target = e.target;
     if (target instanceof HTMLElement) {
-      if (target.nodeName === "INPUT" && target.classList.contains("fill")) {
-        if (e.key === "Enter") {
+      // Typing into a text box (the in-cell rebus, or the keyboard's
+      // entry box) is the box's business, not the grid's.
+      if (target.nodeName === "INPUT" || target.nodeName === "TEXTAREA") {
+        if (e.key === "Enter" && target.classList.contains("fill")) {
           target.blur();
           e.preventDefault();
         }
@@ -161,10 +181,15 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
       }
       case "Delete":
       case "Backspace":
-        this.updateGame(Crossword.deleteKey);
+        this.onDelete();
         break;
       default:
-        return;
+        // A single character is a printable key (named keys like
+        // "Shift" or "Dead" are longer). Spaces don't fill a cell.
+        if (e.key.length !== 1 || e.key === " ") {
+          return;
+        }
+        this.onInput(e.key);
     }
     e.preventDefault();
   }
@@ -340,13 +365,26 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
           startGame={this.props.startGame}
         />
         {playing && (
-          <CurrentClue
-            clue={this.selectedClue()}
-            direction={this.direction()}
-            onPrev={this.prevClue}
-            onNext={this.nextClue}
-            onToggle={this.toggleDirection}
-          />
+          <div id="bottombar">
+            <CurrentClue
+              clue={this.selectedClue()}
+              direction={this.direction()}
+              onPrev={this.prevClue}
+              onNext={this.nextClue}
+              onToggle={this.toggleDirection}
+            />
+            {!solved && (
+              <Keyboard
+                ref={this.keyboard}
+                fill={
+                  Crossword.fillAt(this.state.game, this.state.game.cursor)
+                    ?.fill ?? ""
+                }
+                onInput={this.onInput}
+                onDelete={this.onDelete}
+              />
+            )}
+          </div>
         )}
         <PuzzleGrid
           ref={this.grid}
