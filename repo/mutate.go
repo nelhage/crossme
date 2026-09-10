@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"crossme.app/src/pb"
-	"google.golang.org/protobuf/proto"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/proto"
 )
 
 func (r *Repository) FlushConfig() error {
@@ -62,6 +62,7 @@ func (r *Repository) InsertPuzzle(puz *pb.Puzzle, blob []byte) (string, error) {
 		&insert_puzzle_args{
 			Proto:   protobytes,
 			Title:   puz.Title,
+			Author:  puz.Author,
 			Id:      puz.Metadata.Id,
 			Sha256:  sql.NullString{Valid: true, String: puz.Metadata.Sha256},
 			Date:    puz.Metadata.Date,

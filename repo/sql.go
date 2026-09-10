@@ -14,13 +14,14 @@ type insert_puz_file_args struct {
 }
 
 const sql_insert_puzzle = `
-INSERT INTO puzzles (proto, title, meta__id, meta__sha256, meta__date, meta__created)
-VALUES (:proto, :title, :id, :sha256, :date, :created)
+INSERT INTO puzzles (proto, title, author, meta__id, meta__sha256, meta__date, meta__created)
+VALUES (:proto, :title, :author, :id, :sha256, :date, :created)
 `
 
 type insert_puzzle_args struct {
 	Proto   []byte         `db:"proto"`
 	Title   string         `db:"title"`
+	Author  string         `db:"author"`
 	Id      string         `db:"id"`
 	Sha256  sql.NullString `db:"sha256"`
 	Date    string         `db:"date"`
@@ -28,9 +29,9 @@ type insert_puzzle_args struct {
 }
 
 const sql_query_puzzle_index = `
-SELECT meta__id as id, title, meta__date as date
+SELECT meta__id as id, title, author, meta__date as date
 FROM puzzles
-ORDER BY date DESC
+ORDER BY date DESC, title
 `
 
 const sql_query_puzzle_by_id = `

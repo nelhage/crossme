@@ -143,6 +143,7 @@ type PuzzleIndex struct {
 	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
 	Date          string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
+	Author        string                 `protobuf:"bytes,4,opt,name=author,proto3" json:"author,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -194,6 +195,13 @@ func (x *PuzzleIndex) GetTitle() string {
 func (x *PuzzleIndex) GetDate() string {
 	if x != nil {
 		return x.Date
+	}
+	return ""
+}
+
+func (x *PuzzleIndex) GetAuthor() string {
+	if x != nil {
+		return x.Author
 	}
 	return ""
 }
@@ -439,11 +447,12 @@ const file_puzzle_proto_rawDesc = "" +
 	"\acreated\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\acreated\x12\x16\n" +
 	"\x06sha256\x18\x02 \x01(\tR\x06sha256\x12\x0e\n" +
 	"\x02id\x18\x05 \x01(\tR\x02id\x12\x12\n" +
-	"\x04date\x18\x03 \x01(\tR\x04date\"G\n" +
+	"\x04date\x18\x03 \x01(\tR\x04date\"_\n" +
 	"\vPuzzleIndex\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
-	"\x04date\x18\x03 \x01(\tR\x04dateB\x14Z\x12crossme.app/src/pbb\x06proto3"
+	"\x04date\x18\x03 \x01(\tR\x04date\x12\x16\n" +
+	"\x06author\x18\x04 \x01(\tR\x06authorB\x14Z\x12crossme.app/src/pbb\x06proto3"
 
 var (
 	file_puzzle_proto_rawDescOnce sync.Once

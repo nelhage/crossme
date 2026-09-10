@@ -24,7 +24,7 @@ func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var puz pb.PuzzleIndex
-		if err := rows.Scan(&puz.Id, &puz.Title, &puz.Date); err != nil {
+		if err := rows.Scan(&puz.Id, &puz.Title, &puz.Author, &puz.Date); err != nil {
 			return nil, err
 		}
 		out = append(out, &puz)

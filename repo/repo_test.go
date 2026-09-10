@@ -108,8 +108,13 @@ func TestInsertQuery(t *testing.T) {
 		}
 
 		if rt.Metadata.Id != idx.Id ||
-			rt.Title != idx.Title {
-			t.Errorf("%q[sha=%s]: Failed to round trip", idx.Title, idx.Id)
+			rt.Title != idx.Title ||
+			rt.Author != idx.Author ||
+			rt.Metadata.Date != idx.Date {
+			t.Errorf("%q[sha=%s]: Failed to round trip: index %v", idx.Title, idx.Id, idx)
+		}
+		if idx.Author == "" {
+			t.Errorf("%q: index has no author", idx.Title)
 		}
 	}
 }
