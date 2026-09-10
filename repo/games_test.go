@@ -7,6 +7,7 @@ import (
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	"crossme.app/src/pb"
 	"crossme.app/src/puz"
@@ -154,5 +155,115 @@ func TestPlayHistory(t *testing.T) {
 	// Other users' histories are unaffected.
 	if games := gamesForUser(t, r, "user-2"); len(games) != 0 {
 		t.Fatalf("history leaked across users: %v", games)
+	}
+}
+
+// puzzleGame returns the game attached to `puzzleId` in the index as seen
+// by `user`, or nil if there is none.
+func puzzleGame(t *testing.T, r *Repository, user, puzzleId string) *pb.PuzzleIndex_Game {
+	t.Helper()
+	index, err := r.PuzzleIndex(user)
+	if err != nil {
+		t.Fatalf("PuzzleIndex(%q): %v", user, err)
+	}
+	for _, puz := range index {
+		if puz.Id == puzzleId {
+			return puz.Game
+		}
+	}
+	t.Fatalf("puzzle %q missing from the index", puzzleId)
+	return nil
+}
+
+func TestPuzzleIndexGames(t *testing.T) {
+	t.Parallel()
+	r, err := Open(":memory:")
+	if err != nil {
+		t.Fatalf("open: %v", err)
+	}
+	defer r.Close()
+
+	puzzleId := insertTestPuzzle(t, r, "nyt_sun_rebus.puz")
+	otherId := insertTestPuzzle(t, r, "nyt_weekday_with_notes.puz")
+
+	// Nothing played yet: no game on either puzzle, for anyone.
+	const user = "user-1"
+	for _, u := range []string{"", user} {
+		for _, p := range []string{puzzleId, otherId} {
+			if g := puzzleGame(t, r, u, p); g != nil {
+				t.Errorf("user %q, puzzle %q: unexpected game %v", u, p, g)
+			}
+		}
+	}
+
+	newGame := func() *pb.Game {
+		game, err := r.NewGame(puzzleId, "")
+		if err != nil {
+			t.Fatalf("NewGame: %v", err)
+		}
+		return game
+	}
+	playAt := func(game *pb.Game, at time.Time) {
+		if err := r.RecordPlayAt(game.Id, user, at); err != nil {
+			t.Fatalf("RecordPlayAt: %v", err)
+		}
+	}
+	t0 := time.Date(2001, 1, 1, 0, 0, 0, 0, time.UTC)
+
+	// One in-progress game: that's the one.
+	old := newGame()
+	playAt(old, t0)
+	got := puzzleGame(t, r, user, puzzleId)
+	if got == nil || got.Id != old.Id {
+		t.Fatalf("game = %v, want %s", got, old.Id)
+	}
+	if !got.LastPlayed.AsTime().Equal(t0) {
+		t.Errorf("last_played = %v, want %v", got.LastPlayed.AsTime(), t0)
+	}
+	if got.CompletedAt != nil {
+		t.Errorf("in-progress game marked complete: %v", got)
+	}
+	// ...but only for the player: other users and anonymous callers
+	// see nothing, and the other puzzle is untouched.
+	if g := puzzleGame(t, r, "", puzzleId); g != nil {
+		t.Errorf("anonymous caller sees a game: %v", g)
+	}
+	if g := puzzleGame(t, r, "user-2", puzzleId); g != nil {
+		t.Errorf("another user sees the game: %v", g)
+	}
+	if g := puzzleGame(t, r, user, otherId); g != nil {
+		t.Errorf("game attached to the wrong puzzle: %v", g)
+	}
+
+	// Among in-progress games, the most recently played wins.
+	recent := newGame()
+	playAt(recent, t0.Add(time.Hour))
+	if got := puzzleGame(t, r, user, puzzleId); got.Id != recent.Id {
+		t.Errorf("game = %s, want the more recent %s", got.Id, recent.Id)
+	}
+
+	// A solved game beats any in-progress one, however stale.
+	solved := newGame()
+	playAt(solved, t0.Add(-time.Hour))
+	solved.CompletedAt = timestamppb.New(t0)
+	if err := r.UpdateGame(solved); err != nil {
+		t.Fatalf("UpdateGame: %v", err)
+	}
+	got = puzzleGame(t, r, user, puzzleId)
+	if got.Id != solved.Id {
+		t.Errorf("game = %s, want the solved %s", got.Id, solved.Id)
+	}
+	if got.CompletedAt == nil || !got.CompletedAt.AsTime().Equal(t0) {
+		t.Errorf("completed_at = %v, want %v", got.CompletedAt, t0)
+	}
+
+	// A game the user never opened doesn't count, even if solved.
+	unplayed := newGame()
+	unplayed.CompletedAt = timestamppb.New(t0.Add(time.Hour))
+	if err := r.UpdateGame(unplayed); err != nil {
+		t.Fatalf("UpdateGame: %v", err)
+	}
+	if got := puzzleGame(t, r, user, puzzleId); got.Id != solved.Id {
+		t.Errorf("game = %s, want the played %s", got.Id, solved.Id)
 	}
 }

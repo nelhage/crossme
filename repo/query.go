@@ -15,19 +15,42 @@ var (
 	ErrNoSuchSession = errors.New("no such session")
 )
 
-func (r *Repository) PuzzleIndex() ([]*pb.PuzzleIndex, error) {
-	var out []*pb.PuzzleIndex
-	rows, err := r.db.Query(sql_query_puzzle_index)
+// PuzzleIndex lists every puzzle, newest first. user_id is the caller,
+// whose own game of each puzzle (if any) is attached to the entry; pass ""
+// for an anonymous caller, who gets the bare index.
+func (r *Repository) PuzzleIndex(user_id string) ([]*pb.PuzzleIndex, error) {
+	rows, err := r.db.NamedQuery(sql_query_puzzle_index, query_puzzle_index_args{
+		UserId: user_id,
+	})
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+	var out []*pb.PuzzleIndex
 	for rows.Next() {
-		var puz pb.PuzzleIndex
-		if err := rows.Scan(&puz.Id, &puz.Title, &puz.Author, &puz.Date); err != nil {
+		var row puzzle_index_row
+		if err := rows.StructScan(&row); err != nil {
 			return nil, err
 		}
-		out = append(out, &puz)
+		puz := &pb.PuzzleIndex{
+			Id:     row.Id,
+			Title:  row.Title,
+			Author: row.Author,
+			Date:   row.Date,
+		}
+		if row.GameId.Valid {
+			game := &pb.PuzzleIndex_Game{Id: row.GameId.String}
+			if game.LastPlayed, err = parseTimestamp(row.LastPlayed.String); err != nil {
+				return nil, err
+			}
+			if row.CompletedAt.Valid {
+				if game.CompletedAt, err = parseTimestamp(row.CompletedAt.String); err != nil {
+					return nil, err
+				}
+			}
+			puz.Game = game
+		}
+		out = append(out, puz)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err

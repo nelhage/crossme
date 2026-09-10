@@ -139,11 +139,17 @@ func (x *Puzzle) GetMetadata() *Puzzle_Meta {
 }
 
 type PuzzleIndex struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	Title         string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
-	Date          string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
-	Author        string                 `protobuf:"bytes,4,opt,name=author,proto3" json:"author,omitempty"`
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	Id     string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	Title  string                 `protobuf:"bytes,2,opt,name=title,proto3" json:"title,omitempty"`
+	Date   string                 `protobuf:"bytes,3,opt,name=date,proto3" json:"date,omitempty"`
+	Author string                 `protobuf:"bytes,4,opt,name=author,proto3" json:"author,omitempty"`
+	// The caller's own game of this puzzle, so the list can link back
+	// to it. Unset for anonymous callers, and for puzzles the caller has
+	// not played. A user who has played a puzzle more than once gets a
+	// single game here: a solved one if there is one, otherwise the most
+	// recently played.
+	Game          *PuzzleIndex_Game `protobuf:"bytes,5,opt,name=game,proto3" json:"game,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -204,6 +210,13 @@ func (x *PuzzleIndex) GetAuthor() string {
 		return x.Author
 	}
 	return ""
+}
+
+func (x *PuzzleIndex) GetGame() *PuzzleIndex_Game {
+	if x != nil {
+		return x.Game
+	}
+	return nil
 }
 
 type Puzzle_Cell struct {
@@ -414,6 +427,68 @@ func (x *Puzzle_Meta) GetDate() string {
 	return ""
 }
 
+type PuzzleIndex_Game struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// When the caller last opened the game.
+	LastPlayed *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=last_played,json=lastPlayed,proto3" json:"last_played,omitempty"`
+	// Set once the game has been solved; unset while in progress.
+	CompletedAt   *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=completed_at,json=completedAt,proto3" json:"completed_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PuzzleIndex_Game) Reset() {
+	*x = PuzzleIndex_Game{}
+	mi := &file_puzzle_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PuzzleIndex_Game) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PuzzleIndex_Game) ProtoMessage() {}
+
+func (x *PuzzleIndex_Game) ProtoReflect() protoreflect.Message {
+	mi := &file_puzzle_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PuzzleIndex_Game.ProtoReflect.Descriptor instead.
+func (*PuzzleIndex_Game) Descriptor() ([]byte, []int) {
+	return file_puzzle_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *PuzzleIndex_Game) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *PuzzleIndex_Game) GetLastPlayed() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastPlayed
+	}
+	return nil
+}
+
+func (x *PuzzleIndex_Game) GetCompletedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CompletedAt
+	}
+	return nil
+}
+
 var File_puzzle_proto protoreflect.FileDescriptor
 
 const file_puzzle_proto_rawDesc = "" +
@@ -447,12 +522,18 @@ const file_puzzle_proto_rawDesc = "" +
 	"\acreated\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\acreated\x12\x16\n" +
 	"\x06sha256\x18\x02 \x01(\tR\x06sha256\x12\x0e\n" +
 	"\x02id\x18\x05 \x01(\tR\x02id\x12\x12\n" +
-	"\x04date\x18\x03 \x01(\tR\x04date\"_\n" +
+	"\x04date\x18\x03 \x01(\tR\x04date\"\xa3\x02\n" +
 	"\vPuzzleIndex\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12\x12\n" +
 	"\x04date\x18\x03 \x01(\tR\x04date\x12\x16\n" +
-	"\x06author\x18\x04 \x01(\tR\x06authorB\x14Z\x12crossme.app/src/pbb\x06proto3"
+	"\x06author\x18\x04 \x01(\tR\x06author\x12-\n" +
+	"\x04game\x18\x05 \x01(\v2\x19.crossme.PuzzleIndex.GameR\x04game\x1a\x92\x01\n" +
+	"\x04Game\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12;\n" +
+	"\vlast_played\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"lastPlayed\x12=\n" +
+	"\fcompleted_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vcompletedAtB\x14Z\x12crossme.app/src/pbb\x06proto3"
 
 var (
 	file_puzzle_proto_rawDescOnce sync.Once
@@ -466,26 +547,30 @@ func file_puzzle_proto_rawDescGZIP() []byte {
 	return file_puzzle_proto_rawDescData
 }
 
-var file_puzzle_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_puzzle_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_puzzle_proto_goTypes = []any{
 	(*Puzzle)(nil),                // 0: crossme.Puzzle
 	(*PuzzleIndex)(nil),           // 1: crossme.PuzzleIndex
 	(*Puzzle_Cell)(nil),           // 2: crossme.Puzzle.Cell
 	(*Puzzle_Clue)(nil),           // 3: crossme.Puzzle.Clue
 	(*Puzzle_Meta)(nil),           // 4: crossme.Puzzle.Meta
-	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
+	(*PuzzleIndex_Game)(nil),      // 5: crossme.PuzzleIndex.Game
+	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
 }
 var file_puzzle_proto_depIdxs = []int32{
 	2, // 0: crossme.Puzzle.squares:type_name -> crossme.Puzzle.Cell
 	3, // 1: crossme.Puzzle.across_clues:type_name -> crossme.Puzzle.Clue
 	3, // 2: crossme.Puzzle.down_clues:type_name -> crossme.Puzzle.Clue
 	4, // 3: crossme.Puzzle.metadata:type_name -> crossme.Puzzle.Meta
-	5, // 4: crossme.Puzzle.Meta.created:type_name -> google.protobuf.Timestamp
-	5, // [5:5] is the sub-list for method output_type
-	5, // [5:5] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	5, // 4: crossme.PuzzleIndex.game:type_name -> crossme.PuzzleIndex.Game
+	6, // 5: crossme.Puzzle.Meta.created:type_name -> google.protobuf.Timestamp
+	6, // 6: crossme.PuzzleIndex.Game.last_played:type_name -> google.protobuf.Timestamp
+	6, // 7: crossme.PuzzleIndex.Game.completed_at:type_name -> google.protobuf.Timestamp
+	8, // [8:8] is the sub-list for method output_type
+	8, // [8:8] is the sub-list for method input_type
+	8, // [8:8] is the sub-list for extension type_name
+	8, // [8:8] is the sub-list for extension extendee
+	0, // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_puzzle_proto_init() }
@@ -499,7 +584,7 @@ func file_puzzle_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_puzzle_proto_rawDesc), len(file_puzzle_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
