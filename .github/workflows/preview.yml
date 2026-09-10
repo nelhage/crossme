@@ -18,6 +18,7 @@ on:
 env:
   FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
   FLY_ORG: personal
+  # Must match primary_region in fly.toml; see the note there.
   FLY_REGION: sjc
 
 permissions:
@@ -70,14 +71,15 @@ jobs:
             CROSSME_GCP_IDENTITY_PROVIDER=${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
 
       # The action deploys with `--regions $FLY_REGION`, which only touches
-      # machines already in that region. Fly may place a machine in a
-      # neighboring region when the requested one is out of capacity, and
-      # from then on every deploy leaves that machine on its old image and
-      # creates a fresh one, so the preview serves two different builds
-      # depending on where the visitor is routed. Whichever machine is
-      # newest carries the image just deployed (an in-place update keeps the
-      # only machine; otherwise the deploy created it), so drop the rest.
-      # Previews keep no state on their machines, so this loses nothing.
+      # machines already in that region. Should a machine ever end up
+      # elsewhere (Fly places one in a neighboring region when the requested
+      # one is out of capacity), every later deploy leaves it on its old
+      # image and creates a fresh one, so the preview serves two different
+      # builds depending on where the visitor is routed. Whichever machine
+      # is newest carries the image just deployed (an in-place update keeps
+      # the only machine; otherwise the deploy created it), so drop the
+      # rest. Previews keep no state on their machines, so this loses
+      # nothing.
       - uses: superfly/flyctl-actions/setup-flyctl@1.6
         if: github.event.action != 'closed'
 
@@ -92,3 +94,4 @@ jobs:
             echo "Destroying stale machine $id"
             flyctl machine destroy "$id" --app "$APP" --force
           done
+          flyctl machine list --app "$APP"
