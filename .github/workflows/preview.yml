@@ -5,7 +5,8 @@ name: Preview
 # The preview runs the whole app in one container on an empty database.
 #
 # Needs the FLY_API_TOKEN repository secret: an org-scoped Fly token, since the
-# action creates and destroys apps (`fly tokens create org`). Also needs the
+# action creates and destroys apps and machines (`fly tokens create org`).
+# Also needs the
 # GCP_WORKLOAD_IDENTITY_PROVIDER repository variable, the full resource name
 # of the Workload Identity Federation provider that trusts Fly's OIDC tokens,
 # which the preview uses to fetch its database snapshot (see README).
@@ -67,3 +68,27 @@ jobs:
           secrets: >-
             CROSSME_BASE_URL=https://crossme-pr-${{ github.event.number }}.fly.dev
             CROSSME_GCP_IDENTITY_PROVIDER=${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+
+      # The action deploys with `--regions $FLY_REGION`, which only touches
+      # machines already in that region. Fly may place a machine in a
+      # neighboring region when the requested one is out of capacity, and
+      # from then on every deploy leaves that machine on its old image and
+      # creates a fresh one, so the preview serves two different builds
+      # depending on where the visitor is routed. Whichever machine is
+      # newest carries the image just deployed (an in-place update keeps the
+      # only machine; otherwise the deploy created it), so drop the rest.
+      # Previews keep no state on their machines, so this loses nothing.
+      - uses: superfly/flyctl-actions/setup-flyctl@1.6
+        if: github.event.action != 'closed'
+
+      - name: Remove stale machines
+        if: github.event.action != 'closed'
+        env:
+          APP: crossme-pr-${{ github.event.number }}
+        run: |
+          stale=$(flyctl machine list --app "$APP" --json \
+            | jq -r 'sort_by(.created_at) | .[:-1][] | .id')
+          for id in $stale; do
+            echo "Destroying stale machine $id"
+            flyctl machine destroy "$id" --app "$APP" --force
+          done
