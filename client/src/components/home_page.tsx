@@ -12,8 +12,8 @@ export const HomePage = () => {
 
       <p>
         To get started, browse the <Link to="/puzzles">puzzles</Link>, pick one,
-        and click &quot;New Game&quot; to get going right away, or click its
-        title to preview the puzzle before you start playing.
+        and click &quot;Solve&quot; to get going right away, or click its title
+        to preview the puzzle before you start playing.
       </p>
 
       <p>

@@ -115,7 +115,7 @@ it("starts a new game from a row", async () => {
   const row = (
     await screen.findByRole("link", { name: "Labor Day Special" })
   ).closest("li")!;
-  fireEvent.click(within(row).getByRole("button", { name: /New game/ }));
+  fireEvent.click(within(row).getByRole("button", { name: /^Solve/ }));
 
   expect(newGame).toHaveBeenCalledWith({ puzzleId: "p2" });
   expect(await screen.findByText("game page")).toBeVisible();

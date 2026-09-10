@@ -28,9 +28,23 @@
 }
 
 #puzzles .puzzle-row .date {
-  flex: 0 0 7em;
-  font-size: 90%;
+  flex: 0 0 2.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
   color: #666;
+}
+
+#puzzles .puzzle-row .date .weekday {
+  font-size: 70%;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#puzzles .puzzle-row .date .day {
+  font-size: 140%;
+  font-weight: 500;
   font-variant-numeric: tabular-nums;
 }
 

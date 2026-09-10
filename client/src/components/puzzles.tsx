@@ -6,7 +6,7 @@ import { Link, NavigateFunction, useNavigate } from "react-router";
 
 import type { UploadPuzzleResponse } from "../pb/crossme_pb";
 import type { PuzzleIndex } from "../pb/puzzle_pb";
-import { dayLabel, groupByMonth, matchesQuery } from "../puzzle_index";
+import { dayParts, groupByMonth, matchesQuery } from "../puzzle_index";
 import { useClient, type CrossMeClient } from "../rpc";
 
 import "./style/puzzles.css";
@@ -93,6 +93,21 @@ function byline(author: string): string {
   return /^by\s/i.test(trimmed) ? trimmed : `by ${trimmed}`;
 }
 
+// A calendar-tile date: weekday over day-of-month. Always rendered, so
+// undated rows keep their titles aligned with the rest.
+const PuzzleDay = ({ date }: { date: string }) => {
+  const parts = dayParts(date);
+  if (!parts) {
+    return <span className="date" aria-hidden="true" />;
+  }
+  return (
+    <time className="date" dateTime={date} title={parts.full}>
+      <span className="weekday">{parts.weekday}</span>
+      <span className="day">{parts.day}</span>
+    </time>
+  );
+};
+
 const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
   const client = useClient();
   const navigate = useNavigate();
@@ -117,7 +132,7 @@ const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
 
   return (
     <li className="puzzle-row">
-      <span className="date">{dayLabel(puzzle.date)}</span>
+      <PuzzleDay date={puzzle.date} />
       <span className="details">
         <Link className="title" to={`/preview/${puzzle.id}`}>
           {puzzle.title || "Untitled puzzle"}
@@ -131,9 +146,9 @@ const PuzzleRow = ({ puzzle }: { puzzle: PuzzleIndex }) => {
         variant="primary"
         onClick={newGame}
         disabled={starting}
-        aria-label={`New game: ${puzzle.title || "Untitled puzzle"}`}
+        aria-label={`Solve ${puzzle.title || "Untitled puzzle"}`}
       >
-        New Game
+        Solve
       </Button>
     </li>
   );

@@ -24,17 +24,27 @@ export function monthLabel(date: string): string {
   });
 }
 
-export function dayLabel(date: string): string {
+// The pieces of a puzzle's date shown in its row: a short weekday and
+// the day of the month, plus the full date for a tooltip. The month and
+// year are implied by the section header.
+export interface DayParts {
+  weekday: string;
+  day: string;
+  full: string;
+}
+
+export function dayParts(date: string): null | DayParts {
   const d = parseDate(date);
   if (!d) {
-    return "";
+    return null;
   }
-  return d.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    timeZone: "UTC",
-  });
+  const fmt = (opts: Intl.DateTimeFormatOptions) =>
+    d.toLocaleDateString(undefined, { ...opts, timeZone: "UTC" });
+  return {
+    weekday: fmt({ weekday: "short" }),
+    day: fmt({ day: "numeric" }),
+    full: fmt({ dateStyle: "full" }),
+  };
 }
 
 export interface PuzzleGroup {
