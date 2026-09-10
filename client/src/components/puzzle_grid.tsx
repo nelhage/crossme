@@ -17,16 +17,13 @@ export interface PuzzleGridProps {
 }
 
 export class PuzzleGrid extends React.Component<PuzzleGridProps> {
-  inputRef: React.RefObject<HTMLInputElement | null>;
   activeCell: React.RefObject<PuzzleCell | null>;
 
   constructor(props: PuzzleGridProps) {
     super(props);
-    this.inputRef = React.createRef();
     this.activeCell = React.createRef();
 
     this.onClick = this.onClick.bind(this);
-    this.onInput = this.onInput.bind(this);
   }
 
   onClick(evt: React.MouseEvent<HTMLDivElement>) {
@@ -37,29 +34,6 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
     const row = parseInt(target.dataset.row as string, 10);
     const column = parseInt(target.dataset.column as string, 10);
     this.props.onClickCell({ row: row, column: column });
-  }
-
-  onInput(e: React.FormEvent<HTMLInputElement>) {
-    if (!this.props.showCursor) {
-      return;
-    }
-    const target = e.target as HTMLInputElement;
-    const fill = target.value.toUpperCase();
-    this.props.onInput(fill);
-    target.value = "";
-    e.preventDefault();
-  }
-
-  componentDidMount() {
-    if (this.inputRef.current) {
-      this.inputRef.current.focus();
-    }
-  }
-
-  componentDidUpdate() {
-    if (this.inputRef.current) {
-      this.inputRef.current.focus();
-    }
   }
 
   render() {
@@ -118,27 +92,16 @@ export class PuzzleGrid extends React.Component<PuzzleGridProps> {
       "--puzzle-rows": this.props.game.puzzle.height,
     } as React.CSSProperties;
 
-    // In order to support mobile devices, we create an
-    // off-screen <input> field, which we ensure is always focused
-    // as long as the cursor is on a crossword cell. This forces
-    // mobile devices to pop up a keyboard, and we then listen for
-    // onInput events to catch keystrokes. We use a password field
-    // because that forces a letter-by-letter keyboard and input mode,
-    // avoiding potentially buffering input in the keyboard itself
-    // before it hits the DOM.
+    // Typing isn't handled here: keystrokes from a physical keyboard
+    // arrive via a window-level listener in PuzzleComponent, and touch
+    // devices get the on-screen Keyboard. The grid only takes input
+    // from the active cell's own rebus box.
     return (
       <div
         id="puzzlegrid"
         className={this.props.complete ? "complete" : undefined}
         style={style}
       >
-        <input
-          id="puzzleinput"
-          defaultValue=""
-          type="password"
-          onInput={this.onInput}
-          ref={this.inputRef}
-        />
         {cells}
       </div>
     );

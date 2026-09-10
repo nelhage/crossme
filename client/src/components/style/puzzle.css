@@ -60,6 +60,12 @@
   display: none;
 }
 
+/* The on-screen keyboard is for touch screens; anyone on a wider
+   screen is assumed to have a real keyboard. */
+#keyboard {
+  display: none;
+}
+
 #theclue .label {
   background-color: #88f;
 }
@@ -105,17 +111,6 @@
   border-bottom: 1px solid black;
   padding: 0px;
   margin: 0px;
-}
-
-#puzzleinput {
-  width: 0;
-  height: 0;
-  padding: 0;
-  border: none;
-  position: fixed;
-  left: -10px;
-  top: -10px;
-  z-index: -1;
 }
 
 #puzzlegrid .cell.rebus .fill {
@@ -304,8 +299,9 @@
 
 /* Responsive layout, at two breakpoints:
 
-   - Below 768px ("mobile"): the clue box is hidden and the current
-     clue is pinned to the bottom of the screen.
+   - Below 768px ("mobile"): the clue box is hidden, and the current
+     clue and an on-screen keyboard are pinned to the bottom of the
+     screen.
    - At 992px and up ("wide"): the controls stack as a column beside
      the clue box. In between, they stay in a row, which wraps below
      the grid on its own when it runs out of room. */
@@ -321,16 +317,19 @@
     display: none;
   }
 
-  #theclue {
+  #bottombar {
     position: fixed;
     bottom: 0px;
     left: 0px;
     right: 0px;
     background-color: white;
     border-top: 2px solid black;
+    z-index: 5;
+  }
+
+  #theclue {
     padding: 10px 0px;
     margin: 0;
-    z-index: 5;
     display: flex;
     align-items: center;
   }
@@ -358,31 +357,123 @@
     background-color: #ccf;
   }
 
-  /* While the clue is pinned, scroll inside .App instead of the
+  #keyboard {
+    display: block;
+    --key-height: 42px;
+    padding: 5px 3px;
+    background-color: #d4d6db;
+    /* Selecting or long-pressing a key should behave like a keyboard,
+       not like text; and a touch that starts on the keyboard is a
+       keypress, never the start of a scroll (keys act on pointerdown). */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+  }
+
+  /* Standard staggered QWERTY layout, on a 20-column grid: a letter
+     is two columns wide, so the 9-key middle row is inset by one
+     column (half a key) and the bottom row's two wide keys are three
+     columns each. */
+  #keyboard .keyrow {
+    display: grid;
+    grid-template-columns: repeat(20, 1fr);
+    gap: 5px 4px;
+    margin-bottom: 5px;
+  }
+
+  #keyboard .keyrow:last-child {
+    margin-bottom: 0;
+  }
+
+  #keyboard .keyrow:nth-child(2) .key:first-child {
+    grid-column: 2 / span 2;
+  }
+
+  #keyboard .key {
+    grid-column: span 2;
+    height: var(--key-height);
+    min-width: 0;
+    padding: 0;
+    border: none;
+    border-radius: 5px;
+    background-color: white;
+    box-shadow: 0 1px 0 #888;
+    color: black;
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  #keyboard .key.entry,
+  #keyboard .key.delete {
+    grid-column: span 3;
+    background-color: #b3b7c0;
+  }
+
+  #keyboard .key.entry {
+    font-weight: normal;
+  }
+
+  #keyboard .key:active {
+    background-color: #ccf;
+  }
+
+  /* The free-text box that the "..." key opens, in place of the letter
+     keys. Its font must be at least 16px, or iOS zooms the page in
+     when the box takes focus. */
+  #keyboard .entrybox {
+    display: flex;
+    gap: 5px;
+    height: var(--key-height);
+  }
+
+  #keyboard .entrybox input {
+    flex: 1;
+    min-width: 0;
+    font-size: 18px;
+    text-transform: uppercase;
+    padding: 0 8px;
+    border: 1px solid #888;
+    border-radius: 5px;
+  }
+
+  #keyboard .entrybox button {
+    flex: none;
+    padding: 0 16px;
+    border: none;
+    border-radius: 5px;
+    background-color: #77f;
+    color: white;
+    font-size: 16px;
+  }
+
+  /* While the bottom bar is pinned, scroll inside .App instead of the
      document. Scrolling the document makes mobile browsers show and
-     hide the URL bar, resizing the viewport the fixed clue is
-     anchored to; the clue then jitters (and lets the puzzle peek
-     through underneath) while the browser re-anchors it. With the
-     document pinned, the browser chrome never moves. Scrolling .App
-     (rather than #puzzle) puts the nav bar inside the scroller, so
-     it scrolls away and frees its space while solving. */
-  body:has(#theclue) {
+     hide the URL bar, resizing the viewport the fixed bar is anchored
+     to; the bar then jitters (and lets the puzzle peek through
+     underneath) while the browser re-anchors it. With the document
+     pinned, the browser chrome never moves. Scrolling .App (rather
+     than #puzzle) puts the nav bar inside the scroller, so it scrolls
+     away and frees its space while solving. */
+  body:has(#bottombar) {
     height: 100dvh;
     overflow: hidden;
   }
 
-  body:has(#theclue) #root {
+  body:has(#bottombar) #root {
     height: 100%;
   }
 
-  body:has(#theclue) .App {
+  body:has(#bottombar) .App {
     height: 100%;
     overflow-y: auto;
     overscroll-behavior: contain;
   }
 
-  /* Room to scroll the bottom of the page up past the pinned clue. */
+  /* Room to scroll the bottom of the page up past the pinned bar:
+     the keyboard (three rows) plus a clue of a couple of lines. */
   #controls {
-    padding-bottom: 100px;
+    padding-bottom: 260px;
   }
 }
