@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 
-export const HomePage = () => {
+export const About = () => {
   return (
     <div className="container">
       <h2>Welcome to CrossMe!</h2>

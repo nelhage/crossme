@@ -2,6 +2,7 @@ import { useMemo } from "react";
 
 import {
   createBrowserRouter,
+  Navigate,
   Outlet,
   RouterProvider,
   useParams,
@@ -16,7 +17,7 @@ import { ClientContext } from "./rpc";
 import { UserProvider } from "./user_provider";
 import { PreviewContainer } from "./components/preview_container";
 import { GameContainer } from "./components/game_container";
-import { HomePage } from "./components/home_page";
+import { About } from "./components/about";
 import { MyGames } from "./components/my_games";
 import { Puzzles } from "./components/puzzles";
 import { Header } from "./components/header";
@@ -42,7 +43,8 @@ const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
-      { index: true, element: <HomePage /> },
+      { index: true, element: <Navigate to="/puzzles" replace /> },
+      { path: "about", element: <About /> },
       { path: "puzzles", element: <Puzzles /> },
       { path: "games", element: <MyGames /> },
       { path: "preview/:puzzleId", element: <RoutePreview /> },

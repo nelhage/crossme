@@ -29,6 +29,9 @@ export const Header = () => {
                 My Games
               </Nav.Link>
             )}
+            <Nav.Link as={Link} to="/about">
+              About
+            </Nav.Link>
           </Nav>
           <Nav>
             <Account />
