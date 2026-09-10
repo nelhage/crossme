@@ -9,5 +9,8 @@ it("renders the home page", () => {
     screen.getByRole("heading", { name: /welcome to crossme/i })
   ).toBeVisible();
   expect(screen.getByRole("link", { name: "CrossMe" })).toBeVisible();
-  expect(screen.getByRole("button", { name: "New Game" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "Puzzles" })).toHaveAttribute(
+    "href",
+    "/puzzles"
+  );
 });

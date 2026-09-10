@@ -1,3 +1,5 @@
+import { Link } from "react-router";
+
 export const HomePage = () => {
   return (
     <div className="container">
@@ -9,13 +11,9 @@ export const HomePage = () => {
       </p>
 
       <p>
-        To get started, just click &quot;New Game&quot; above, select a puzzle,
-        and get started!
-      </p>
-      <p>
-        In the popup, you can click &quot;New Game&quot; to get going right
-        away, or &quot;Preview&quot; to view the puzzle before you start
-        playing.
+        To get started, browse the <Link to="/puzzles">puzzles</Link>, pick one,
+        and click &quot;New Game&quot; to get going right away, or click its
+        title to preview the puzzle before you start playing.
       </p>
 
       <p>
