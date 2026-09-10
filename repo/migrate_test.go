@@ -97,6 +97,28 @@ func TestMigrateForward(t *testing.T) {
 	); err != nil {
 		t.Fatalf("insert v1 game: %v", err)
 	}
+	// Likewise a puzzle: v1 has no author column, so the migration
+	// that adds one has to backfill it from the proto.
+	puzzle := &pb.Puzzle{
+		Title:  "Old Puzzle",
+		Author: "A. Constructor",
+		Metadata: &pb.Puzzle_Meta{
+			Id:      NewId(),
+			Date:    "2020-01-02",
+			Created: &timestamp.Timestamp{Seconds: time.Now().Unix()},
+		},
+	}
+	puzbytes, err := proto.Marshal(puzzle)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	if _, err := old.db.Exec(
+		`INSERT INTO puzzles (proto, title, meta__id, meta__date, meta__created) VALUES (?, ?, ?, ?, ?)`,
+		puzbytes, puzzle.Title, puzzle.Metadata.Id, puzzle.Metadata.Date,
+		formatTimestamp(puzzle.Metadata.Created),
+	); err != nil {
+		t.Fatalf("insert v1 puzzle: %v", err)
+	}
 	if err := old.Close(); err != nil {
 		t.Fatalf("close: %v", err)
 	}
@@ -112,6 +134,17 @@ func TestMigrateForward(t *testing.T) {
 	}
 	if cols := tableColumns(t, repo, "games"); !slices.Contains(cols, "completed_at") {
 		t.Errorf("games table lacks completed_at after migration: %v", cols)
+	}
+
+	index, err := repo.PuzzleIndex()
+	if err != nil {
+		t.Fatalf("PuzzleIndex: %v", err)
+	}
+	if len(index) != 1 || index[0].Id != puzzle.Metadata.Id {
+		t.Fatalf("PuzzleIndex = %v, want the one v1 puzzle", index)
+	}
+	if index[0].Author != puzzle.Author {
+		t.Errorf("author not backfilled: got %q want %q", index[0].Author, puzzle.Author)
 	}
 
 	got, err := repo.GameById(game.Id)

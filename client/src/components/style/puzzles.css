@@ -1,0 +1,77 @@
+#puzzles .puzzle-search {
+  max-width: 30em;
+  margin-bottom: 1em;
+}
+
+#puzzles .puzzle-month h3 {
+  font-size: 110%;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #666;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.25em;
+  margin-top: 1.5em;
+}
+
+#puzzles .puzzle-month ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#puzzles .puzzle-row {
+  display: flex;
+  align-items: center;
+  gap: 1em;
+  padding: 0.4em 0;
+  border-bottom: 1px solid #eee;
+}
+
+#puzzles .puzzle-row .date {
+  flex: 0 0 2.5em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+  color: #666;
+}
+
+#puzzles .puzzle-row .date .weekday {
+  font-size: 70%;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#puzzles .puzzle-row .date .day {
+  font-size: 140%;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+#puzzles .puzzle-row .details {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.5em;
+  align-items: baseline;
+}
+
+#puzzles .puzzle-row .btn {
+  white-space: nowrap;
+}
+
+#puzzles .puzzle-row .author {
+  font-size: 90%;
+  color: #666;
+}
+
+#puzzles .upload-puzzle {
+  margin-bottom: 2em;
+}
+
+#puzzles .upload-controls {
+  display: flex;
+  gap: 0.5em;
+  max-width: 30em;
+}

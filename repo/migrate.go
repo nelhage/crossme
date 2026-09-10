@@ -29,6 +29,10 @@ const sql_write_config = `REPLACE INTO config (id, proto) VALUES(0, ?)`
 type migration struct {
 	name string
 	sql  string
+	// Optional Go step, run in the same transaction after `sql`, for
+	// work that plain SQL can't express -- typically backfilling a new
+	// column from the protos already stored in the table.
+	fn func(tx *sqlx.Tx) error
 }
 
 // migrations is append-only: once a migration has shipped, edit it only to
@@ -119,6 +123,53 @@ CREATE TABLE game_players (
 ) strict;
 `,
 	},
+	{
+		// The author, replicated out of the proto so the puzzle index
+		// can list and search by it without decoding every puzzle.
+		name: "puzzles-author",
+		sql: `
+ALTER TABLE puzzles ADD COLUMN author text not null default '';
+`,
+		fn: backfillPuzzleAuthors,
+	},
+}
+
+// backfillPuzzleAuthors fills the puzzles.author column from each row's
+// proto, for puzzles inserted before the column existed.
+func backfillPuzzleAuthors(tx *sqlx.Tx) error {
+	rows, err := tx.Query("SELECT meta__id, proto FROM puzzles")
+	if err != nil {
+		return err
+	}
+	type row struct {
+		id     string
+		author string
+	}
+	var updates []row
+	for rows.Next() {
+		var id string
+		var data []byte
+		if err := rows.Scan(&id, &data); err != nil {
+			rows.Close()
+			return err
+		}
+		var puz pb.Puzzle
+		if err := proto.Unmarshal(data, &puz); err != nil {
+			rows.Close()
+			return fmt.Errorf("decoding puzzle %s: %w", id, err)
+		}
+		updates = append(updates, row{id, puz.Author})
+	}
+	rows.Close()
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	for _, u := range updates {
+		if _, err := tx.Exec("UPDATE puzzles SET author = ? WHERE meta__id = ?", u.author, u.id); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 // CurrentSchemaVersion is the schema version this build expects. A database
@@ -184,6 +235,11 @@ func (r *Repository) applyMigration(m *migration, version int32) error {
 
 	if _, err := tx.Exec(m.sql); err != nil {
 		return err
+	}
+	if m.fn != nil {
+		if err := m.fn(tx); err != nil {
+			return err
+		}
 	}
 
 	config := proto.Clone(&r.Config).(*pb.Config)

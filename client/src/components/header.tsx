@@ -7,7 +7,6 @@ import { Link } from "react-router";
 import { useUser } from "../user";
 
 import { Account } from "./account";
-import { NewGame } from "./new_game";
 import { RecentGames } from "./recent_games";
 
 export const Header = () => {
@@ -19,7 +18,9 @@ export const Header = () => {
         <Navbar.Toggle aria-controls="main-navbar" />
         <Navbar.Collapse id="main-navbar">
           <Nav className="me-auto">
-            <NewGame />
+            <Nav.Link as={Link} to="/puzzles">
+              Puzzles
+            </Nav.Link>
             <RecentGames />
             {/* Anonymous play never reaches the server-side history,
                 so the link would only ever show an empty page. */}
@@ -28,6 +29,9 @@ export const Header = () => {
                 My Games
               </Nav.Link>
             )}
+            <Nav.Link as={Link} to="/about">
+              About
+            </Nav.Link>
           </Nav>
           <Nav>
             <Account />

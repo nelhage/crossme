@@ -1,8 +1,15 @@
 # Fly.io config for transient per-PR preview instances. Production does not
 # run on Fly; this file exists for .github/workflows/preview.yml, which uses
 # superfly/fly-pr-review-apps to create one app per pull request from it and
-# destroy the app when the PR closes. The action supplies the app name and
-# region itself, so neither is set here.
+# destroy the app when the PR closes. The action supplies the app name
+# itself, so it is not set here.
+
+# Where machines are created. The action passes its region to `fly launch`,
+# but then restores this file over the one launch wrote, so the region has
+# to be here too or new machines land wherever Fly picks. Keep in step with
+# FLY_REGION in the workflow: its deploys only update machines in that
+# region, so a machine anywhere else is stranded on its old image.
+primary_region = "sjc"
 
 [build]
   dockerfile = "Dockerfile.preview"

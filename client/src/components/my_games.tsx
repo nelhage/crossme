@@ -91,8 +91,8 @@ export const MyGames = () => {
         </p>
       ) : games.length === 0 ? (
         <p>
-          You haven&apos;t played any games yet. Click &quot;New Game&quot;
-          above to get started!
+          You haven&apos;t played any games yet. Pick a{" "}
+          <Link to="/puzzles">puzzle</Link> to get started!
         </p>
       ) : (
         <Table hover>
