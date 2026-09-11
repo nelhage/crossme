@@ -438,7 +438,7 @@ describe("crossword operations", () => {
 `,
     ],
     [
-      "Next clue moves to the start of the following clue",
+      "Next blank moves to the start of the following clue",
       `
 # . .>. #
 . . . . .
@@ -446,7 +446,7 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      (g) => Crossword.adjacentClue(g),
+      (g) => Crossword.nextBlank(g),
       `
 # . . . #
 .>. . . .
@@ -456,7 +456,25 @@ describe("crossword operations", () => {
 `,
     ],
     [
-      "Next clue continues from the last across into the first down",
+      "Next blank skips filled words and lands on the first blank",
+      `
+# . .>. #
+A B C D E
+. F . . .
+. . . . .
+# . . . #
+`,
+      (g) => Crossword.nextBlank(g),
+      `
+# . . . #
+A B C D E
+.>F . . .
+. . . . .
+# . . . #
+`,
+    ],
+    [
+      "Next blank continues from the last across into the first down",
       `
 # . . . #
 . . . . .
@@ -464,7 +482,7 @@ describe("crossword operations", () => {
 . . . . .
 # . .>. #
 `,
-      (g) => Crossword.adjacentClue(g),
+      (g) => Crossword.nextBlank(g),
       `
 # .v. . #
 . . . . .
@@ -474,7 +492,7 @@ describe("crossword operations", () => {
 `,
     ],
     [
-      "Previous clue moves to the start of the preceding clue",
+      "Previous blank moves to the start of the preceding clue",
       `
 # . . . #
 . .>. . .
@@ -482,7 +500,7 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      (g) => Crossword.adjacentClue(g, true),
+      (g) => Crossword.nextBlank(g, true),
       `
 # .>. . #
 . . . . .
@@ -492,7 +510,7 @@ describe("crossword operations", () => {
 `,
     ],
     [
-      "Previous clue wraps from the first across to the last down",
+      "Previous blank wraps from the first across to the last down",
       `
 # .>. . #
 . . . . .
@@ -500,7 +518,7 @@ describe("crossword operations", () => {
 . . . . .
 # . . . #
 `,
-      (g) => Crossword.adjacentClue(g, true),
+      (g) => Crossword.nextBlank(g, true),
       `
 # . . . #
 . . . . .
