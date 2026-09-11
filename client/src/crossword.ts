@@ -567,6 +567,11 @@ function nextClue(
   return {};
 }
 
+// Moves the cursor to the first blank square of the next (or, with
+// `reverse`, the previous) clue that still has one, walking clues in
+// puzzle order: through the rest of the current direction's clues,
+// then the other direction's, wrapping around. Fully-filled words are
+// skipped. This is what Tab / Shift-Tab do.
 export function nextBlank(g: Game, reverse?: boolean): GameUpdate {
   return nextClue(
     g,
@@ -578,17 +583,6 @@ export function nextBlank(g: Game, reverse?: boolean): GameUpdate {
         return { ...found, direction };
       }
     },
-    reverse
-  );
-}
-
-// Moves the cursor to the start of the next (or, with `reverse`, the
-// previous) clue in puzzle order: through the rest of the current
-// direction's clues, then the other direction's, wrapping around.
-export function adjacentClue(g: Game, reverse?: boolean): GameUpdate {
-  return nextClue(
-    g,
-    (direction, clue) => ({ ...g.by_clue[clue.number], direction }),
     reverse
   );
 }

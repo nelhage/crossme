@@ -233,12 +233,14 @@ export class PuzzleComponent extends React.Component<PuzzleProps, PuzzleState> {
     this.updateGame((game) => Crossword.selectClue(game, evt));
   }
 
+  // The clue bar's arrows behave like shift-tab / tab: they jump to
+  // the next word that still has a blank, not merely the next clue.
   prevClue() {
-    this.updateGame((game) => Crossword.adjacentClue(game, true));
+    this.updateGame((game) => Crossword.nextBlank(game, true));
   }
 
   nextClue() {
-    this.updateGame((game) => Crossword.adjacentClue(game));
+    this.updateGame((game) => Crossword.nextBlank(game));
   }
 
   toggleDirection() {
