@@ -334,9 +334,22 @@
     align-items: center;
   }
 
+  /* A long clue must not push the keyboard down or the grid off the
+     screen: cap the text at about two lines and scroll the rest. */
   #theclue .body {
     flex: 1;
     min-width: 0;
+    max-height: 3em; /* two lines at Bootstrap's 1.5 line-height */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* The text's vertical padding is invisible (no background) but
+     pokes out of the line box, which would make even a one-line clue
+     scrollable now that overflow is clipped. */
+  #theclue .body > .text {
+    padding-top: 0;
+    padding-bottom: 0;
   }
 
   #theclue .clue-nav {
