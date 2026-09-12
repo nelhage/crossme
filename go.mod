@@ -14,6 +14,7 @@ require (
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/text v0.40.0
 	google.golang.org/protobuf v1.36.11
+	hegel.dev/go/hegel v0.6.33
 )
 
 require (
@@ -21,5 +22,4 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	google.golang.org/appengine v1.4.0 // indirect
-	hegel.dev/go/hegel v0.6.33 // indirect
 )
