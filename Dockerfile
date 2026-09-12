@@ -2,7 +2,7 @@
 
 # Keep GO_VERSION in sync with go.mod. The builder and the runtime pin the same
 # Alpine release so the cgo build and the runtime agree on musl.
-ARG GO_VERSION=1.25
+ARG GO_VERSION=1.26
 ARG ALPINE_VERSION=3.22
 
 FROM golang:${GO_VERSION}-alpine${ALPINE_VERSION} AS build
