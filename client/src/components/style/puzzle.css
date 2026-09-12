@@ -335,11 +335,14 @@
   }
 
   /* A long clue must not push the keyboard down or the grid off the
-     screen: cap the text at about two lines and scroll the rest. */
+     screen: cap the text at about two lines and scroll the rest. The
+     cap is a fraction over two lines so that a longer clue shows the
+     top half of a third line, a visible cue that there's more to
+     scroll. Sizes assume Bootstrap's 1.5 line-height. */
   #theclue .body {
     flex: 1;
     min-width: 0;
-    max-height: 3em; /* two lines at Bootstrap's 1.5 line-height */
+    max-height: calc(2.4 * 1.5em);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
