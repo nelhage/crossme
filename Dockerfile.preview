@@ -13,7 +13,7 @@
 # Keep GO_VERSION in sync with go.mod, and NODE_VERSION with client/Dockerfile.
 # The builder and the runtime pin the same Alpine release so the cgo build and
 # the runtime agree on musl.
-ARG GO_VERSION=1.25
+ARG GO_VERSION=1.26
 ARG ALPINE_VERSION=3.22
 ARG NODE_VERSION=24
 
