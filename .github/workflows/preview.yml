@@ -26,12 +26,31 @@ permissions:
   deployments: write
 
 jobs:
+  # Some pull requests run without repository secrets: PRs from forks, and
+  # PRs opened by Dependabot (which only sees its own, separate secrets).
+  # Those can't deploy, so skip the preview rather than fail it. A job-level
+  # `if` can't read `secrets`, hence this gate job. Dependabot is the known
+  # case, so skip it outright here; `preview` is then skipped too, since it
+  # needs this job.
+  check-credentials:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    outputs:
+      available: ${{ steps.check.outputs.available }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "$FLY_API_TOKEN" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No FLY_API_TOKEN in this run; skipping the preview deploy."
+            echo "available=false" >> "$GITHUB_OUTPUT"
+          fi
+
   preview:
     runs-on: ubuntu-latest
-
-    # Forks don't get repository secrets, so a fork PR can't deploy anyway;
-    # skip rather than fail.
-    if: github.event.pull_request.head.repo.full_name == github.repository
+    needs: check-credentials
+    if: needs.check-credentials.outputs.available == 'true'
 
     # One deploy at a time per PR. Deliberately not cancel-in-progress: a
     # destroy on close must not race a half-finished deploy.
