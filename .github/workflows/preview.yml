@@ -29,9 +29,12 @@ jobs:
   # Some pull requests run without repository secrets: PRs from forks, and
   # PRs opened by Dependabot (which only sees its own, separate secrets).
   # Those can't deploy, so skip the preview rather than fail it. A job-level
-  # `if` can't read `secrets`, hence this gate job.
+  # `if` can't read `secrets`, hence this gate job. Dependabot is the known
+  # case, so skip it outright here; `preview` is then skipped too, since it
+  # needs this job.
   check-credentials:
     runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
     outputs:
       available: ${{ steps.check.outputs.available }}
     steps:
