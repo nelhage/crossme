@@ -12,5 +12,18 @@ jobs:
         uses: actions/setup-go@v7
         with:
           go-version-file: go.mod
+      - name: Use Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      # The Go CRDT tests cross-check the Go merge against its
+      # TypeScript port by running it under node; that needs the
+      # client's dev dependencies installed.
+      - run: npm ci
+        working-directory: client
       - run: go build ./...
       - run: go test ./...
+        env:
+          CROSSME_CROSS_TEST: require

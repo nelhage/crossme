@@ -27,4 +27,10 @@ export default defineConfig([
       globals: globals.vitest ?? {},
     },
   },
+  {
+    files: ["src/crdt/merge_bridge.ts"],
+    languageOptions: {
+      globals: globals.node,
+    },
+  },
 ]);
