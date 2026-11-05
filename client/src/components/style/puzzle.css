@@ -335,14 +335,19 @@
   }
 
   /* A long clue must not push the keyboard down or the grid off the
-     screen: cap the text at about two lines and scroll the rest. The
-     cap is a fraction over two lines so that a longer clue shows the
-     top half of a third line, a visible cue that there's more to
-     scroll. Sizes assume Bootstrap's 1.5 line-height. */
+     screen: cap the text at a few lines and scroll the rest. The text
+     is set smaller and tighter than on desktop to fit more in; the cap
+     (about 72px, as tall as 2.4 lines at the desktop size) is a
+     fraction over three lines, so that a longer clue shows the top of
+     a fourth line, a visible cue that there's more to scroll. The
+     font size is set here rather than on #theclue so that the nav
+     arrows keep their size. */
   #theclue .body {
     flex: 1;
     min-width: 0;
-    max-height: calc(2.4 * 1.5em);
+    font-size: 85%;
+    line-height: 1.25;
+    max-height: calc(3.4 * 1.25em);
     overflow-y: auto;
     overscroll-behavior: contain;
   }
