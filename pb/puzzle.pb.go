@@ -220,13 +220,19 @@ func (x *PuzzleIndex) GetGame() *PuzzleIndex_Game {
 }
 
 type Puzzle_Cell struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Number        int32                  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
-	Black         bool                   `protobuf:"varint,2,opt,name=black,proto3" json:"black,omitempty"`
-	Circled       bool                   `protobuf:"varint,3,opt,name=circled,proto3" json:"circled,omitempty"`
-	Fill          string                 `protobuf:"bytes,4,opt,name=fill,proto3" json:"fill,omitempty"`
-	ClueAcross    int32                  `protobuf:"varint,5,opt,name=clue_across,json=clueAcross,proto3" json:"clue_across,omitempty"`
-	ClueDown      int32                  `protobuf:"varint,6,opt,name=clue_down,json=clueDown,proto3" json:"clue_down,omitempty"`
+	state      protoimpl.MessageState `protogen:"open.v1"`
+	Number     int32                  `protobuf:"varint,1,opt,name=number,proto3" json:"number,omitempty"`
+	Black      bool                   `protobuf:"varint,2,opt,name=black,proto3" json:"black,omitempty"`
+	Circled    bool                   `protobuf:"varint,3,opt,name=circled,proto3" json:"circled,omitempty"`
+	Fill       string                 `protobuf:"bytes,4,opt,name=fill,proto3" json:"fill,omitempty"`
+	ClueAcross int32                  `protobuf:"varint,5,opt,name=clue_across,json=clueAcross,proto3" json:"clue_across,omitempty"`
+	ClueDown   int32                  `protobuf:"varint,6,opt,name=clue_down,json=clueDown,proto3" json:"clue_down,omitempty"`
+	// Barred grids: a thick bar on this cell's right / bottom
+	// edge, ending any word that would otherwise cross it. Bars on
+	// the left / top edges are stored on the neighboring cell; bars
+	// on the outer edge of the grid are dropped.
+	BarRight      bool `protobuf:"varint,7,opt,name=bar_right,json=barRight,proto3" json:"bar_right,omitempty"`
+	BarBottom     bool `protobuf:"varint,8,opt,name=bar_bottom,json=barBottom,proto3" json:"bar_bottom,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -301,6 +307,20 @@ func (x *Puzzle_Cell) GetClueDown() int32 {
 		return x.ClueDown
 	}
 	return 0
+}
+
+func (x *Puzzle_Cell) GetBarRight() bool {
+	if x != nil {
+		return x.BarRight
+	}
+	return false
+}
+
+func (x *Puzzle_Cell) GetBarBottom() bool {
+	if x != nil {
+		return x.BarBottom
+	}
+	return false
 }
 
 type Puzzle_Clue struct {
@@ -493,7 +513,7 @@ var File_puzzle_proto protoreflect.FileDescriptor
 
 const file_puzzle_proto_rawDesc = "" +
 	"\n" +
-	"\fpuzzle.proto\x12\acrossme\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb7\x05\n" +
+	"\fpuzzle.proto\x12\acrossme\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x05\n" +
 	"\x06Puzzle\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x16\n" +
 	"\x06author\x18\x02 \x01(\tR\x06author\x12\x1c\n" +
@@ -506,7 +526,7 @@ const file_puzzle_proto_rawDesc = "" +
 	"\n" +
 	"down_clues\x18\n" +
 	" \x03(\v2\x14.crossme.Puzzle.ClueR\tdownClues\x120\n" +
-	"\bmetadata\x18\v \x01(\v2\x14.crossme.Puzzle.MetaR\bmetadata\x1a\xa0\x01\n" +
+	"\bmetadata\x18\v \x01(\v2\x14.crossme.Puzzle.MetaR\bmetadata\x1a\xdc\x01\n" +
 	"\x04Cell\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\x05R\x06number\x12\x14\n" +
 	"\x05black\x18\x02 \x01(\bR\x05black\x12\x18\n" +
@@ -514,7 +534,10 @@ const file_puzzle_proto_rawDesc = "" +
 	"\x04fill\x18\x04 \x01(\tR\x04fill\x12\x1f\n" +
 	"\vclue_across\x18\x05 \x01(\x05R\n" +
 	"clueAcross\x12\x1b\n" +
-	"\tclue_down\x18\x06 \x01(\x05R\bclueDown\x1a2\n" +
+	"\tclue_down\x18\x06 \x01(\x05R\bclueDown\x12\x1b\n" +
+	"\tbar_right\x18\a \x01(\bR\bbarRight\x12\x1d\n" +
+	"\n" +
+	"bar_bottom\x18\b \x01(\bR\tbarBottom\x1a2\n" +
 	"\x04Clue\x12\x16\n" +
 	"\x06number\x18\x01 \x01(\x05R\x06number\x12\x12\n" +
 	"\x04text\x18\x03 \x01(\tR\x04text\x1ax\n" +

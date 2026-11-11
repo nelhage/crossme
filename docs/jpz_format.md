@@ -51,13 +51,16 @@ The parser maps standard crosswords onto the same in-memory
 representation as the `.puz` reader:
 
 - blocks, cell numbers, circled cells
+- bars (`top-bar`/`left-bar`/`bottom-bar`/`right-bar`), stored as
+  `bar_right`/`bar_bottom` on the cell on the left/upper side of the
+  bar; a word that crosses a bar is rejected
 - rebus entries (multi-character `solution` attributes)
 - Across/Down clue lists; inline clue markup is flattened to plain text
 - metadata (title, creator, copyright, description + instructions)
 
 Anything the current `Puzzle` proto cannot faithfully represent is
 **rejected with an explicit error** rather than imported lossily:
-barred grids, shaded (`background-color`) cells, void and in-grid clue
+shaded (`background-color`) cells, void and in-grid clue
 cells, clue lists other than Across/Down, words that are not straight
 across/down runs, non-standard numbering, and the non-crossword puzzle
 types the schema allows (coded, word search, sudoku, acrostic).

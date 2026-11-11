@@ -9,25 +9,27 @@ function computeNumbering(
 ): [Types.Clue[], Types.Clue[]] {
   const at: (r: number, c: number) => Types.Cell = (r, c) =>
     grid[r * width + c];
-  const needsAcross: (row: number, column: number) => boolean = (r, c) => {
-    if (c > 0 && !at(r, c - 1).black) {
-      return false;
-    }
-    return c + 1 !== width && !at(r, c + 1).black;
+  // Whether a word continues from (r, c) to the next cell: no block
+  // and no bar in the way.
+  const joinsRight = (r: number, c: number) => {
+    const sq = at(r, c);
+    return !sq.black && !sq.barRight && c + 1 < width && !at(r, c + 1).black;
   };
-  const needsDown: (row: number, column: number) => boolean = (r, c) => {
-    if (r > 0 && !at(r - 1, c).black) {
-      return false;
-    }
-    return r + 1 !== height && !at(r + 1, c).black;
+  const joinsDown = (r: number, c: number) => {
+    const sq = at(r, c);
+    return !sq.black && !sq.barBottom && r + 1 < height && !at(r + 1, c).black;
   };
+  const needsAcross: (row: number, column: number) => boolean = (r, c) =>
+    !(c > 0 && joinsRight(r, c - 1)) && joinsRight(r, c);
+  const needsDown: (row: number, column: number) => boolean = (r, c) =>
+    !(r > 0 && joinsDown(r - 1, c)) && joinsDown(r, c);
 
   const across: Types.Clue[] = [];
   const down: Types.Clue[] = [];
 
   let n = 1;
   for (let r = 0; r < height; r++) {
-    for (let c = 0; c < height; c++) {
+    for (let c = 0; c < width; c++) {
       const cell = at(r, c);
       if (cell.black) {
         continue;
@@ -38,23 +40,20 @@ function computeNumbering(
       (cell as Types.LetterCell).number = n;
       if (needsDown(r, c)) {
         down.push({ number: n, text: `Down clue ${n}` });
-        for (let rr = r; rr < height; rr++) {
-          const sq = at(rr, c);
-          if (sq.black) {
+        for (let rr = r; ; rr++) {
+          (at(rr, c) as Types.LetterCell).clueDown = n;
+          if (!joinsDown(rr, c)) {
             break;
           }
-          (sq as Types.LetterCell).clueDown = n;
         }
       }
       if (needsAcross(r, c)) {
         across.push({ number: n, text: `Across clue ${n}` });
-        for (let cc = c; cc < width; cc++) {
-          const sq = at(r, cc);
-          if (sq.black) {
+        for (let cc = c; ; cc++) {
+          (at(r, cc) as Types.LetterCell).clueAcross = n;
+          if (!joinsRight(r, cc)) {
             break;
           }
-
-          (sq as Types.LetterCell).clueAcross = n;
         }
       }
       n += 1;
@@ -63,7 +62,14 @@ function computeNumbering(
   return [across, down];
 }
 
-function parseGame(template: string): Crossword.Game {
+// Bars for a barred grid, as [row, column] of the cell on the left /
+// upper side of the bar.
+interface Bars {
+  right?: [number, number][];
+  bottom?: [number, number][];
+}
+
+function parseGame(template: string, bars?: Bars): Crossword.Game {
   template = template.trim();
   const lines = template.split("\n");
   const height = lines.length;
@@ -139,6 +145,13 @@ function parseGame(template: string): Crossword.Game {
     throw new Error("no cursor found");
   }
 
+  for (const [r, c] of bars?.right ?? []) {
+    (grid[r * width + c] as Types.LetterCell).barRight = true;
+  }
+  for (const [r, c] of bars?.bottom ?? []) {
+    (grid[r * width + c] as Types.LetterCell).barBottom = true;
+  }
+
   const [across_clues, down_clues] = computeNumbering({ width, height }, grid);
 
   const puzzle: Types.Puzzle = {
@@ -212,6 +225,18 @@ A V A I L
     "S"
   );
   expect(Crossword.fillAt(g, { row: 0, column: 2 })).toBeUndefined();
+});
+
+it("numbers every column of a grid wider than it is tall", () => {
+  const g = parseGame(`
+.>. # . .
+. . # . .
+`);
+  const at = (row: number, column: number) =>
+    Crossword.cellAt(g.puzzle, { row, column }) as Types.LetterCell;
+  expect(at(0, 3).number).toEqual(3);
+  expect(at(0, 4).clueAcross).toEqual(3);
+  expect(at(1, 4).clueDown).toEqual(4);
 });
 
 describe("crossword operations", () => {
@@ -539,6 +564,134 @@ A B C D E
       const xformed = Crossword.withUpdate(g_before, op(g_before));
       expect(formatGame(xformed)).toEqual(formatGame(g_after));
     });
+  });
+});
+
+// A 4x4 barred grid with no blocks:
+//
+//   . . | . .
+//   . . . .
+//   ---
+//   . . . .
+//   . . . .
+//
+// so 1-Across is the first two cells of row 0, and 1-Down is the
+// first two cells of column 0. (0,2) starts a 2-cell across word,
+// (2,0) a 2-cell down word.
+describe("barred grids", () => {
+  const bars: Bars = { right: [[0, 1]], bottom: [[1, 0]] };
+  const testCases: [
+    string,
+    string,
+    (g: Crossword.Game) => Crossword.GameUpdate,
+    string,
+  ][] = [
+    [
+      "numbering stops at bars",
+      `
+.>. . .
+. . . .
+. . . .
+. . . .
+`,
+      () => ({}),
+      `
+.>. . .
+. . . .
+. . . .
+. . . .
+`,
+    ],
+    [
+      "typing at the end of a word wraps instead of crossing a bar",
+      `
+. .>. .
+. . . .
+. . . .
+. . . .
+`,
+      (g) => Crossword.keypress(g, "A"),
+      `
+.>A . .
+. . . .
+. . . .
+. . . .
+`,
+    ],
+    [
+      "a filled word ends at a bar",
+      `
+A .v. .
+B . . .
+. . . .
+. . . .
+`,
+      (g) => Crossword.keypress(g, "C"),
+      `
+A C . .
+B .v. .
+. . . .
+. . . .
+`,
+    ],
+    [
+      "typing down stops at a bar and moves to the next clue",
+      `
+A . . .
+.v. . .
+. . . .
+. . . .
+`,
+      (g) => Crossword.keypress(g, "B"),
+      `
+A .v. .
+B . . .
+. . . .
+. . . .
+`,
+    ],
+    [
+      "overwriting at the end of a word stays put",
+      `
+A B>. .
+. . . .
+. . . .
+. . . .
+`,
+      (g) => Crossword.keypress(g, "C"),
+      `
+A C>. .
+. . . .
+. . . .
+. . . .
+`,
+    ],
+  ];
+  testCases.forEach(([name, before, op, after], i) => {
+    it(`${name} [index: ${i}]`, () => {
+      const g_before = parseGame(before, bars);
+      const g_after = parseGame(after, bars);
+      const xformed = Crossword.withUpdate(g_before, op(g_before));
+      expect(formatGame(xformed)).toEqual(formatGame(g_after));
+    });
+  });
+
+  it("numbers words by bars", () => {
+    const g = parseGame(
+      `
+.>. . .
+. . . .
+. . . .
+. . . .
+`,
+      bars
+    );
+    const at = (row: number, column: number) =>
+      Crossword.cellAt(g.puzzle, { row, column }) as Types.LetterCell;
+    expect(at(0, 1).clueAcross).toEqual(1);
+    expect(at(0, 2).clueAcross).not.toEqual(1);
+    expect(at(1, 0).clueDown).toEqual(1);
+    expect(at(2, 0).clueDown).not.toEqual(1);
   });
 });
 

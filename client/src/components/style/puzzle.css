@@ -113,6 +113,16 @@
   margin: 0px;
 }
 
+/* Barred grids: a thick edge ends a word. border-box keeps the cell
+   the same size; the content just shifts by the extra width. */
+#puzzlegrid .cell.bar-right {
+  border-right-width: 3px;
+}
+
+#puzzlegrid .cell.bar-bottom {
+  border-bottom-width: 3px;
+}
+
 #puzzlegrid .cell.rebus .fill {
   font-size: 0.5em;
   left: 0px;
@@ -497,4 +507,10 @@
   #controls {
     padding-bottom: 260px;
   }
+}
+
+/* Puzzle notes (e.g. a variety puzzle's preamble) can run to several
+   paragraphs; keep the author's line breaks. */
+#details .note .value {
+  white-space: pre-line;
 }

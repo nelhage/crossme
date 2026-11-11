@@ -19,6 +19,11 @@ type Cell struct {
 
 	Fill    string
 	Circled bool
+
+	// Barred grids: a thick bar on this cell's right / bottom edge,
+	// which ends any word crossing it. Only .jpz files produce these.
+	BarRight  bool
+	BarBottom bool
 }
 
 type Clue struct {

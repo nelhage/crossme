@@ -12,7 +12,7 @@ import type { Message } from "@bufbuild/protobuf";
  * Describes the file puzzle.proto.
  */
 export const file_puzzle: GenFile = /*@__PURE__*/
-  fileDesc("CgxwdXp6bGUucHJvdG8SB2Nyb3NzbWUi/wMKBlB1enpsZRINCgV0aXRsZRgBIAEoCRIOCgZhdXRob3IYAiABKAkSEQoJY29weXJpZ2h0GAMgASgJEgwKBG5vdGUYBCABKAkSDQoFd2lkdGgYBSABKAUSDgoGaGVpZ2h0GAYgASgFEiUKB3NxdWFyZXMYCCADKAsyFC5jcm9zc21lLlB1enpsZS5DZWxsEioKDGFjcm9zc19jbHVlcxgJIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSKAoKZG93bl9jbHVlcxgKIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSJgoIbWV0YWRhdGEYCyABKAsyFC5jcm9zc21lLlB1enpsZS5NZXRhGmwKBENlbGwSDgoGbnVtYmVyGAEgASgFEg0KBWJsYWNrGAIgASgIEg8KB2NpcmNsZWQYAyABKAgSDAoEZmlsbBgEIAEoCRITCgtjbHVlX2Fjcm9zcxgFIAEoBRIRCgljbHVlX2Rvd24YBiABKAUaJAoEQ2x1ZRIOCgZudW1iZXIYASABKAUSDAoEdGV4dBgDIAEoCRpdCgRNZXRhEisKB2NyZWF0ZWQYASABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEg4KBnNoYTI1NhgCIAEoCRIKCgJpZBgFIAEoCRIMCgRkYXRlGAMgASgJIuYBCgtQdXp6bGVJbmRleBIKCgJpZBgBIAEoCRINCgV0aXRsZRgCIAEoCRIMCgRkYXRlGAMgASgJEg4KBmF1dGhvchgEIAEoCRInCgRnYW1lGAUgASgLMhkuY3Jvc3NtZS5QdXp6bGVJbmRleC5HYW1lGnUKBEdhbWUSCgoCaWQYASABKAkSLwoLbGFzdF9wbGF5ZWQYAiABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wEjAKDGNvbXBsZXRlZF9hdBgDIAEoCzIaLmdvb2dsZS5wcm90b2J1Zi5UaW1lc3RhbXBCFFoSY3Jvc3NtZS5hcHAvc3JjL3BiYgZwcm90bzM", [file_google_protobuf_timestamp]);
+  fileDesc("CgxwdXp6bGUucHJvdG8SB2Nyb3NzbWUipwQKBlB1enpsZRINCgV0aXRsZRgBIAEoCRIOCgZhdXRob3IYAiABKAkSEQoJY29weXJpZ2h0GAMgASgJEgwKBG5vdGUYBCABKAkSDQoFd2lkdGgYBSABKAUSDgoGaGVpZ2h0GAYgASgFEiUKB3NxdWFyZXMYCCADKAsyFC5jcm9zc21lLlB1enpsZS5DZWxsEioKDGFjcm9zc19jbHVlcxgJIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSKAoKZG93bl9jbHVlcxgKIAMoCzIULmNyb3NzbWUuUHV6emxlLkNsdWUSJgoIbWV0YWRhdGEYCyABKAsyFC5jcm9zc21lLlB1enpsZS5NZXRhGpMBCgRDZWxsEg4KBm51bWJlchgBIAEoBRINCgVibGFjaxgCIAEoCBIPCgdjaXJjbGVkGAMgASgIEgwKBGZpbGwYBCABKAkSEwoLY2x1ZV9hY3Jvc3MYBSABKAUSEQoJY2x1ZV9kb3duGAYgASgFEhEKCWJhcl9yaWdodBgHIAEoCBISCgpiYXJfYm90dG9tGAggASgIGiQKBENsdWUSDgoGbnVtYmVyGAEgASgFEgwKBHRleHQYAyABKAkaXQoETWV0YRIrCgdjcmVhdGVkGAEgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIOCgZzaGEyNTYYAiABKAkSCgoCaWQYBSABKAkSDAoEZGF0ZRgDIAEoCSLmAQoLUHV6emxlSW5kZXgSCgoCaWQYASABKAkSDQoFdGl0bGUYAiABKAkSDAoEZGF0ZRgDIAEoCRIOCgZhdXRob3IYBCABKAkSJwoEZ2FtZRgFIAEoCzIZLmNyb3NzbWUuUHV6emxlSW5kZXguR2FtZRp1CgRHYW1lEgoKAmlkGAEgASgJEi8KC2xhc3RfcGxheWVkGAIgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcBIwCgxjb21wbGV0ZWRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wQhRaEmNyb3NzbWUuYXBwL3NyYy9wYmIGcHJvdG8z", [file_google_protobuf_timestamp]);
 
 /**
  * @generated from message crossme.Puzzle
@@ -109,6 +109,21 @@ export type Puzzle_Cell = Message<"crossme.Puzzle.Cell"> & {
    * @generated from field: int32 clue_down = 6;
    */
   clueDown: number;
+
+  /**
+   * Barred grids: a thick bar on this cell's right / bottom
+   * edge, ending any word that would otherwise cross it. Bars on
+   * the left / top edges are stored on the neighboring cell; bars
+   * on the outer edge of the grid are dropped.
+   *
+   * @generated from field: bool bar_right = 7;
+   */
+  barRight: boolean;
+
+  /**
+   * @generated from field: bool bar_bottom = 8;
+   */
+  barBottom: boolean;
 };
 
 /**

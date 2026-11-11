@@ -5,10 +5,10 @@
 //
 // The format (schema at
 // https://crossword.info/xml/rectangular-puzzle.xsd) can express many
-// features CrossMe cannot yet represent: barred grids, shaded cells,
-// words in arbitrary directions, coded crosswords, and so on. This
-// parser handles standard crosswords -- blocks, circles, rebus
-// entries, across/down clues -- and returns a clear error for puzzles
+// features CrossMe cannot yet represent: shaded cells, words in
+// arbitrary directions, coded crosswords, and so on. This parser
+// handles standard and barred crosswords -- blocks, bars, circles,
+// rebus entries, across/down clues -- and returns a clear error for puzzles
 // that use anything we would otherwise have to silently drop. The
 // original file bytes are stored alongside every imported puzzle, so
 // puzzles imported today can be re-parsed if support improves.
@@ -155,6 +155,8 @@ type xmlCell struct {
 	BackgroundColor string `xml:"background-color,attr"`
 	TopBar          string `xml:"top-bar,attr"`
 	LeftBar         string `xml:"left-bar,attr"`
+	BottomBar       string `xml:"bottom-bar,attr"`
+	RightBar        string `xml:"right-bar,attr"`
 }
 
 type xmlWord struct {
@@ -379,10 +381,22 @@ func fillGrid(p *puz.PuzFile, cells []xmlCell) error {
 		}
 		seen[i] = true
 
-		if c.TopBar == "true" || c.LeftBar == "true" {
-			return errors.New("jpz: barred grids are not supported yet")
+		// A bar is an edge shared by two cells; store it on the
+		// cell above / to the left. Bars on the grid's outer edge
+		// separate nothing and are dropped.
+		if c.TopBar == "true" && c.Y > 1 {
+			p.At(c.X-1, c.Y-2).BarBottom = true
+		}
+		if c.LeftBar == "true" && c.X > 1 {
+			p.At(c.X-2, c.Y-1).BarRight = true
 		}
 		cell := &p.Cells[i]
+		if c.BottomBar == "true" && c.Y < p.Height {
+			cell.BarBottom = true
+		}
+		if c.RightBar == "true" && c.X < p.Width {
+			cell.BarRight = true
+		}
 		switch c.Type {
 		case "block":
 			cell.Black = true
@@ -517,6 +531,10 @@ func assignClues(p *puz.PuzFile, list *xmlClues, words map[string][]coord, isAcr
 					(!isAcross && c.x == prev.x && c.y == prev.y+1)
 				if !straight {
 					return nil, fmt.Errorf("jpz: word %s is not a contiguous %s run; only standard across/down words are supported", cl.Word, dir)
+				}
+				before := p.At(prev.x-1, prev.y-1)
+				if (isAcross && before.BarRight) || (!isAcross && before.BarBottom) {
+					return nil, fmt.Errorf("jpz: word %s crosses a bar at (%d,%d)", cl.Word, c.x, c.y)
 				}
 			}
 		}

@@ -9,6 +9,9 @@ export interface LetterCell {
   circled?: boolean;
   clueAcross: number;
   clueDown: number;
+  // Barred grids: a thick bar on this cell's right / bottom edge.
+  barRight?: boolean;
+  barBottom?: boolean;
 }
 
 export type Cell = BlackCell | LetterCell;
