@@ -44,6 +44,8 @@ export class PuzzleCell extends React.PureComponent<
     const fill = this.props.fill;
     const classes: { [cls: string]: boolean | undefined } = {
       circled: this.props.square.circled,
+      "bar-right": this.props.square.barRight,
+      "bar-bottom": this.props.square.barBottom,
       pencil: fill && fill.pencil,
       reveal: fill && fill.didReveal,
       wrong: fill && fill.checked === Types.Checked.WRONG,

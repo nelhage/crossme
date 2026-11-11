@@ -338,6 +338,57 @@ function find(
   }
 }
 
+function clueIn(cell: Types.Cell, dir: Types.Direction): number {
+  if (cell.black) {
+    return 0;
+  }
+  return dir === Types.Direction.ACROSS ? cell.clueAcross : cell.clueDown;
+}
+
+// Walks the word containing `start` from `start` (inclusive) in
+// direction (dr, dc), returning the first position that satisfies
+// `predicate`, or null on running off the end of the word.
+//
+// A word is the run of cells sharing a clue number in that direction,
+// so words end at bars in a barred grid as well as at blocks and the
+// grid edge. A cell with no clue in that direction is a word by itself.
+function findInWord(
+  g: Game,
+  start: Types.Position,
+  dr: number,
+  dc: number,
+  predicate: (pos: Types.Position, sq: Types.LetterCell) => boolean
+): Types.Position | null {
+  const dir = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
+  let cell = cellAt(g.puzzle, start);
+  if (cell.black) {
+    return null;
+  }
+  const clue = clueIn(cell, dir);
+  const pos: Types.Position = { ...start };
+  while (true) {
+    if (predicate({ ...pos }, cell)) {
+      return pos;
+    }
+    pos.row += dr;
+    pos.column += dc;
+    if (
+      !clue ||
+      pos.row < 0 ||
+      pos.row >= g.puzzle.height ||
+      pos.column < 0 ||
+      pos.column >= g.puzzle.width
+    ) {
+      return null;
+    }
+    const next = cellAt(g.puzzle, pos);
+    if (next.black || clueIn(next, dir) !== clue) {
+      return null;
+    }
+    cell = next;
+  }
+}
+
 export function move(
   g: Game,
   dr: number,
@@ -349,20 +400,17 @@ export function move(
   const row = g.cursor.row;
   const col = g.cursor.column;
 
-  const sel = selectedSquare(g);
-  const dst = find(g, { row: row + dr, column: col + dc }, dr, dc, (_, sq) => {
-    if (sq.black) {
-      return false;
-    }
-    if (
-      inword &&
-      ((dc && sel.clueAcross !== sq.clueAcross) ||
-        (dr && sel.clueDown !== sq.clueDown))
-    ) {
-      return false;
-    }
-    return true;
-  });
+  const dst = inword
+    ? findInWord(
+        g,
+        g.cursor,
+        dr,
+        dc,
+        (pos) => pos.row !== row || pos.column !== col
+      )
+    : find(g, { row: row + dr, column: col + dc }, dr, dc, (_, sq) => {
+        return !sq.black;
+      });
 
   if (!dst) return {};
   return { cursor: { ...dst, direction } };
@@ -422,10 +470,7 @@ function lastBlankInWord(
   dc: number
 ): Types.Position | null {
   let prev = null;
-  find(g, pos, dr, dc, (pos, sq) => {
-    if (sq.black) {
-      return true;
-    }
+  findInWord(g, pos, dr, dc, (pos) => {
     const fill = g.fill.get(packIndex(g.puzzle, pos));
     if (!fill || fill.fill === "") {
       prev = pos;
@@ -441,17 +486,10 @@ function nextBlankInWord(
   dr: number,
   dc: number
 ): Types.Position | null {
-  const found = find(g, pos, dr, dc, (pos, sq) => {
-    if (sq.black) {
-      return true;
-    }
+  return findInWord(g, pos, dr, dc, (pos) => {
     const fill = g.fill.get(packIndex(g.puzzle, pos));
     return !fill || fill.fill === "";
   });
-  if (found && cellAt(g.puzzle, found).black) {
-    return null;
-  }
-  return found;
 }
 
 function cluesForDirection(g: Game, direction: Types.Direction): Types.Clue[] {
@@ -598,25 +636,15 @@ export function keypress(g: Game, text: string): GameUpdate {
     return { ...update, ...move(g, dr, dc, true) };
   }
 
-  const next = find(
-    g,
-    { row: cursor.row + dr, column: cursor.column + dc },
-    dr,
-    dc,
-    (pos, sq) => {
-      if (
-        sq.black /* TODO(pref): || this.state.profile.settingWithinWord !== "skip" */
-      ) {
-        return true;
-      }
-      const fill = g.fill.get(packIndex(g.puzzle, pos));
-      if (!fill || fill.fill === "") {
-        return true;
-      }
+  // TODO(pref): this.state.profile.settingWithinWord !== "skip"
+  const next = findInWord(g, cursor, dr, dc, (pos) => {
+    if (pos.row === cursor.row && pos.column === cursor.column) {
       return false;
     }
-  );
-  if (next && !cellAt(g.puzzle, next).black) {
+    const fill = g.fill.get(packIndex(g.puzzle, pos));
+    return !fill || fill.fill === "";
+  });
+  if (next) {
     return { ...update, cursor: next };
   }
   // At end-of-word, try wrapping to the beginning
@@ -653,10 +681,7 @@ export function deleteKey(g: Game): GameUpdate {
         const start = g.by_clue[clue.number];
         const { dr, dc } = directionToDelta(direction);
         let last = start;
-        find(g, start, dr, dc, (pos, sq) => {
-          if (sq.black) {
-            return true;
-          }
+        findInWord(g, start, dr, dc, (pos) => {
           last = pos;
           return false;
         });

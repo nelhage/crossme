@@ -29,6 +29,12 @@ function proto2Cell(sq: Puzzle_Cell): Types.Cell {
     clueAcross: sq.clueAcross,
     clueDown: sq.clueDown,
   };
+  if (sq.barRight) {
+    cell.barRight = true;
+  }
+  if (sq.barBottom) {
+    cell.barBottom = true;
+  }
   // A square with no clue number comes back as 0; the client models
   // "no number" as the field being absent.
   if (sq.number !== 0) {
