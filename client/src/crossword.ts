@@ -312,12 +312,16 @@ export function selectedSquare(g: Game): Types.LetterCell {
   return cell;
 }
 
+// Walks from `start` (inclusive) in direction (dr, dc) and returns the
+// first position for which `predicate` returns true. The predicate
+// returns false to keep going, or null to give up; the walk also gives
+// up at the edge of the grid.
 function find(
   g: Game,
   start: Types.Position,
   dr: number,
   dc: number,
-  predicate: (pos: Types.Position, sq: Types.Cell) => boolean
+  predicate: (pos: Types.Position, sq: Types.Cell) => boolean | null
 ): Types.Position | null {
   const pos: Types.Position = { ...start };
   while (true) {
@@ -329,8 +333,11 @@ function find(
     ) {
       return null;
     }
-    const cell = cellAt(g.puzzle, pos);
-    if (predicate({ ...pos }, cell)) {
+    const found = predicate({ ...pos }, cellAt(g.puzzle, pos));
+    if (found === null) {
+      return null;
+    }
+    if (found) {
       return pos;
     }
     pos.row += dr;
@@ -345,9 +352,8 @@ function clueIn(cell: Types.Cell, dir: Types.Direction): number {
   return dir === Types.Direction.ACROSS ? cell.clueAcross : cell.clueDown;
 }
 
-// Walks the word containing `start` from `start` (inclusive) in
-// direction (dr, dc), returning the first position that satisfies
-// `predicate`, or null on running off the end of the word.
+// Like `find`, but walks only the word containing `start`, giving up
+// at its end.
 //
 // A word is the run of cells sharing a clue number in that direction,
 // so words end at bars in a barred grid as well as at blocks and the
@@ -360,33 +366,18 @@ function findInWord(
   predicate: (pos: Types.Position, sq: Types.LetterCell) => boolean
 ): Types.Position | null {
   const dir = dr ? Types.Direction.DOWN : Types.Direction.ACROSS;
-  let cell = cellAt(g.puzzle, start);
-  if (cell.black) {
+  const first = cellAt(g.puzzle, start);
+  if (first.black) {
     return null;
   }
-  const clue = clueIn(cell, dir);
-  const pos: Types.Position = { ...start };
-  while (true) {
-    if (predicate({ ...pos }, cell)) {
-      return pos;
-    }
-    pos.row += dr;
-    pos.column += dc;
-    if (
-      !clue ||
-      pos.row < 0 ||
-      pos.row >= g.puzzle.height ||
-      pos.column < 0 ||
-      pos.column >= g.puzzle.width
-    ) {
+  const clue = clueIn(first, dir);
+  return find(g, start, dr, dc, (pos, sq) => {
+    const atStart = pos.row === start.row && pos.column === start.column;
+    if (sq.black || (!atStart && (!clue || clueIn(sq, dir) !== clue))) {
       return null;
     }
-    const next = cellAt(g.puzzle, pos);
-    if (next.black || clueIn(next, dir) !== clue) {
-      return null;
-    }
-    cell = next;
-  }
+    return predicate(pos, sq);
+  });
 }
 
 export function move(
