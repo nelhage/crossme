@@ -29,7 +29,7 @@ function computeNumbering(
 
   let n = 1;
   for (let r = 0; r < height; r++) {
-    for (let c = 0; c < height; c++) {
+    for (let c = 0; c < width; c++) {
       const cell = at(r, c);
       if (cell.black) {
         continue;
@@ -225,6 +225,18 @@ A V A I L
     "S"
   );
   expect(Crossword.fillAt(g, { row: 0, column: 2 })).toBeUndefined();
+});
+
+it("numbers every column of a grid wider than it is tall", () => {
+  const g = parseGame(`
+.>. # . .
+. . # . .
+`);
+  const at = (row: number, column: number) =>
+    Crossword.cellAt(g.puzzle, { row, column }) as Types.LetterCell;
+  expect(at(0, 3).number).toEqual(3);
+  expect(at(0, 4).clueAcross).toEqual(3);
+  expect(at(1, 4).clueDown).toEqual(4);
 });
 
 describe("crossword operations", () => {
