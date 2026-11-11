@@ -63,6 +63,8 @@ func Puz2Proto(puz *puz.PuzFile) *pb.Puzzle {
 			Fill:       sq.Fill,
 			ClueAcross: int32(sq.WordAcross),
 			ClueDown:   int32(sq.WordDown),
+			BarRight:   sq.BarRight,
+			BarBottom:  sq.BarBottom,
 		})
 	}
 	for _, cl := range puz.CluesAcross {

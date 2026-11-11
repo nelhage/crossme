@@ -79,6 +79,7 @@ func TestFromFile(t *testing.T) {
 		"mini.jpz":    {5, 5, 5, 5},
 		"daily.jpz":   {14, 11, 19, 22},
 		"cryptic.jpz": {15, 15, 14, 14},
+		"barred.jpz":  {11, 11, 21, 19},
 	}
 	dents, err := os.ReadDir("testdata")
 	if err != nil {
@@ -103,6 +104,9 @@ func TestFromFile(t *testing.T) {
 		}
 		if strings.HasPrefix(ent.Name(), "mini.") {
 			checkMini(t, p)
+		}
+		if ent.Name() == "barred.jpz" {
+			checkBarred(t, p)
 		}
 	}
 }
@@ -145,10 +149,10 @@ func TestRejectsUnsupported(t *testing.T) {
 		want string
 	}{
 		{
-			"barred",
+			"word crosses bar",
 			fill(`<cell x="1" y="1" solution="A" number="1"/><cell x="2" y="1" solution="B" left-bar="true"/>`,
 				okWords, okClueA, ""),
-			"barred grids",
+			"crosses a bar",
 		},
 		{
 			"shaded",
@@ -218,6 +222,74 @@ func TestRejectsUnsupported(t *testing.T) {
 				t.Errorf("error %q does not contain %q", err.Error(), tc.want)
 			}
 		})
+	}
+}
+
+// checkBarred spot-checks testdata/barred.jpz, a sanitized barred
+// cryptic with no blocks.
+func checkBarred(t *testing.T, p *puz.PuzFile) {
+	t.Helper()
+	for i, c := range p.Cells {
+		if c.Black {
+			t.Fatalf("cell %d is a block; barred grid has none", i)
+		}
+	}
+	// (2,4) has left-bar, (1,6) has top-bar.
+	if !p.At(0, 3).BarRight {
+		t.Errorf("cell (1,4) should have a right bar")
+	}
+	if !p.At(0, 4).BarBottom {
+		t.Errorf("cell (1,5) should have a bottom bar")
+	}
+	if p.At(0, 0).BarRight || p.At(0, 0).BarBottom {
+		t.Errorf("cell (1,1) should have no bars")
+	}
+	// Row 6 across starts at 23 (x=4); the cells before it are
+	// unchecked across.
+	if got := p.At(0, 5); got.WordAcross != 0 || got.WordDown != 22 {
+		t.Errorf("cell (1,6) words across=%d down=%d, want 0/22", got.WordAcross, got.WordDown)
+	}
+	if got := p.At(3, 5).WordAcross; got != 23 {
+		t.Errorf("cell (4,6) across=%d, want 23", got)
+	}
+}
+
+// Bars may be given on either side of an edge; bars on the grid's
+// outer edge are dropped.
+func TestBars(t *testing.T) {
+	doc := `<?xml version="1.0" encoding="UTF-8"?>
+<rectangular-puzzle>
+  <crossword>
+    <grid width="2" height="2">
+      <cell x="1" y="1" solution="A" number="1" top-bar="true" left-bar="true"/>
+      <cell x="2" y="1" solution="B" number="2" bottom-bar="true" right-bar="true"/>
+      <cell x="1" y="2" solution="C" number="3" right-bar="true"/>
+      <cell x="2" y="2" solution="D" bottom-bar="true"/>
+    </grid>
+    <word id="1" x="1-2" y="1"/>
+    <word id="2" x="1" y="1-2"/>
+    <word id="3" x="2" y="1"/>
+    <word id="4" x="1" y="2"/>
+    <clues><title>Across</title><clue word="1" number="1">a</clue><clue word="4" number="3">c</clue></clues>
+    <clues><title>Down</title><clue word="2" number="1">b</clue><clue word="3" number="2">d</clue></clues>
+  </crossword>
+</rectangular-puzzle>`
+	p, err := FromBytes([]byte(doc))
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[[2]int][2]bool{ // {x,y} -> {right, bottom}
+		{0, 0}: {false, false},
+		{1, 0}: {false, true},
+		{0, 1}: {true, false},
+		{1, 1}: {false, false},
+	}
+	for pos, w := range want {
+		c := p.At(pos[0], pos[1])
+		if c.BarRight != w[0] || c.BarBottom != w[1] {
+			t.Errorf("cell %v bars right=%v bottom=%v, want %v/%v",
+				pos, c.BarRight, c.BarBottom, w[0], w[1])
+		}
 	}
 }
 

@@ -26,6 +26,13 @@ message Puzzle {
         string fill = 4;
         int32 clue_across = 5;
         int32 clue_down = 6;
+
+        // Barred grids: a thick bar on this cell's right / bottom
+        // edge, ending any word that would otherwise cross it. Bars on
+        // the left / top edges are stored on the neighboring cell; bars
+        // on the outer edge of the grid are dropped.
+        bool bar_right = 7;
+        bool bar_bottom = 8;
     }
 
     message Clue {
